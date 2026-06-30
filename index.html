@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Get Key System</title>
+    <title>APEX HUB | Get Key</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
         * {
             margin: 0;
             padding: 0;
@@ -12,8 +14,8 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+            font-family: 'Montserrat', sans-serif;
+            background: #050505;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -22,112 +24,192 @@
             position: relative;
         }
 
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(180, 0, 0, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(0, 0, 0, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 0%, rgba(255, 50, 50, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 100%, rgba(180, 0, 0, 0.1) 0%, transparent 50%);
+            z-index: 0;
+        }
+
+        .grid-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 0;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(60px, 60px); }
+        }
+
         .particles {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 0;
+            z-index: 1;
+            pointer-events: none;
         }
 
         .particle {
             position: absolute;
-            background: linear-gradient(45deg, #c9a84c, #ffd700);
             border-radius: 50%;
-            animation: float 6s infinite ease-in-out;
-            opacity: 0.1;
+            animation: floatUp 8s infinite ease-in;
+            opacity: 0;
         }
 
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0) translateX(0) scale(1);
-                opacity: 0.1;
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
             }
-            25% {
-                transform: translateY(-100px) translateX(50px) scale(1.5);
-                opacity: 0.3;
-            }
-            50% {
-                transform: translateY(-50px) translateX(-30px) scale(1);
-                opacity: 0.1;
-            }
-            75% {
-                transform: translateY(-150px) translateX(-50px) scale(1.8);
-                opacity: 0.4;
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% {
+                transform: translateY(-100px) translateX(100px) scale(1);
+                opacity: 0;
             }
         }
 
         .container {
             position: relative;
-            z-index: 1;
+            z-index: 2;
             width: 100%;
-            max-width: 500px;
+            max-width: 520px;
             padding: 20px;
         }
 
         .card {
-            background: rgba(20, 20, 20, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(201, 168, 76, 0.3);
-            border-radius: 30px;
-            padding: 60px 40px;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(230, 57, 70, 0.2);
+            border-radius: 24px;
+            padding: 50px 40px;
             text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
-                        0 0 40px rgba(201, 168, 76, 0.1),
-                        inset 0 0 30px rgba(201, 168, 76, 0.05);
+            box-shadow: 
+                0 0 80px rgba(220, 20, 20, 0.08),
+                0 30px 60px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.03);
             position: relative;
             overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .card::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                45deg,
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background: conic-gradient(
+                from 0deg,
                 transparent,
-                rgba(201, 168, 76, 0.05),
+                rgba(220, 20, 20, 0.05),
                 transparent,
-                rgba(201, 168, 76, 0.1),
+                rgba(255, 80, 80, 0.08),
+                transparent,
+                rgba(220, 20, 20, 0.05),
                 transparent
             );
-            animation: rotate 10s linear infinite;
+            animation: rotateGlow 15s linear infinite;
+            z-index: 0;
         }
 
-        @keyframes rotate {
+        @keyframes rotateGlow {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        .card:hover {
-            border-color: rgba(201, 168, 76, 0.6);
-            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6),
-                        0 0 60px rgba(201, 168, 76, 0.2),
-                        inset 0 0 40px rgba(201, 168, 76, 0.1);
-            transform: translateY(-5px);
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 50%, rgba(0, 0, 0, 0.3) 100%);
+            z-index: 0;
+            pointer-events: none;
         }
 
-        .title {
-            font-size: 42px;
-            font-weight: 300;
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-text {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: 6px;
             color: #ffffff;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
+            animation: fadeInUp 0.8s ease-out;
+            text-shadow: 0 0 40px rgba(255, 50, 50, 0.3);
+        }
+
+        .logo-text span {
+            color: #e63946;
+            text-shadow: 0 0 60px rgba(230, 57, 70, 0.6);
+        }
+
+        .logo-subtitle {
+            font-size: 13px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.5);
             letter-spacing: 8px;
             text-transform: uppercase;
-            position: relative;
-            z-index: 2;
-            animation: fadeInUp 0.8s ease-out;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out 0.15s both;
+        }
+
+        .divider {
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #e63946, transparent);
+            margin: 0 auto 35px;
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 400;
+            color: #cccccc;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            animation: fadeInUp 0.8s ease-out 0.35s both;
+        }
+
+        .page-subtitle {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.35);
+            letter-spacing: 3px;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
         }
 
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(25px);
             }
             to {
                 opacity: 1;
@@ -135,51 +217,27 @@
             }
         }
 
-        .subtitle {
-            font-size: 14px;
-            color: rgba(201, 168, 76, 0.8);
-            margin-bottom: 50px;
+        .btn-get-key {
+            position: relative;
+            display: inline-block;
+            padding: 16px 55px;
+            font-size: 15px;
+            font-weight: 500;
             letter-spacing: 4px;
             text-transform: uppercase;
-            position: relative;
-            z-index: 2;
-            animation: fadeInUp 0.8s ease-out 0.2s both;
-        }
-
-        .line {
-            width: 60px;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #c9a84c, transparent);
-            margin: 0 auto 40px;
-            position: relative;
-            z-index: 2;
-            animation: fadeInUp 0.8s ease-out 0.4s both;
-        }
-
-        .get-key-btn {
-            position: relative;
-            z-index: 2;
-            padding: 18px 60px;
-            font-size: 18px;
-            font-weight: 500;
-            letter-spacing: 3px;
-            text-transform: uppercase;
             color: #ffffff;
-            background: linear-gradient(135deg, 
-                rgba(201, 168, 76, 0.2) 0%, 
-                rgba(201, 168, 76, 0.4) 50%, 
-                rgba(201, 168, 76, 0.2) 100%);
-            border: 1px solid rgba(201, 168, 76, 0.5);
+            background: linear-gradient(135deg, #1a0000 0%, #2d0000 50%, #1a0000 100%);
+            border: 1px solid rgba(230, 57, 70, 0.5);
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            animation: fadeInUp 0.8s ease-out 0.6s both;
-            overflow: hidden;
-            display: inline-block;
             text-decoration: none;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.8s ease-out 0.5s both;
+            z-index: 1;
         }
 
-        .get-key-btn::before {
+        .btn-get-key::before {
             content: '';
             position: absolute;
             top: 50%;
@@ -187,95 +245,129 @@
             width: 0;
             height: 0;
             border-radius: 50%;
-            background: rgba(201, 168, 76, 0.4);
+            background: rgba(230, 57, 70, 0.25);
             transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
+            transition: width 0.7s, height 0.7s;
         }
 
-        .get-key-btn:hover::before {
-            width: 300px;
-            height: 300px;
+        .btn-get-key:hover::before {
+            width: 400px;
+            height: 400px;
         }
 
-        .get-key-btn:hover {
-            background: linear-gradient(135deg, 
-                rgba(201, 168, 76, 0.4) 0%, 
-                rgba(201, 168, 76, 0.6) 50%, 
-                rgba(201, 168, 76, 0.4) 100%);
-            border-color: rgba(201, 168, 76, 0.8);
-            box-shadow: 0 10px 30px rgba(201, 168, 76, 0.3),
-                        0 0 20px rgba(201, 168, 76, 0.2);
-            transform: translateY(-2px);
-            letter-spacing: 5px;
+        .btn-get-key:hover {
+            border-color: #e63946;
+            box-shadow: 
+                0 0 30px rgba(230, 57, 70, 0.3),
+                0 0 60px rgba(230, 57, 70, 0.15),
+                0 15px 40px rgba(0, 0, 0, 0.4);
+            transform: translateY(-3px);
+            letter-spacing: 6px;
         }
 
-        .get-key-btn span {
+        .btn-get-key:active {
+            transform: translateY(-1px);
+            transition: all 0.1s;
+        }
+
+        .btn-text {
             position: relative;
             z-index: 1;
         }
 
-        .shine {
+        .card-glow {
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.05),
-                transparent
-            );
-            animation: shine 3s infinite;
-            z-index: 1;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 26px;
+            background: linear-gradient(45deg, transparent 40%, rgba(230, 57, 70, 0.15) 50%, transparent 60%);
+            z-index: -1;
+            animation: borderGlow 4s ease-in-out infinite;
+            pointer-events: none;
         }
 
-        @keyframes shine {
-            0% { left: -100%; }
-            100% { left: 200%; }
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        .corner-accent {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-color: rgba(230, 57, 70, 0.4);
+            border-style: solid;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .corner-accent.top-left {
+            top: 15px;
+            left: 15px;
+            border-width: 1px 0 0 1px;
+            border-radius: 6px 0 0 0;
+        }
+
+        .corner-accent.bottom-right {
+            bottom: 15px;
+            right: 15px;
+            border-width: 0 1px 1px 0;
+            border-radius: 0 0 6px 0;
         }
     </style>
 </head>
 <body>
+    <div class="bg-gradient"></div>
+    <div class="grid-pattern"></div>
     <div class="particles" id="particles"></div>
 
     <div class="container">
-        <div class="card" id="card">
-            <div class="shine"></div>
-            
-            <h1 class="title">Get Key</h1>
-            <p class="subtitle">Access System</p>
-            <div class="line"></div>
-            <button class="get-key-btn" onclick="openGetKey()">
-                <span>Get Key</span>
-            </button>
+        <div class="card">
+            <div class="card-glow"></div>
+            <div class="corner-accent top-left"></div>
+            <div class="corner-accent bottom-right"></div>
+
+            <div class="card-content">
+                <div class="logo-text">APEX <span>HUB</span></div>
+                <div class="logo-subtitle">Premium Access</div>
+                <div class="divider"></div>
+
+                <div class="page-title">Get Key</div>
+                <div class="page-subtitle">Verify to continue</div>
+                
+                <button class="btn-get-key" onclick="openLink()">
+                    <span class="btn-text">Get Key</span>
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Tạo particles
         function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            for (let i = 0; i < 30; i++) {
+            const container = document.getElementById('particles');
+            const colors = ['#e63946', '#ff4d4d', '#cc2936', '#ff6666', '#b32430'];
+            
+            for (let i = 0; i < 25; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
-                const size = Math.random() * 4 + 1;
+                const size = Math.random() * 3 + 1;
                 particle.style.width = size + 'px';
                 particle.style.height = size + 'px';
                 particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 6 + 's';
-                particle.style.animationDuration = (Math.random() * 6 + 4) + 's';
-                particlesContainer.appendChild(particle);
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (Math.random() * 6 + 5) + 's';
+                particle.style.boxShadow = `0 0 ${size * 3}px ${colors[Math.floor(Math.random() * colors.length)]}`;
+                container.appendChild(particle);
             }
         }
 
-        function openGetKey() {
-            // Mở link rút gọn trong tab mới
-            window.open('https://link4m.net/qtvvip0J', '_blank');
+        function openLink() {
+            window.open('https://link4m.org/WXWTu3pG', '_blank');
         }
 
-        // Khởi tạo
         createParticles();
     </script>
 </body>
