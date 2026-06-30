@@ -93,12 +93,6 @@
                 <div class="line"></div>
 
                 <div id="loading"><div class="ttl">Đang kiểm tra...</div><div class="load">Vui lòng đợi</div></div>
-                
-                <div id="unauthorized" class="hid">
-                    <div class="ttl" style="color:#f44;">Truy Cập Bị Từ Chối</div>
-                    <div class="stl" style="color:#f44;">Vui lòng truy cập từ trang chính</div>
-                    <button class="btn" onclick="window.location.href=HOME"><span>Về Trang Chủ</span></button>
-                </div>
 
                 <div id="generate" class="hid">
                     <div class="ttl">Tạo Key</div>
@@ -139,15 +133,15 @@
         var PHUT = 5;
         // ======================
 
-        // ===== BẢO MẬT: Tạo mã định danh thiết bị (không thể xóa) =====
+        // ===== TẠO MÃ ĐỊNH DANH THIẾT BỊ (KHÔNG THỂ XÓA) =====
         function taoDeviceFingerprint() {
             var components = [];
             
-            // Canvas fingerprinting
+            // Canvas fingerprint
             try {
                 var canvas = document.createElement('canvas');
                 var ctx = canvas.getContext('2d');
-                var txt = 'APEX_HUB_SECURITY_FINGERPRINT_2024';
+                var txt = 'APEX_HUB_DEVICE_CHECK_2024';
                 ctx.textBaseline = 'top';
                 ctx.font = '14px Arial';
                 ctx.fillStyle = '#f60';
@@ -159,7 +153,7 @@
                 components.push(canvas.toDataURL());
             } catch(e) {}
             
-            // WebGL fingerprinting
+            // WebGL fingerprint
             try {
                 var glCanvas = document.createElement('canvas');
                 var gl = glCanvas.getContext('webgl') || glCanvas.getContext('experimental-webgl');
@@ -172,33 +166,49 @@
                 }
             } catch(e) {}
             
-            // Browser characteristics
-            components.push(navigator.userAgent);
-            components.push(navigator.language);
-            components.push(screen.colorDepth.toString());
-            components.push(screen.width + 'x' + screen.height);
-            components.push(new Date().getTimezoneOffset().toString());
-            
-            // Audio fingerprinting
+            // Audio fingerprint  
             try {
                 var AudioContext = window.AudioContext || window.webkitAudioContext;
                 if(AudioContext) {
                     var audioCtx = new AudioContext();
                     var oscillator = audioCtx.createOscillator();
                     var analyser = audioCtx.createAnalyser();
+                    var gainNode = audioCtx.createGain();
+                    gainNode.gain.value = 0; // Tắt tiếng
                     oscillator.connect(analyser);
-                    analyser.connect(audioCtx.destination);
+                    analyser.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
                     components.push(oscillator.type);
                     components.push(analyser.fftSize.toString());
+                    components.push(audioCtx.sampleRate.toString());
                     oscillator.disconnect();
                     analyser.disconnect();
+                    gainNode.disconnect();
                     audioCtx.close();
                 }
             } catch(e) {}
             
+            // Browser/platform info
+            components.push(navigator.userAgent);
+            components.push(navigator.language);
+            components.push(navigator.platform || '');
+            components.push(screen.colorDepth.toString());
+            components.push(screen.width + 'x' + screen.height);
+            components.push(screen.availWidth + 'x' + screen.availHeight);
+            components.push(new Date().getTimezoneOffset().toString());
+            
+            // Plugins
+            try {
+                var plugins = [];
+                for(var i = 0; i < navigator.plugins.length; i++) {
+                    plugins.push(navigator.plugins[i].name);
+                }
+                components.push(plugins.join(','));
+            } catch(e) {}
+            
             var fingerprint = components.join('###');
             
-            // Simple hash function
+            // Hash function
             var hash = 0;
             for (var i = 0; i < fingerprint.length; i++) {
                 var char = fingerprint.charCodeAt(i);
@@ -206,13 +216,37 @@
                 hash = hash & hash;
             }
             
-            var deviceID = 'APEX_' + Math.abs(hash).toString(36) + '_' + Date.now().toString(36);
+            var deviceID = 'APEX_' + Math.abs(hash).toString(36);
             
-            // Lưu vào nhiều nơi
+            // LƯU VÀO NHIỀU NƠI - KHÔNG THỂ XÓA HẾT
             try {
-                localStorage.setItem('__apex_hub_device', deviceID);
-                sessionStorage.setItem('__apex_hub_device', deviceID);
-                document.cookie = '__apex_hub_device=' + deviceID + ';path=/;max-age=31536000;SameSite=Strict';
+                // Cookie - khó xóa nhất với người dùng thông thường
+                document.cookie = '__apex_did=' + deviceID + ';path=/;max-age=31536000;SameSite=Lax';
+                
+                // localStorage
+                localStorage.setItem('__apex_did', deviceID);
+                localStorage.setItem('__apex_device_locked', 'true');
+                
+                // sessionStorage  
+                sessionStorage.setItem('__apex_did', deviceID);
+                
+                // IndexedDB (rất ít người biết cách xóa)
+                try {
+                    var request = indexedDB.open('__apex_security', 1);
+                    request.onupgradeneeded = function(e) {
+                        var db = e.target.result;
+                        if (!db.objectStoreNames.contains('device')) {
+                            db.createObjectStore('device', {keyPath: 'id'});
+                        }
+                    };
+                    request.onsuccess = function(e) {
+                        var db = e.target.result;
+                        var tx = db.transaction('device', 'readwrite');
+                        var store = tx.objectStore('device');
+                        store.put({id: 'fingerprint', value: deviceID});
+                    };
+                } catch(e) {}
+                
             } catch(e) {}
             
             return deviceID;
@@ -220,59 +254,86 @@
 
         function layDeviceID() {
             var id = null;
+            var sources = [];
             
-            // Kiểm tra từ cookie
+            // Kiểm tra tất cả nguồn lưu trữ
+            try {
+                // IndexedDB
+                var request = indexedDB.open('__apex_security', 1);
+                request.onsuccess = function(e) {
+                    var db = e.target.result;
+                    if(db.objectStoreNames.contains('device')) {
+                        var tx = db.transaction('device', 'readonly');
+                        var store = tx.objectStore('device');
+                        var getReq = store.get('fingerprint');
+                        getReq.onsuccess = function() {
+                            if(getReq.result) {
+                                sources.push(getReq.result.value);
+                            }
+                        };
+                    }
+                };
+            } catch(e) {}
+            
+            // Cookie
             try {
                 var cookies = document.cookie.split(';');
                 for(var i = 0; i < cookies.length; i++) {
                     var c = cookies[i].trim();
-                    if(c.startsWith('__apex_hub_device=')) {
-                        id = c.substring('__apex_hub_device='.length);
+                    if(c.startsWith('__apex_did=')) {
+                        sources.push(c.substring('__apex_did='.length));
                         break;
                     }
                 }
             } catch(e) {}
             
-            // Kiểm tra localStorage
-            if(!id) {
-                try { id = localStorage.getItem('__apex_hub_device'); } catch(e) {}
+            // localStorage
+            try { 
+                var ls = localStorage.getItem('__apex_did');
+                if(ls) sources.push(ls);
+            } catch(e) {}
+            
+            // sessionStorage
+            try { 
+                var ss = sessionStorage.getItem('__apex_did');
+                if(ss) sources.push(ss);
+            } catch(e) {}
+            
+            // Nếu có ít nhất 2 nguồn khớp nhau thì dùng
+            if(sources.length >= 2 && sources[0] === sources[1]) {
+                return sources[0];
             }
             
-            // Kiểm tra sessionStorage
-            if(!id) {
-                try { id = sessionStorage.getItem('__apex_hub_device'); } catch(e) {}
+            // Nếu chỉ có 1 nguồn
+            if(sources.length >= 1) {
+                return sources[0];
             }
             
-            // Tạo mới nếu chưa có
-            if(!id) {
-                id = taoDeviceFingerprint();
-            }
-            
-            return id;
+            // Tạo mới nếu không tìm thấy
+            return taoDeviceFingerprint();
         }
 
-        // ===== BẢO MẬT: Kiểm tra quyền truy cập =====
-        function kiemTraQuyenTruyCap() {
-            // 1. Kiểm tra xem có phải mở từ trang chính không
-            var referrer = document.referrer;
-            var currentUrl = window.location.href;
+        // ===== KIỂM TRA THAM SỐ URL (BẢO VỆ CHỐNG TRUY CẬP TRỰC TIẾP) =====
+        function kiemTraTokenURL() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var token = urlParams.get('token');
+            var time = urlParams.get('t');
             
-            // Nếu không có referrer và không phải redirect từ chính nó
-            if (!referrer || referrer === '') {
-                // Cho phép nếu đang test local
-                if (currentUrl.indexOf('localhost') !== -1 || currentUrl.indexOf('127.0.0.1') !== -1) {
+            // Token chỉ có hiệu lực trong 60 giây
+            if(token && time) {
+                var now = Date.now();
+                var tokenTime = parseInt(time);
+                if(now - tokenTime < 60000) {
                     return true;
                 }
-                return false;
             }
             
-            // 2. Kiểm tra referrer có từ trang chính không
-            var homeDomain = HOME.replace(/\/$/, ''); // Bỏ dấu / cuối
-            if (referrer.indexOf(homeDomain) === -1) {
-                return false;
+            // Cho phép test local
+            if(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                return true;
             }
             
-            return true;
+            return false;
         }
 
         function taoHat(){
@@ -295,12 +356,14 @@
             }catch(e){return 'khong-co-ip';}
         }
 
-        async function kiemTraIP(deviceID){
+        async function kiemTraThietBi(deviceID){
             try{
                 var ip=await layIP();
                 var controller=new AbortController();
                 var timeout=setTimeout(function(){controller.abort();},10000);
-                var r=await fetch(API+'?action=check&ip='+encodeURIComponent(ip)+'&device='+encodeURIComponent(deviceID),{signal:controller.signal});
+                // Gửi IP + Device ID + User Agent
+                var ua = encodeURIComponent(navigator.userAgent);
+                var r=await fetch(API+'?action=check&ip='+encodeURIComponent(ip)+'&device='+encodeURIComponent(deviceID)+'&ua='+ua,{signal:controller.signal});
                 clearTimeout(timeout);
                 return await r.json();
             }catch(e){
@@ -311,8 +374,8 @@
         async function luuKey(key,expiry,deviceID){
             try{
                 var ip=await layIP();
-                var token=Math.random().toString(36).substr(2);
-                await fetch(API+'?action=save&ip='+encodeURIComponent(ip)+'&device='+encodeURIComponent(deviceID)+'&token='+token+'&key='+encodeURIComponent(key)+'&expiry='+encodeURIComponent(expiry));
+                var ua = encodeURIComponent(navigator.userAgent);
+                await fetch(API+'?action=save&ip='+encodeURIComponent(ip)+'&device='+encodeURIComponent(deviceID)+'&ua='+ua+'&key='+encodeURIComponent(key)+'&expiry='+encodeURIComponent(expiry));
             }catch(e){}
         }
 
@@ -360,7 +423,7 @@
             btn.querySelector('span').textContent='Đang tạo...';
             
             var deviceID = layDeviceID();
-            var kq=await kiemTraIP(deviceID);
+            var kq=await kiemTraThietBi(deviceID);
             
             if(!kq.allowed){
                 hien('blocked');
@@ -381,14 +444,8 @@
         function keyMoi(){location.href=HOME;}
 
         async function init(){
-            // Kiểm tra quyền truy cập
-            if(!kiemTraQuyenTruyCap()){
-                hien('unauthorized');
-                return;
-            }
-            
             var deviceID = layDeviceID();
-            var kq=await kiemTraIP(deviceID);
+            var kq=await kiemTraThietBi(deviceID);
             
             if(!kq.allowed){
                 hien('blocked');
