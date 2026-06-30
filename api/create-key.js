@@ -1,4 +1,5 @@
-const { kv } = require('@vercel/kv');
+const fs = require('fs');
+const path = require('path');
 const crypto = require('crypto');
 
 // ===== CONFIG =====
@@ -38,16 +39,50 @@ function generateKey() {
   return key;
 }
 
-// Rate limit bằng Vercel KV
-async function checkRateLimit(ip) {
-  const key = `ratelimit:${ip}`;
-  const count = await kv.get(key) || 0;
+// Đọc keys từ file
+function readKeys() {
+  try {
+    const filePath = path.join(process.cwd(), 'data', 'keys.json');
+    const data = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    return {};
+  }
+}
+
+// Ghi keys vào file
+function writeKeys(keys) {
+  const filePath = path.join(process.cwd(), 'data', 'keys.json');
+  fs.writeFileSync(filePath, JSON.stringify(keys, null, 2));
+}
+
+// Rate limit (lưu trong file keys luôn)
+function checkRateLimit(ip) {
+  const keys = readKeys();
+  const rateKey = `ratelimit_${ip.replace(/\./g, '_')}`;
+  const now = Date.now();
   
-  if (count >= 3) {
+  if (!keys[rateKey]) {
+    keys[rateKey] = { count: 1, resetAt: now + 86400000 };
+    writeKeys(keys);
+    return true;
+  }
+  
+  const rateData = keys[rateKey];
+  
+  if (now > rateData.resetAt) {
+    keys[rateKey] = { count: 1, resetAt: now + 86400000 };
+    writeKeys(keys);
+    return true;
+  }
+  
+  if (rateData.count >= 3) {
     return false;
   }
   
-  await kv.set(key, count + 1, { ex: 86400 }); // Hết hạn sau 24h
+  rateData.count++;
+  keys[rateKey] = rateData;
+  writeKeys(keys);
   return true;
 }
 
@@ -64,9 +99,7 @@ module.exports = async (req, res) => {
   
   const ip = req.headers['x-forwarded-for'] || 'unknown';
   
-  // Rate limit
-  const allowed = await checkRateLimit(ip);
-  if (!allowed) {
+  if (!checkRateLimit(ip)) {
     return res.status(429).json({ error: 'Quá giới hạn! Tối đa 3 key/24h.' });
   }
   
@@ -77,14 +110,16 @@ module.exports = async (req, res) => {
     const signature = createSignature(key, timestamp);
     const token = crypto.randomBytes(16).toString('hex');
     
-    // Lưu vào Vercel KV
-    await kv.set(`key:${token}`, {
+    // Lưu vào file
+    const keys = readKeys();
+    keys[token] = {
       key: key,
       signature: signature,
       createdAt: timestamp,
       expiresAt: expiryTime,
       status: 'active'
-    }, { ex: EXPIRY_MINUTES * 60 }); // Tự động xóa khi hết hạn
+    };
+    writeKeys(keys);
     
     return res.status(200).json({
       success: true,
