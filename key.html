@@ -344,11 +344,10 @@
         const FINGERPRINT_KEY = 'apexhub_device_fp';
         // ==================
 
-        // ===== DEVICE FINGERPRINT (KHÔNG THỂ XÓA) =====
+        // ===== DEVICE FINGERPRINT =====
         function generateFingerprint() {
             const components = [];
             
-            // Canvas fingerprint
             try {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
@@ -364,7 +363,6 @@
                 components.push(canvas.toDataURL());
             } catch(e) {}
             
-            // WebGL fingerprint
             try {
                 const glCanvas = document.createElement('canvas');
                 const gl = glCanvas.getContext('webgl') || glCanvas.getContext('experimental-webgl');
@@ -377,7 +375,6 @@
                 }
             } catch(e) {}
             
-            // Audio fingerprint
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 if(AudioContext) {
@@ -399,7 +396,6 @@
                 }
             } catch(e) {}
             
-            // Browser info
             components.push(navigator.userAgent);
             components.push(navigator.language);
             components.push(navigator.platform || '');
@@ -410,7 +406,6 @@
             components.push(navigator.hardwareConcurrency || '');
             components.push(navigator.deviceMemory || '');
             
-            // Plugins
             try {
                 const plugins = [];
                 for(let i = 0; i < navigator.plugins.length; i++) {
@@ -421,7 +416,6 @@
             
             const fingerprint = components.join('###');
             
-            // Hash
             let hash = 0;
             for (let i = 0; i < fingerprint.length; i++) {
                 const char = fingerprint.charCodeAt(i);
@@ -433,7 +427,7 @@
         }
 
         function getOrCreateFingerprint() {
-            // Kiểm tra cookie (khó xóa nhất)
+            // Kiểm tra cookie
             try {
                 const cookies = document.cookie.split(';');
                 for(let i = 0; i < cookies.length; i++) {
@@ -450,28 +444,19 @@
                 if(fp) return fp;
             } catch(e) {}
             
-            // Kiểm tra sessionStorage
-            try {
-                const fp = sessionStorage.getItem(FINGERPRINT_KEY);
-                if(fp) return fp;
-            } catch(e) {}
-            
-            // Tạo mới và lưu vào NHIỀU NƠI
+            // Tạo mới
             const newFp = generateFingerprint();
             
             try {
-                // Cookie - 1 năm, không thể xóa dễ dàng
                 document.cookie = FINGERPRINT_KEY + '=' + newFp + ';path=/;max-age=31536000;SameSite=Lax';
-                // localStorage
                 localStorage.setItem(FINGERPRINT_KEY, newFp);
-                // sessionStorage
                 sessionStorage.setItem(FINGERPRINT_KEY, newFp);
             } catch(e) {}
             
             return newFp;
         }
 
-        // ===== GỌI API GOOGLE SHEETS =====
+        // ===== GỌI API =====
         async function getIP() {
             try {
                 const response = await fetch('https://api.ipify.org?format=json');
@@ -498,7 +483,7 @@
                 return data;
             } catch(e) {
                 console.error('Check error:', e);
-                return { allowed: true }; // Nếu lỗi API thì cho phép tạo key
+                return { allowed: true };
             }
         }
 
@@ -522,7 +507,7 @@
             }
         }
 
-        // ===== HELPER FUNCTIONS =====
+        // ===== HELPERS =====
         function createParticles() {
             const container = document.getElementById('particles');
             const colors = ['#e63946', '#ff4d4d', '#cc2936', '#ff6666', '#b32430'];
@@ -580,7 +565,7 @@
             return key;
         }
 
-        // ===== LƯU TRỮ LOCAL =====
+        // ===== LƯU TRỮ =====
         function getMainData() {
             const stored = localStorage.getItem(STORAGE_KEY);
             if (stored) {
@@ -588,13 +573,8 @@
                     const data = JSON.parse(stored);
                     const currentFp = getOrCreateFingerprint();
                     
-                    // Kiểm tra fingerprint
-                    if (data.fingerprint !== currentFp) {
-                        localStorage.removeItem(STORAGE_KEY);
-                        return null;
-                    }
-                    
-                    // Kiểm tra hết hạn
+                    // === QUAN TRỌNG: Chỉ kiểm tra hết hạn, bỏ qua fingerprint ===
+                    // Vì fingerprint có thể thay đổi trên cùng thiết bị
                     if (new Date().getTime() < data.expiry) {
                         return data;
                     } else {
@@ -615,8 +595,7 @@
                 key: key,
                 token: token,
                 expiry: expiry,
-                fingerprint: fingerprint,
-                saved: new Date().getTime()
+                fingerprint: fingerprint
             };
             
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -670,40 +649,43 @@
             return interval;
         }
 
-        // ===== MAIN FUNCTIONS =====
+        // ===== MAIN =====
         async function generateAndShowKey() {
             const btn = document.getElementById('btnGenerate');
             btn.disabled = true;
             btn.querySelector('.btn-text').textContent = 'Đang tạo...';
             
-            const deviceId = getOrCreateFingerprint();
-            
-            // Kiểm tra server trước
-            const serverCheck = await checkDeviceOnServer(deviceId);
-            
-            if (!serverCheck.allowed) {
-                // Server nói đã có key -> hiển thị wait
-                const existingData = {
-                    key: serverCheck.key,
-                    expiry: new Date(serverCheck.expiry).getTime(),
-                    token: generateToken(),
-                    fingerprint: deviceId
-                };
-                saveMainData(serverCheck.key, existingData.token, serverCheck.expiry);
-                showWaitSection(existingData);
+            // === KIỂM TRA LOCAL TRƯỚC ===
+            const localData = getMainData();
+            if (localData) {
+                showKeySection(localData);
                 btn.disabled = false;
                 btn.querySelector('.btn-text').textContent = 'Tạo Key';
                 return;
             }
             
-            // Tạo key mới
+            const deviceId = getOrCreateFingerprint();
+            
+            // === KIỂM TRA SERVER ===
+            const serverCheck = await checkDeviceOnServer(deviceId);
+            
+            if (!serverCheck.allowed) {
+                // Server nói đã có key
+                const data = saveMainData(serverCheck.key, generateToken(), serverCheck.expiry);
+                showWaitSection(data);
+                btn.disabled = false;
+                btn.querySelector('.btn-text').textContent = 'Tạo Key';
+                return;
+            }
+            
+            // === TẠO KEY MỚI ===
             const token = generateToken();
             const key = generateKey();
             const now = new Date();
             const expiry = new Date(now.getTime() + EXPIRY_MINUTES * 60 * 1000);
             const expiryISO = expiry.toISOString();
             
-            // Lưu lên server
+            // Lưu server
             await saveKeyToServer(deviceId, key, expiryISO);
             
             // Lưu local
@@ -713,7 +695,6 @@
             const newURL = BASE_URL + '?token=' + token;
             window.history.pushState({ token: token }, '', newURL);
             
-            // Hiển thị key
             showKeySection(data);
             
             btn.disabled = false;
@@ -765,87 +746,77 @@
             redirectToHome();
         }
 
-        // ===== KHỞI TẠO =====
+        // ===== INIT =====
         async function init() {
-            // Kiểm tra local trước
+            // === LUÔN KIỂM TRA LOCAL TRƯỚC ===
             const mainData = getMainData();
             
             if (mainData) {
-                // CÓ KEY LOCAL -> kiểm tra lại với server
-                const deviceId = getOrCreateFingerprint();
-                const serverCheck = await checkDeviceOnServer(deviceId);
-                
-                if (!serverCheck.allowed) {
-                    // Server confirm có key -> hiển thị
-                    if (serverCheck.key === mainData.key) {
-                        // Key khớp
-                        const updatedData = {
-                            ...mainData,
-                            expiry: new Date(serverCheck.expiry).getTime()
-                        };
-                        saveMainData(serverCheck.key, mainData.token, serverCheck.expiry);
-                        showKeySection(updatedData);
-                    } else {
-                        // Key khác -> dùng key từ server
-                        const newData = saveMainData(serverCheck.key, generateToken(), serverCheck.expiry);
-                        showWaitSection(newData);
-                    }
-                } else {
-                    // Server nói hết hạn nhưng local còn -> dùng local
-                    showKeySection(mainData);
-                }
-                
-                // Đảm bảo URL có token
+                // CÓ KEY LOCAL -> LUÔN HIỂN THỊ KEY, bất kể URL có token hay không
                 const urlToken = getTokenFromURL();
+                
+                // Nếu URL không có token hoặc token khác -> cập nhật URL
                 if (!urlToken || urlToken !== mainData.token) {
                     const newURL = BASE_URL + '?token=' + mainData.token;
-                    window.history.pushState({ token: mainData.token }, '', newURL);
+                    window.history.replaceState({ token: mainData.token }, '', newURL);
                 }
-            } else {
-                // KHÔNG CÓ KEY LOCAL -> kiểm tra server
-                const deviceId = getOrCreateFingerprint();
-                const serverCheck = await checkDeviceOnServer(deviceId);
                 
-                if (!serverCheck.allowed) {
-                    // Server có key -> lưu local và hiển thị wait
-                    const data = saveMainData(serverCheck.key, generateToken(), serverCheck.expiry);
-                    showWaitSection(data);
-                } else {
-                    // Không có key -> cho phép tạo
-                    showGenerateSection();
-                }
+                showKeySection(mainData);
+                return;
+            }
+            
+            // KHÔNG CÓ KEY LOCAL -> kiểm tra server
+            const deviceId = getOrCreateFingerprint();
+            const serverCheck = await checkDeviceOnServer(deviceId);
+            
+            if (!serverCheck.allowed) {
+                // Server có key -> lưu local và hiển thị
+                const data = saveMainData(serverCheck.key, generateToken(), serverCheck.expiry);
+                const newURL = BASE_URL + '?token=' + data.token;
+                window.history.replaceState({ token: data.token }, '', newURL);
+                showWaitSection(data);
+            } else {
+                // Không có key -> cho tạo mới
+                showGenerateSection();
             }
         }
 
-        // Kiểm tra định kỳ - chống xóa localStorage
+        // === CHỐNG XÓA TOKEN URL ===
+        // Kiểm tra liên tục: nếu có key local thì luôn hiển thị key
         setInterval(() => {
             const mainData = getMainData();
             const keySection = document.getElementById('keySection');
             const waitSection = document.getElementById('waitSection');
+            const generateSection = document.getElementById('generateSection');
+            
             const isKeyVisible = !keySection.classList.contains('hidden');
             const isWaitVisible = !waitSection.classList.contains('hidden');
+            const isGenerateVisible = !generateSection.classList.contains('hidden');
             
             if (mainData && !isKeyVisible && !isWaitVisible) {
-                // Key tồn tại nhưng không hiển thị -> ép hiển thị
+                // Có key nhưng đang hiện generate -> ÉP HIỂN THỊ KEY
                 showKeySection(mainData);
                 const newURL = BASE_URL + '?token=' + mainData.token;
-                window.history.pushState({ token: mainData.token }, '', newURL);
+                window.history.replaceState({ token: mainData.token }, '', newURL);
+            }
+            
+            if (!mainData && isGenerateVisible) {
+                // Không có key và đang hiện generate -> OK
             }
             
             if (!mainData && (isKeyVisible || isWaitVisible)) {
-                // Key hết hạn -> chuyển về home
+                // Key hết hạn -> redirect
                 redirectToHome();
             }
-        }, 3000);
+        }, 1000); // Kiểm tra mỗi 1 giây
 
-        // Bảo vệ URL - nếu ai đó xóa token thì tự động thêm lại
-        window.addEventListener('popstate', function() {
+        // Chặn popstate (khi người dùng bấm back/forward)
+        window.addEventListener('popstate', function(event) {
             const mainData = getMainData();
-            const urlToken = getTokenFromURL();
-            
-            if (mainData && (!urlToken || urlToken !== mainData.token)) {
+            if (mainData) {
+                // Luôn giữ token trong URL
                 const newURL = BASE_URL + '?token=' + mainData.token;
-                window.history.pushState({ token: mainData.token }, '', newURL);
+                window.history.replaceState({ token: mainData.token }, '', newURL);
                 showKeySection(mainData);
             }
         });
