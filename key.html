@@ -187,7 +187,7 @@
             50% { opacity: 0.4; }
         }
 
-        .btn-get-key, .btn-generate {
+        .btn-get-key {
             position: relative;
             display: inline-block;
             padding: 16px 55px;
@@ -204,7 +204,7 @@
             z-index: 1;
         }
 
-        .btn-get-key::before, .btn-generate::before {
+        .btn-get-key::before {
             content: '';
             position: absolute; top: 50%; left: 50%;
             width: 0; height: 0;
@@ -214,16 +214,16 @@
             transition: width 0.7s, height 0.7s;
         }
 
-        .btn-get-key:hover::before, .btn-generate:hover::before { width: 400px; height: 400px; }
+        .btn-get-key:hover::before { width: 400px; height: 400px; }
 
-        .btn-get-key:hover, .btn-generate:hover {
+        .btn-get-key:hover {
             border-color: #e63946;
             box-shadow: 0 0 30px rgba(230, 57, 70, 0.3), 0 0 60px rgba(230, 57, 70, 0.15), 0 15px 40px rgba(0, 0, 0, 0.4);
             transform: translateY(-3px);
             letter-spacing: 6px;
         }
 
-        .btn-get-key:active, .btn-generate:active { transform: translateY(-1px); transition: all 0.1s; }
+        .btn-get-key:active { transform: translateY(-1px); transition: all 0.1s; }
 
         .btn-text { position: relative; z-index: 1; }
 
@@ -253,20 +253,6 @@
 
         .hidden { display: none !important; }
 
-        .loading-spinner {
-            width: 40px; height: 40px;
-            border: 3px solid rgba(230, 57, 70, 0.2);
-            border-top: 3px solid #e63946;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
         .error-text { color: #ff4444; font-size: 13px; margin-top: 15px; letter-spacing: 1px; }
     </style>
 </head>
@@ -289,11 +275,10 @@
                 <!-- Generate Section -->
                 <div id="generateSection">
                     <div class="page-title">Generate Key</div>
-                    <div class="page-subtitle">Click to create your key via secure API</div>
-                    <button class="btn-get-key" id="btnGenerate" onclick="generateKeyViaAPI()">
+                    <div class="page-subtitle">Click to create your key</div>
+                    <button class="btn-get-key" onclick="generateAndShowKey()">
                         <span class="btn-text">Tạo Key</span>
                     </button>
-                    <div class="loading-spinner hidden" id="loadingSpinner"></div>
                     <p class="error-text hidden" id="errorMsg"></p>
                 </div>
 
@@ -316,176 +301,398 @@
     </div>
 
     <script>
-        // ===== CONFIG =====
-        const API_URL = '/api/create-key';
-        const VERIFY_URL = '/api/verify-key';
-        const HOME_URL = '/';
-        // ==================
-
-        function createParticles() {
-            const container = document.getElementById('particles');
-            const colors = ['#e63946', '#ff4d4d', '#cc2936', '#ff6666', '#b32430'];
-            for (let i = 0; i < 25; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                const size = Math.random() * 3 + 1;
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                particle.style.animationDelay = Math.random() * 8 + 's';
-                particle.style.animationDuration = (Math.random() * 6 + 5) + 's';
-                particle.style.boxShadow = `0 0 ${size * 3}px ${colors[Math.floor(Math.random() * colors.length)]}`;
-                container.appendChild(particle);
-            }
-        }
-
-        function getTokenFromURL() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('token');
-        }
-
-        function showLoading() {
-            document.getElementById('btnGenerate').classList.add('hidden');
-            document.getElementById('loadingSpinner').classList.remove('hidden');
-            document.getElementById('errorMsg').classList.add('hidden');
-        }
-
-        function hideLoading() {
-            document.getElementById('btnGenerate').classList.remove('hidden');
-            document.getElementById('loadingSpinner').classList.add('hidden');
-        }
-
-        function showError(msg) {
-            document.getElementById('errorMsg').textContent = msg;
-            document.getElementById('errorMsg').classList.remove('hidden');
-            hideLoading();
-        }
-
-        let countdownInterval;
-
-        function startCountdown(expiryTime) {
-            if (countdownInterval) clearInterval(countdownInterval);
+        // ============================================
+        // BẢO VỆ ĐA LỚP - APEX HUB SECURITY SYSTEM
+        // ============================================
+        
+        (function() {
+            "use strict";
             
-            const countdownEl = document.getElementById('countdown');
+            // ===== CONFIG =====
+            const EXPIRY_MINUTES = 5; // Test 5 phút. OK đổi 1440
+            const HOME_URL = 'https://getkeyapexhub.vercel.app/';
             
-            countdownInterval = setInterval(() => {
-                const distance = expiryTime - Date.now();
+            // ===== LỚP BẢO VỆ 1: Phát hiện DevTools =====
+            let devToolsOpen = false;
+            const threshold = 160;
+            
+            function detectDevTools() {
+                const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+                const heightThreshold = window.outerHeight - window.innerHeight > threshold;
                 
-                if (distance <= 0) {
-                    clearInterval(countdownInterval);
-                    countdownEl.textContent = 'KEY EXPIRED - Redirecting...';
-                    countdownEl.classList.add('expired');
-                    setTimeout(() => { window.location.href = HOME_URL; }, 2000);
+                if (widthThreshold || heightThreshold) {
+                    devToolsOpen = true;
+                }
+                
+                // Kiểm tra bằng console.time
+                const startTime = performance.now();
+                debugger;
+                const endTime = performance.now();
+                if (endTime - startTime > 100) {
+                    devToolsOpen = true;
+                }
+            }
+            
+            setInterval(detectDevTools, 1000);
+            
+            // ===== LỚP BẢO VỆ 2: Obfuscate localStorage keys =====
+            function encode(str) {
+                return btoa(unescape(encodeURIComponent(str + '_sEcUrE_2024')));
+            }
+            
+            function decode(str) {
+                try {
+                    return decodeURIComponent(escape(atob(str))).replace('_sEcUrE_2024', '');
+                } catch(e) {
+                    return null;
+                }
+            }
+            
+            const STORAGE_KEYS = {
+                main: encode('k3y_d4t4_m41n'),
+                backup: encode('k3y_d4t4_b4ckup'),
+                timestamp: encode('k3y_t1m3st4mp'),
+                count: encode('k3y_c0unt'),
+                fingerprint: encode('k3y_f1ng3rpr1nt'),
+                hash: encode('k3y_h4sh')
+            };
+            
+            // ===== LỚP BẢO VỆ 3: Fingerprint thiết bị =====
+            function getFingerprint() {
+                const nav = window.navigator;
+                const screen = window.screen;
+                const fingerprint = [
+                    nav.userAgent,
+                    nav.language,
+                    nav.platform,
+                    nav.hardwareConcurrency,
+                    screen.width + 'x' + screen.height,
+                    screen.colorDepth,
+                    new Date().getTimezoneOffset(),
+                    !!window.sessionStorage,
+                    !!window.localStorage,
+                    navigator.deviceMemory || 'unknown'
+                ].join('|||');
+                
+                // Hash đơn giản
+                let hash = 0;
+                for (let i = 0; i < fingerprint.length; i++) {
+                    const char = fingerprint.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash;
+                }
+                return Math.abs(hash).toString(36);
+            }
+            
+            // ===== LỚP BẢO VỆ 4: Lưu đa điểm =====
+            function saveSecure(key, value) {
+                const data = JSON.stringify(value);
+                
+                // Lưu vào localStorage
+                localStorage.setItem(key, data);
+                
+                // Lưu backup vào sessionStorage
+                try { sessionStorage.setItem(key + '_bak', data); } catch(e) {}
+                
+                // Lưu timestamp
+                localStorage.setItem(STORAGE_KEYS.timestamp, Date.now().toString());
+                
+                // Lưu fingerprint
+                localStorage.setItem(STORAGE_KEYS.fingerprint, getFingerprint());
+            }
+            
+            function getSecure(key) {
+                const data = localStorage.getItem(key);
+                if (!data) return null;
+                
+                // Kiểm tra fingerprint
+                const storedFP = localStorage.getItem(STORAGE_KEYS.fingerprint);
+                if (storedFP && storedFP !== getFingerprint()) {
+                    // Thiết bị khác → xóa hết
+                    clearAllSecure();
+                    return null;
+                }
+                
+                // Kiểm tra backup
+                const backup = sessionStorage.getItem(key + '_bak');
+                if (backup && backup !== data) {
+                    // Dữ liệu bị chỉnh sửa → khôi phục từ backup
+                    localStorage.setItem(key, backup);
+                    return JSON.parse(backup);
+                }
+                
+                try {
+                    return JSON.parse(data);
+                } catch(e) {
+                    clearAllSecure();
+                    return null;
+                }
+            }
+            
+            function clearAllSecure() {
+                Object.values(STORAGE_KEYS).forEach(key => {
+                    localStorage.removeItem(key);
+                    try { sessionStorage.removeItem(key + '_bak'); } catch(e) {}
+                });
+            }
+            
+            // ===== LỚP BẢO VỆ 5: Rate limit =====
+            function checkRateLimit() {
+                const now = Date.now();
+                const key = STORAGE_KEYS.count;
+                let countData = localStorage.getItem(key);
+                
+                if (!countData) {
+                    localStorage.setItem(key, JSON.stringify({ count: 1, resetAt: now + 86400000 }));
+                    return true;
+                }
+                
+                try {
+                    countData = JSON.parse(countData);
+                } catch(e) {
+                    localStorage.setItem(key, JSON.stringify({ count: 1, resetAt: now + 86400000 }));
+                    return true;
+                }
+                
+                if (now > countData.resetAt) {
+                    localStorage.setItem(key, JSON.stringify({ count: 1, resetAt: now + 86400000 }));
+                    return true;
+                }
+                
+                if (countData.count >= 3) {
+                    return false;
+                }
+                
+                countData.count++;
+                localStorage.setItem(key, JSON.stringify(countData));
+                return true;
+            }
+            
+            // ===== LỚP BẢO VỆ 6: Kiểm tra toàn vẹn =====
+            function verifyIntegrity(data) {
+                if (!data || !data.key || !data.expiresAt || !data.createdAt) {
+                    return false;
+                }
+                
+                // Kiểm tra key format
+                if (!data.key.startsWith('Free_') || !data.key.includes('apex')) {
+                    return false;
+                }
+                
+                // Kiểm tra thời gian hợp lý
+                const maxExpiry = data.createdAt + (86400000 * 7); // Tối đa 7 ngày
+                if (data.expiresAt > maxExpiry) {
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            // ===== HÀM CHÍNH (đã obfuscate tên) =====
+            function _gK() {
+                const _c = 'qptoeugjwmxnalkjf¡¿\'-:;₫&@9275023#%*^+€¥$_|\\[]{}bcz';
+                let _r = '';
+                for (let _i = 0; _i < 15; _i++) {
+                    _r += _c.charAt(Math.floor(Math.random() * _c.length));
+                }
+                const _p = ['start', 'middle', 'end'];
+                const _a = _p[Math.floor(Math.random() * _p.length)];
+                
+                let _k;
+                switch(_a) {
+                    case 'start': _k = `Free_apex${_r}`; break;
+                    case 'middle':
+                        const _m = Math.floor(_r.length / 2);
+                        _k = `Free_${_r.slice(0, _m)}apex${_r.slice(_m)}`;
+                        break;
+                    case 'end': _k = `Free_${_r}apex`; break;
+                }
+                return _k;
+            }
+            
+            function _sD(_k) {
+                const _n = Date.now();
+                const _e = _n + (EXPIRY_MINUTES * 60 * 1000);
+                const _d = { key: _k, createdAt: _n, expiresAt: _e };
+                
+                saveSecure(STORAGE_KEYS.main, _d);
+                saveSecure(STORAGE_KEYS.backup, _d);
+                
+                // Lưu hash để kiểm tra toàn vẹn
+                const _h = btoa(JSON.stringify(_d));
+                localStorage.setItem(STORAGE_KEYS.hash, _h);
+                
+                return _d;
+            }
+            
+            function _gSD() {
+                const _d = getSecure(STORAGE_KEYS.main);
+                
+                if (_d && verifyIntegrity(_d)) {
+                    if (Date.now() < _d.expiresAt) {
+                        return _d;
+                    } else {
+                        clearAllSecure();
+                    }
+                } else {
+                    // Thử backup
+                    const _b = getSecure(STORAGE_KEYS.backup);
+                    if (_b && verifyIntegrity(_b) && Date.now() < _b.expiresAt) {
+                        saveSecure(STORAGE_KEYS.main, _b);
+                        return _b;
+                    } else {
+                        clearAllSecure();
+                    }
+                }
+                
+                return null;
+            }
+            
+            let _cI;
+            
+            function _sC(_e) {
+                if (_cI) clearInterval(_cI);
+                
+                const _el = document.getElementById('countdown');
+                _el.classList.remove('expired');
+                
+                _cI = setInterval(() => {
+                    const _dist = _e - Date.now();
+                    
+                    if (_dist <= 0) {
+                        clearInterval(_cI);
+                        _el.textContent = 'KEY EXPIRED - Get new key...';
+                        _el.classList.add('expired');
+                        clearAllSecure();
+                        return;
+                    }
+                    
+                    const _h = Math.floor(_dist / 3600000);
+                    const _m = Math.floor((_dist % 3600000) / 60000);
+                    const _s = Math.floor((_dist % 60000) / 1000);
+                    
+                    if (_h > 0) _el.textContent = `Time remaining: ${_h}h ${_m}m ${_s}s`;
+                    else if (_m > 0) _el.textContent = `Time remaining: ${_m}m ${_s}s`;
+                    else _el.textContent = `Time remaining: ${_s}s`;
+                    
+                    if (_dist < 60000) _el.style.color = '#ff3333';
+                }, 1000);
+            }
+            
+            function _sKS(_d) {
+                document.getElementById('generateSection').classList.add('hidden');
+                document.getElementById('keySection').classList.remove('hidden');
+                document.getElementById('keyDisplay').textContent = _d.key;
+                
+                const _diff = Math.floor((_d.expiresAt - Date.now()) / 60000);
+                if (_diff < 60) {
+                    document.getElementById('expiryText').textContent = 'Key expires in ' + _diff + ' minutes';
+                } else {
+                    document.getElementById('expiryText').textContent = 'Key expires in ' + Math.floor(_diff / 60) + ' hours';
+                }
+                
+                _sC(_d.expiresAt);
+            }
+            
+            // ===== PUBLIC API (đã obfuscate tên hàm) =====
+            window.generateAndShowKey = function() {
+                // Phát hiện DevTools
+                if (devToolsOpen) {
+                    document.getElementById('errorMsg').textContent = 'Vui lòng tắt Developer Tools!';
+                    document.getElementById('errorMsg').classList.remove('hidden');
                     return;
                 }
                 
-                const h = Math.floor(distance / (1000 * 60 * 60));
-                const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const s = Math.floor((distance % (1000 * 60)) / 1000);
-                
-                if (h > 0) countdownEl.textContent = `Time remaining: ${h}h ${m}m ${s}s`;
-                else if (m > 0) countdownEl.textContent = `Time remaining: ${m}m ${s}s`;
-                else countdownEl.textContent = `Time remaining: ${s}s`;
-                
-                if (distance < 60000) countdownEl.style.color = '#ff3333';
-            }, 1000);
-        }
-
-        function showKeySection(keyData) {
-            document.getElementById('generateSection').classList.add('hidden');
-            document.getElementById('keySection').classList.remove('hidden');
-            document.getElementById('keyDisplay').textContent = keyData.key;
-            
-            const now = Date.now();
-            const diffMs = keyData.expiresAt - now;
-            const diffMin = Math.floor(diffMs / 60000);
-            
-            if (diffMin < 60) {
-                document.getElementById('expiryText').textContent = 'Key expires in ' + diffMin + ' minutes';
-            } else {
-                const diffH = Math.floor(diffMin / 60);
-                document.getElementById('expiryText').textContent = 'Key expires in ' + diffH + ' hours';
-            }
-            
-            const newURL = window.location.pathname + '?token=' + keyData.token;
-            window.history.pushState({ token: keyData.token }, '', newURL);
-            
-            startCountdown(keyData.expiresAt);
-        }
-
-        async function generateKeyViaAPI() {
-            showLoading();
-            
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({})
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    showKeySection({
-                        key: data.key,
-                        token: data.token,
-                        signature: data.signature,
-                        expiresAt: data.expiresAt
-                    });
-                } else {
-                    showError(data.error || 'Failed to create key');
+                // Kiểm tra rate limit
+                if (!checkRateLimit()) {
+                    document.getElementById('errorMsg').textContent = 'Đã đạt giới hạn! Tối đa 3 key/24h.';
+                    document.getElementById('errorMsg').classList.remove('hidden');
+                    return;
                 }
-            } catch (error) {
-                showError('Network error. Please try again.');
-                console.error('API Error:', error);
-            }
-        }
-
-        async function verifyKeyWithAPI(token) {
-            try {
-                const response = await fetch(VERIFY_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: token })
-                });
                 
-                return await response.json();
-            } catch (error) {
-                return { valid: false, error: 'Network error' };
-            }
-        }
-
-        function getNewKey() {
-            window.location.href = HOME_URL;
-        }
-
-        async function init() {
-            const token = getTokenFromURL();
+                // Kiểm tra key hiện tại
+                const _existing = _gSD();
+                if (_existing) {
+                    _sKS(_existing);
+                    return;
+                }
+                
+                // Tạo key mới
+                const _key = _gK();
+                const _data = _sD(_key);
+                _sKS(_data);
+            };
             
-            if (!token) {
-                document.getElementById('generateSection').classList.remove('hidden');
-                return;
+            window.getNewKey = function() {
+                clearAllSecure();
+                if (_cI) clearInterval(_cI);
+                window.location.href = HOME_URL;
+            };
+            
+            // ===== KHỞI TẠO =====
+            function _init() {
+                const _data = _gSD();
+                if (_data) {
+                    _sKS(_data);
+                } else {
+                    document.getElementById('generateSection').classList.remove('hidden');
+                }
+                
+                // Kiểm tra định kỳ
+                setInterval(() => {
+                    const _data = _gSD();
+                    const _ks = document.getElementById('keySection');
+                    
+                    if (!_ks.classList.contains('hidden') && !_data) {
+                        const _el = document.getElementById('countdown');
+                        _el.textContent = 'KEY EXPIRED - Get new key...';
+                        _el.classList.add('expired');
+                    }
+                }, 10000);
+                
+                // Bảo vệ chống sửa localStorage từ console
+                const _origSetItem = localStorage.setItem;
+                localStorage.setItem = function(key, value) {
+                    // Chặn sửa trực tiếp các key bảo vệ
+                    if (Object.values(STORAGE_KEYS).includes(key)) {
+                        return;
+                    }
+                    return _origSetItem.apply(this, arguments);
+                };
+                
+                const _origRemoveItem = localStorage.removeItem;
+                localStorage.removeItem = function(key) {
+                    // Chặn xóa các key bảo vệ
+                    if (Object.values(STORAGE_KEYS).includes(key)) {
+                        return;
+                    }
+                    return _origRemoveItem.apply(this, arguments);
+                };
             }
             
-            showLoading();
-            const result = await verifyKeyWithAPI(token);
-            
-            if (result.valid) {
-                showKeySection({
-                    key: result.key,
-                    token: token,
-                    expiresAt: result.expiresAt
-                });
-            } else {
-                hideLoading();
-                document.getElementById('generateSection').classList.remove('hidden');
-                showError('Token invalid or expired. Please create new key.');
+            // Tạo particles
+            function _cP() {
+                const _ct = document.getElementById('particles');
+                const _cl = ['#e63946', '#ff4d4d', '#cc2936', '#ff6666', '#b32430'];
+                for (let _i = 0; _i < 25; _i++) {
+                    const _p = document.createElement('div');
+                    _p.className = 'particle';
+                    const _s = Math.random() * 3 + 1;
+                    _p.style.width = _s + 'px';
+                    _p.style.height = _s + 'px';
+                    _p.style.left = Math.random() * 100 + '%';
+                    _p.style.backgroundColor = _cl[Math.floor(Math.random() * _cl.length)];
+                    _p.style.animationDelay = Math.random() * 8 + 's';
+                    _p.style.animationDuration = (Math.random() * 6 + 5) + 's';
+                    _p.style.boxShadow = `0 0 ${_s * 3}px ${_cl[Math.floor(Math.random() * _cl.length)]}`;
+                    _ct.appendChild(_p);
+                }
             }
-        }
-
-        createParticles();
-        init();
+            
+            _cP();
+            _init();
+            
+        })();
     </script>
 </body>
 </html>
