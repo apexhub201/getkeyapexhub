@@ -6,9 +6,7 @@
     <title>APEX HUB | Your Key</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
             font-family: 'Montserrat', sans-serif;
             background: #050505;
@@ -19,7 +17,6 @@
             overflow: hidden;
             position: relative;
         }
-
         .bg-gradient {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: 
@@ -29,271 +26,76 @@
                 radial-gradient(ellipse at 50% 100%, rgba(180, 0, 0, 0.1) 0%, transparent 50%);
             z-index: 0;
         }
-
-        .grid-pattern {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 60px 60px;
-            z-index: 0;
-            animation: gridMove 20s linear infinite;
-        }
-
-        @keyframes gridMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(60px, 60px); }
-        }
-
-        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-
-        .particle {
-            position: absolute; border-radius: 50%;
-            animation: floatUp 8s infinite ease-in;
-            opacity: 0;
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100px) translateX(100px) scale(1); opacity: 0; }
-        }
-
         .container { position: relative; z-index: 2; width: 100%; max-width: 520px; padding: 20px; }
-
         .card {
-            background: rgba(10, 10, 10, 0.9);
+            background: rgba(10, 10, 10, 0.95);
             backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid rgba(230, 57, 70, 0.2);
+            border: 1px solid rgba(230, 57, 70, 0.3);
             border-radius: 24px;
             padding: 50px 40px;
             text-align: center;
-            box-shadow: 0 0 80px rgba(220, 20, 20, 0.08), 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+            box-shadow: 0 0 80px rgba(220, 20, 20, 0.1), 0 30px 60px rgba(0, 0, 0, 0.6);
             position: relative; overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         .card::before {
             content: '';
             position: absolute; top: -100%; left: -100%; width: 300%; height: 300%;
-            background: conic-gradient(from 0deg, transparent, rgba(220, 20, 20, 0.05), transparent, rgba(255, 80, 80, 0.08), transparent, rgba(220, 20, 20, 0.05), transparent);
-            animation: rotateGlow 15s linear infinite;
-            z-index: 0;
+            background: conic-gradient(from 0deg, transparent, rgba(220, 20, 20, 0.05), transparent, rgba(255, 80, 80, 0.08), transparent);
+            animation: rotateGlow 15s linear infinite; z-index: 0;
         }
-
-        @keyframes rotateGlow {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .card::after {
-            content: '';
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 50%, rgba(0, 0, 0, 0.3) 100%);
-            z-index: 0; pointer-events: none;
-        }
-
+        @keyframes rotateGlow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .card-content { position: relative; z-index: 1; }
-
-        .logo-text {
-            font-size: 48px; font-weight: 700;
-            letter-spacing: 6px; color: #ffffff;
-            margin-bottom: 5px;
-            animation: fadeInUp 0.8s ease-out;
-            text-shadow: 0 0 40px rgba(255, 50, 50, 0.3);
-        }
-
+        .logo-text { font-size: 48px; font-weight: 700; letter-spacing: 6px; color: #fff; text-shadow: 0 0 40px rgba(255, 50, 50, 0.3); }
         .logo-text span { color: #e63946; text-shadow: 0 0 60px rgba(230, 57, 70, 0.6); }
-
-        .logo-subtitle {
-            font-size: 13px; font-weight: 400;
-            color: rgba(255, 255, 255, 0.5);
-            letter-spacing: 8px; text-transform: uppercase;
-            margin-bottom: 40px;
-            animation: fadeInUp 0.8s ease-out 0.15s both;
-        }
-
-        .divider {
-            width: 80px; height: 2px;
-            background: linear-gradient(90deg, transparent, #e63946, transparent);
-            margin: 0 auto 35px;
-            animation: fadeInUp 0.8s ease-out 0.3s both;
-        }
-
-        .page-title {
-            font-size: 22px; font-weight: 400;
-            color: #cccccc; letter-spacing: 4px;
-            text-transform: uppercase; margin-bottom: 8px;
-            animation: fadeInUp 0.8s ease-out 0.35s both;
-        }
-
-        .page-subtitle {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.35);
-            letter-spacing: 3px; margin-bottom: 40px;
-            animation: fadeInUp 0.8s ease-out 0.4s both;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(25px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .key-box {
-            margin-top: 35px; padding: 22px 20px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(230, 57, 70, 0.25);
-            border-radius: 16px;
-            animation: fadeInUp 0.8s ease-out 0.4s both;
-        }
-
-        .key-label {
-            font-size: 10px; color: rgba(255, 255, 255, 0.4);
-            letter-spacing: 3px; text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .key-value {
-            font-family: 'Courier New', monospace;
-            font-size: 13px; color: #e63946;
-            word-break: break-all; letter-spacing: 1px;
-            text-shadow: 0 0 20px rgba(230, 57, 70, 0.4);
-        }
-
-        .expiry-text {
-            margin-top: 15px;
-            font-size: 11px; color: rgba(255, 255, 255, 0.3);
-            letter-spacing: 2px;
-            animation: fadeInUp 0.8s ease-out 0.5s both;
-        }
-
-        .countdown-timer {
-            margin-top: 8px; margin-bottom: 30px;
-            font-size: 14px; font-weight: 500;
-            color: #e63946; letter-spacing: 2px;
-            animation: fadeInUp 0.8s ease-out 0.55s both;
-            text-shadow: 0 0 15px rgba(230, 57, 70, 0.5);
-        }
-
-        .countdown-timer.expired {
-            color: #ff3333;
-            animation: blink 0.8s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-
+        .logo-subtitle { font-size: 13px; color: rgba(255,255,255,0.5); letter-spacing: 8px; text-transform: uppercase; margin-bottom: 40px; }
+        .divider { width: 80px; height: 2px; background: linear-gradient(90deg, transparent, #e63946, transparent); margin: 0 auto 35px; }
+        .page-title { font-size: 22px; color: #ccc; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 8px; }
+        .page-subtitle { font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 3px; margin-bottom: 40px; }
+        .key-box { margin-top: 35px; padding: 22px 20px; background: rgba(0,0,0,0.6); border: 1px solid rgba(230,57,70,0.25); border-radius: 16px; }
+        .key-label { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 3px; margin-bottom: 10px; }
+        .key-value { font-family: 'Courier New', monospace; font-size: 13px; color: #e63946; word-break: break-all; }
+        .countdown-timer { margin-top: 8px; margin-bottom: 30px; font-size: 14px; font-weight: 500; color: #e63946; letter-spacing: 2px; }
         .btn-get-key {
-            position: relative;
-            display: inline-block;
-            padding: 16px 55px;
-            font-size: 15px; font-weight: 500;
-            letter-spacing: 4px; text-transform: uppercase;
-            color: #ffffff;
+            display: inline-block; padding: 16px 55px; font-size: 15px; font-weight: 500;
+            letter-spacing: 4px; text-transform: uppercase; color: #fff;
             background: linear-gradient(135deg, #1a0000 0%, #2d0000 50%, #1a0000 100%);
-            border: 1px solid rgba(230, 57, 70, 0.5);
-            border-radius: 50px;
-            cursor: pointer;
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            animation: fadeInUp 0.8s ease-out 0.6s both;
-            z-index: 1;
+            border: 1px solid rgba(230,57,70,0.5); border-radius: 50px; cursor: pointer;
+            transition: all 0.5s;
         }
-
-        .btn-get-key::before {
-            content: '';
-            position: absolute; top: 50%; left: 50%;
-            width: 0; height: 0;
-            border-radius: 50%;
-            background: rgba(230, 57, 70, 0.25);
-            transform: translate(-50%, -50%);
-            transition: width 0.7s, height 0.7s;
-        }
-
-        .btn-get-key:hover::before { width: 400px; height: 400px; }
-
-        .btn-get-key:hover {
-            border-color: #e63946;
-            box-shadow: 0 0 30px rgba(230, 57, 70, 0.3), 0 0 60px rgba(230, 57, 70, 0.15), 0 15px 40px rgba(0, 0, 0, 0.4);
-            transform: translateY(-3px);
-            letter-spacing: 6px;
-        }
-
-        .btn-get-key:active { transform: translateY(-1px); transition: all 0.1s; }
-
-        .btn-text { position: relative; z-index: 1; }
-
-        .card-glow {
-            position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;
-            border-radius: 26px;
-            background: linear-gradient(45deg, transparent 40%, rgba(230, 57, 70, 0.15) 50%, transparent 60%);
-            z-index: -1;
-            animation: borderGlow 4s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        @keyframes borderGlow {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.8; }
-        }
-
-        .corner-accent {
-            position: absolute; width: 30px; height: 30px;
-            border-color: rgba(230, 57, 70, 0.4);
-            border-style: solid;
-            z-index: 2; pointer-events: none;
-        }
-
-        .corner-accent.top-left { top: 15px; left: 15px; border-width: 1px 0 0 1px; border-radius: 6px 0 0 0; }
-        .corner-accent.bottom-right { bottom: 15px; right: 15px; border-width: 0 1px 1px 0; border-radius: 0 0 6px 0; }
-
+        .btn-get-key:hover { border-color: #e63946; box-shadow: 0 0 30px rgba(230,57,70,0.3); transform: translateY(-3px); }
         .hidden { display: none !important; }
-
-        .error-text { color: #ff4444; font-size: 13px; margin-top: 15px; letter-spacing: 1px; }
+        .error-text { color: #ff4444; font-size: 13px; margin-top: 15px; }
     </style>
 </head>
 <body>
     <div class="bg-gradient"></div>
-    <div class="grid-pattern"></div>
-    <div class="particles" id="particles"></div>
-
     <div class="container">
         <div class="card">
-            <div class="card-glow"></div>
-            <div class="corner-accent top-left"></div>
-            <div class="corner-accent bottom-right"></div>
-
             <div class="card-content">
                 <div class="logo-text">APEX <span>HUB</span></div>
                 <div class="logo-subtitle">Premium Access</div>
                 <div class="divider"></div>
 
-                <!-- Generate Section -->
                 <div id="generateSection">
                     <div class="page-title">Generate Key</div>
-                    <div class="page-subtitle">Click to create your key</div>
-                    <button class="btn-get-key" onclick="generateAndShowKey()">
-                        <span class="btn-text">Tạo Key</span>
+                    <div class="page-subtitle">Key được tạo bởi server bảo mật</div>
+                    <button class="btn-get-key" onclick="createKeyFromServer()">
+                        <span>Tạo Key</span>
                     </button>
                     <p class="error-text hidden" id="errorMsg"></p>
                 </div>
 
-                <!-- Key Section -->
                 <div id="keySection" class="hidden">
                     <div class="page-title">Your Key</div>
-                    <div class="page-subtitle">Active & Valid</div>
+                    <div class="page-subtitle">Được tạo bởi APEX HUB Server</div>
                     <div class="key-box">
-                        <div class="key-label">Key</div>
+                        <div class="key-label">KEY</div>
                         <div class="key-value" id="keyDisplay"></div>
                     </div>
-                    <p class="expiry-text" id="expiryText"></p>
+                    <p style="color:#888;font-size:11px;margin-top:15px;" id="expiryText"></p>
                     <div class="countdown-timer" id="countdown"></div>
-                    <button class="btn-get-key" onclick="getNewKey()">
-                        <span class="btn-text">Get New Key</span>
+                    <button class="btn-get-key" onclick="window.location.href='/'">
+                        <span>Get New Key</span>
                     </button>
                 </div>
             </div>
@@ -301,398 +103,53 @@
     </div>
 
     <script>
-        // ============================================
-        // BẢO VỆ ĐA LỚP - APEX HUB SECURITY SYSTEM
-        // ============================================
+        // CLIENT CHỈ GỌI API - KHÔNG BIẾT CÁCH SINH KEY
+        const API_URL = '/api/create-key';
         
-        (function() {
-            "use strict";
+        async function createKeyFromServer() {
+            document.getElementById('errorMsg').classList.add('hidden');
+            document.getElementById('errorMsg').textContent = 'Đang kết nối server...';
+            document.getElementById('errorMsg').classList.remove('hidden');
             
-            // ===== CONFIG =====
-            const EXPIRY_MINUTES = 5; // Test 5 phút. OK đổi 1440
-            const HOME_URL = 'https://getkeyapexhub.vercel.app/';
-            
-            // ===== LỚP BẢO VỆ 1: Phát hiện DevTools =====
-            let devToolsOpen = false;
-            const threshold = 160;
-            
-            function detectDevTools() {
-                const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-                const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-                
-                if (widthThreshold || heightThreshold) {
-                    devToolsOpen = true;
-                }
-                
-                // Kiểm tra bằng console.time
-                const startTime = performance.now();
-                debugger;
-                const endTime = performance.now();
-                if (endTime - startTime > 100) {
-                    devToolsOpen = true;
-                }
-            }
-            
-            setInterval(detectDevTools, 1000);
-            
-            // ===== LỚP BẢO VỆ 2: Obfuscate localStorage keys =====
-            function encode(str) {
-                return btoa(unescape(encodeURIComponent(str + '_sEcUrE_2024')));
-            }
-            
-            function decode(str) {
-                try {
-                    return decodeURIComponent(escape(atob(str))).replace('_sEcUrE_2024', '');
-                } catch(e) {
-                    return null;
-                }
-            }
-            
-            const STORAGE_KEYS = {
-                main: encode('k3y_d4t4_m41n'),
-                backup: encode('k3y_d4t4_b4ckup'),
-                timestamp: encode('k3y_t1m3st4mp'),
-                count: encode('k3y_c0unt'),
-                fingerprint: encode('k3y_f1ng3rpr1nt'),
-                hash: encode('k3y_h4sh')
-            };
-            
-            // ===== LỚP BẢO VỆ 3: Fingerprint thiết bị =====
-            function getFingerprint() {
-                const nav = window.navigator;
-                const screen = window.screen;
-                const fingerprint = [
-                    nav.userAgent,
-                    nav.language,
-                    nav.platform,
-                    nav.hardwareConcurrency,
-                    screen.width + 'x' + screen.height,
-                    screen.colorDepth,
-                    new Date().getTimezoneOffset(),
-                    !!window.sessionStorage,
-                    !!window.localStorage,
-                    navigator.deviceMemory || 'unknown'
-                ].join('|||');
-                
-                // Hash đơn giản
-                let hash = 0;
-                for (let i = 0; i < fingerprint.length; i++) {
-                    const char = fingerprint.charCodeAt(i);
-                    hash = ((hash << 5) - hash) + char;
-                    hash = hash & hash;
-                }
-                return Math.abs(hash).toString(36);
-            }
-            
-            // ===== LỚP BẢO VỆ 4: Lưu đa điểm =====
-            function saveSecure(key, value) {
-                const data = JSON.stringify(value);
-                
-                // Lưu vào localStorage
-                localStorage.setItem(key, data);
-                
-                // Lưu backup vào sessionStorage
-                try { sessionStorage.setItem(key + '_bak', data); } catch(e) {}
-                
-                // Lưu timestamp
-                localStorage.setItem(STORAGE_KEYS.timestamp, Date.now().toString());
-                
-                // Lưu fingerprint
-                localStorage.setItem(STORAGE_KEYS.fingerprint, getFingerprint());
-            }
-            
-            function getSecure(key) {
-                const data = localStorage.getItem(key);
-                if (!data) return null;
-                
-                // Kiểm tra fingerprint
-                const storedFP = localStorage.getItem(STORAGE_KEYS.fingerprint);
-                if (storedFP && storedFP !== getFingerprint()) {
-                    // Thiết bị khác → xóa hết
-                    clearAllSecure();
-                    return null;
-                }
-                
-                // Kiểm tra backup
-                const backup = sessionStorage.getItem(key + '_bak');
-                if (backup && backup !== data) {
-                    // Dữ liệu bị chỉnh sửa → khôi phục từ backup
-                    localStorage.setItem(key, backup);
-                    return JSON.parse(backup);
-                }
-                
-                try {
-                    return JSON.parse(data);
-                } catch(e) {
-                    clearAllSecure();
-                    return null;
-                }
-            }
-            
-            function clearAllSecure() {
-                Object.values(STORAGE_KEYS).forEach(key => {
-                    localStorage.removeItem(key);
-                    try { sessionStorage.removeItem(key + '_bak'); } catch(e) {}
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
                 });
-            }
-            
-            // ===== LỚP BẢO VỆ 5: Rate limit =====
-            function checkRateLimit() {
-                const now = Date.now();
-                const key = STORAGE_KEYS.count;
-                let countData = localStorage.getItem(key);
                 
-                if (!countData) {
-                    localStorage.setItem(key, JSON.stringify({ count: 1, resetAt: now + 86400000 }));
-                    return true;
-                }
+                const data = await response.json();
                 
-                try {
-                    countData = JSON.parse(countData);
-                } catch(e) {
-                    localStorage.setItem(key, JSON.stringify({ count: 1, resetAt: now + 86400000 }));
-                    return true;
-                }
-                
-                if (now > countData.resetAt) {
-                    localStorage.setItem(key, JSON.stringify({ count: 1, resetAt: now + 86400000 }));
-                    return true;
-                }
-                
-                if (countData.count >= 3) {
-                    return false;
-                }
-                
-                countData.count++;
-                localStorage.setItem(key, JSON.stringify(countData));
-                return true;
-            }
-            
-            // ===== LỚP BẢO VỆ 6: Kiểm tra toàn vẹn =====
-            function verifyIntegrity(data) {
-                if (!data || !data.key || !data.expiresAt || !data.createdAt) {
-                    return false;
-                }
-                
-                // Kiểm tra key format
-                if (!data.key.startsWith('Free_') || !data.key.includes('apex')) {
-                    return false;
-                }
-                
-                // Kiểm tra thời gian hợp lý
-                const maxExpiry = data.createdAt + (86400000 * 7); // Tối đa 7 ngày
-                if (data.expiresAt > maxExpiry) {
-                    return false;
-                }
-                
-                return true;
-            }
-            
-            // ===== HÀM CHÍNH (đã obfuscate tên) =====
-            function _gK() {
-                const _c = 'qptoeugjwmxnalkjf¡¿\'-:;₫&@9275023#%*^+€¥$_|\\[]{}bcz';
-                let _r = '';
-                for (let _i = 0; _i < 15; _i++) {
-                    _r += _c.charAt(Math.floor(Math.random() * _c.length));
-                }
-                const _p = ['start', 'middle', 'end'];
-                const _a = _p[Math.floor(Math.random() * _p.length)];
-                
-                let _k;
-                switch(_a) {
-                    case 'start': _k = `Free_apex${_r}`; break;
-                    case 'middle':
-                        const _m = Math.floor(_r.length / 2);
-                        _k = `Free_${_r.slice(0, _m)}apex${_r.slice(_m)}`;
-                        break;
-                    case 'end': _k = `Free_${_r}apex`; break;
-                }
-                return _k;
-            }
-            
-            function _sD(_k) {
-                const _n = Date.now();
-                const _e = _n + (EXPIRY_MINUTES * 60 * 1000);
-                const _d = { key: _k, createdAt: _n, expiresAt: _e };
-                
-                saveSecure(STORAGE_KEYS.main, _d);
-                saveSecure(STORAGE_KEYS.backup, _d);
-                
-                // Lưu hash để kiểm tra toàn vẹn
-                const _h = btoa(JSON.stringify(_d));
-                localStorage.setItem(STORAGE_KEYS.hash, _h);
-                
-                return _d;
-            }
-            
-            function _gSD() {
-                const _d = getSecure(STORAGE_KEYS.main);
-                
-                if (_d && verifyIntegrity(_d)) {
-                    if (Date.now() < _d.expiresAt) {
-                        return _d;
-                    } else {
-                        clearAllSecure();
-                    }
+                if (data.success) {
+                    showKey(data);
                 } else {
-                    // Thử backup
-                    const _b = getSecure(STORAGE_KEYS.backup);
-                    if (_b && verifyIntegrity(_b) && Date.now() < _b.expiresAt) {
-                        saveSecure(STORAGE_KEYS.main, _b);
-                        return _b;
-                    } else {
-                        clearAllSecure();
-                    }
-                }
-                
-                return null;
-            }
-            
-            let _cI;
-            
-            function _sC(_e) {
-                if (_cI) clearInterval(_cI);
-                
-                const _el = document.getElementById('countdown');
-                _el.classList.remove('expired');
-                
-                _cI = setInterval(() => {
-                    const _dist = _e - Date.now();
-                    
-                    if (_dist <= 0) {
-                        clearInterval(_cI);
-                        _el.textContent = 'KEY EXPIRED - Get new key...';
-                        _el.classList.add('expired');
-                        clearAllSecure();
-                        return;
-                    }
-                    
-                    const _h = Math.floor(_dist / 3600000);
-                    const _m = Math.floor((_dist % 3600000) / 60000);
-                    const _s = Math.floor((_dist % 60000) / 1000);
-                    
-                    if (_h > 0) _el.textContent = `Time remaining: ${_h}h ${_m}m ${_s}s`;
-                    else if (_m > 0) _el.textContent = `Time remaining: ${_m}m ${_s}s`;
-                    else _el.textContent = `Time remaining: ${_s}s`;
-                    
-                    if (_dist < 60000) _el.style.color = '#ff3333';
-                }, 1000);
-            }
-            
-            function _sKS(_d) {
-                document.getElementById('generateSection').classList.add('hidden');
-                document.getElementById('keySection').classList.remove('hidden');
-                document.getElementById('keyDisplay').textContent = _d.key;
-                
-                const _diff = Math.floor((_d.expiresAt - Date.now()) / 60000);
-                if (_diff < 60) {
-                    document.getElementById('expiryText').textContent = 'Key expires in ' + _diff + ' minutes';
-                } else {
-                    document.getElementById('expiryText').textContent = 'Key expires in ' + Math.floor(_diff / 60) + ' hours';
-                }
-                
-                _sC(_d.expiresAt);
-            }
-            
-            // ===== PUBLIC API (đã obfuscate tên hàm) =====
-            window.generateAndShowKey = function() {
-                // Phát hiện DevTools
-                if (devToolsOpen) {
-                    document.getElementById('errorMsg').textContent = 'Vui lòng tắt Developer Tools!';
+                    document.getElementById('errorMsg').textContent = '❌ ' + data.error;
                     document.getElementById('errorMsg').classList.remove('hidden');
-                    return;
                 }
-                
-                // Kiểm tra rate limit
-                if (!checkRateLimit()) {
-                    document.getElementById('errorMsg').textContent = 'Đã đạt giới hạn! Tối đa 3 key/24h.';
-                    document.getElementById('errorMsg').classList.remove('hidden');
-                    return;
-                }
-                
-                // Kiểm tra key hiện tại
-                const _existing = _gSD();
-                if (_existing) {
-                    _sKS(_existing);
-                    return;
-                }
-                
-                // Tạo key mới
-                const _key = _gK();
-                const _data = _sD(_key);
-                _sKS(_data);
-            };
-            
-            window.getNewKey = function() {
-                clearAllSecure();
-                if (_cI) clearInterval(_cI);
-                window.location.href = HOME_URL;
-            };
-            
-            // ===== KHỞI TẠO =====
-            function _init() {
-                const _data = _gSD();
-                if (_data) {
-                    _sKS(_data);
-                } else {
-                    document.getElementById('generateSection').classList.remove('hidden');
-                }
-                
-                // Kiểm tra định kỳ
-                setInterval(() => {
-                    const _data = _gSD();
-                    const _ks = document.getElementById('keySection');
-                    
-                    if (!_ks.classList.contains('hidden') && !_data) {
-                        const _el = document.getElementById('countdown');
-                        _el.textContent = 'KEY EXPIRED - Get new key...';
-                        _el.classList.add('expired');
-                    }
-                }, 10000);
-                
-                // Bảo vệ chống sửa localStorage từ console
-                const _origSetItem = localStorage.setItem;
-                localStorage.setItem = function(key, value) {
-                    // Chặn sửa trực tiếp các key bảo vệ
-                    if (Object.values(STORAGE_KEYS).includes(key)) {
-                        return;
-                    }
-                    return _origSetItem.apply(this, arguments);
-                };
-                
-                const _origRemoveItem = localStorage.removeItem;
-                localStorage.removeItem = function(key) {
-                    // Chặn xóa các key bảo vệ
-                    if (Object.values(STORAGE_KEYS).includes(key)) {
-                        return;
-                    }
-                    return _origRemoveItem.apply(this, arguments);
-                };
+            } catch (error) {
+                document.getElementById('errorMsg').textContent = '❌ Lỗi kết nối server!';
+                document.getElementById('errorMsg').classList.remove('hidden');
             }
+        }
+        
+        function showKey(data) {
+            document.getElementById('generateSection').classList.add('hidden');
+            document.getElementById('keySection').classList.remove('hidden');
+            document.getElementById('keyDisplay').textContent = data.key;
+            document.getElementById('expiryText').textContent = 'Key hết hạn sau ' + data.expiresInMin + ' phút';
             
-            // Tạo particles
-            function _cP() {
-                const _ct = document.getElementById('particles');
-                const _cl = ['#e63946', '#ff4d4d', '#cc2936', '#ff6666', '#b32430'];
-                for (let _i = 0; _i < 25; _i++) {
-                    const _p = document.createElement('div');
-                    _p.className = 'particle';
-                    const _s = Math.random() * 3 + 1;
-                    _p.style.width = _s + 'px';
-                    _p.style.height = _s + 'px';
-                    _p.style.left = Math.random() * 100 + '%';
-                    _p.style.backgroundColor = _cl[Math.floor(Math.random() * _cl.length)];
-                    _p.style.animationDelay = Math.random() * 8 + 's';
-                    _p.style.animationDuration = (Math.random() * 6 + 5) + 's';
-                    _p.style.boxShadow = `0 0 ${_s * 3}px ${_cl[Math.floor(Math.random() * _cl.length)]}`;
-                    _ct.appendChild(_p);
+            // Đếm ngược
+            const expiresAt = data.expiresAt;
+            setInterval(() => {
+                const dist = expiresAt - Date.now();
+                if (dist <= 0) {
+                    document.getElementById('countdown').textContent = 'ĐÃ HẾT HẠN';
+                    return;
                 }
-            }
-            
-            _cP();
-            _init();
-            
-        })();
+                const m = Math.floor(dist / 60000);
+                const s = Math.floor((dist % 60000) / 1000);
+                document.getElementById('countdown').textContent = `Còn lại: ${m}m ${s}s`;
+            }, 1000);
+        }
     </script>
 </body>
 </html>
