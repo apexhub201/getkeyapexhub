@@ -130,13 +130,11 @@
                 <div class="logo-subtitle">Premium Access</div>
                 <div class="divider"></div>
 
-                <!-- LOADING -->
                 <div id="loadingSection">
                     <div class="page-title"><span class="loading-spinner"></span>Checking...</div>
                     <div class="page-subtitle">Vui lòng đợi</div>
                 </div>
 
-                <!-- TẠO KEY -->
                 <div id="generateSection" class="hidden">
                     <div class="page-title">Tạo Key</div>
                     <div class="page-subtitle">Nhấn nút để tạo key mới</div>
@@ -146,7 +144,6 @@
                     <p class="error-text hidden" id="errorMsg"></p>
                 </div>
 
-                <!-- HIỂN THỊ KEY -->
                 <div id="keySection" class="hidden">
                     <div class="page-title">Key Của Bạn</div>
                     <div class="page-subtitle">Đang hoạt động</div>
@@ -161,7 +158,6 @@
                     </button>
                 </div>
 
-                <!-- CHẶN - ĐÃ CÓ KEY -->
                 <div id="blockedSection" class="hidden">
                     <div class="page-title">Đã Có Key</div>
                     <div class="page-subtitle">Mỗi IP chỉ được 1 key</div>
@@ -187,11 +183,6 @@
 
         let countdownTimer = null;
 
-        // ===== LẤY TOKEN TỪ URL =====
-        function layTokenURL() {
-            return new URLSearchParams(window.location.search).get("token");
-        }
-
         // ===== PARTICLES =====
         function taoHat(){
             var c=document.getElementById('particles');
@@ -214,7 +205,12 @@
             }catch(e){return 'khong-co-ip';}
         }
 
-        // ===== KIỂM TRA SERVER (check IP) =====
+        // ===== ĐỌC TOKEN TỪ URL =====
+        function layTokenURL() {
+            return new URLSearchParams(window.location.search).get("token");
+        }
+
+        // ===== KIỂM TRA SERVER THEO IP =====
         async function kiemTraServer(){
             try{
                 var ip=await layIP();
@@ -224,21 +220,7 @@
                 clearTimeout(timeout);
                 return await r.json();
             }catch(e){
-                return {allowed:true};
-            }
-        }
-
-        // ===== KIỂM TRA TOKEN VỚI SERVER =====
-        async function kiemTraToken(token){
-            try{
-                var controller=new AbortController();
-                var timeout=setTimeout(function(){controller.abort();},8000);
-                var r=await fetch(API_URL+'?action=get&token='+encodeURIComponent(token),{signal:controller.signal});
-                clearTimeout(timeout);
-                var d=await r.json();
-                return d;
-            }catch(e){
-                return {success:false};
+                return {allowed: true};
             }
         }
 
@@ -252,7 +234,7 @@
             }catch(e){return '';}
         }
 
-        // ===== TẠO TOKEN =====
+        // ===== TẠO TOKEN NGẪU NHIÊN =====
         function taoToken(){
             var c='abcdefghijklmnopqrstuvwxyz0123456789';
             var t='';
@@ -260,9 +242,9 @@
             return t;
         }
 
-        // ===== TẠO KEY =====
+        // ===== TẠO CHUỖI KEY =====
         function taoChuoi(){
-            var c='qptoeugjwmxnalkjf¡¿\'-:;₫&@9275023#%*^+€¥$|\\[]{}bcz';
+            var c="qptoeugjwmxnalkjf0123456789bcz-_@#%^*"; // Đã sửa cú pháp chuỗi bị lỗi
             var r='';
             for(var i=0;i<15;i++) r+=c[Math.floor(Math.random()*c.length)];
             var p=['dau','giua','cuoi'][Math.floor(Math.random()*3)];
@@ -272,7 +254,7 @@
             return 'Free_'+r.slice(0,m)+'apex'+r.slice(m);
         }
 
-        // ===== DEM NGUOC =====
+        // ===== ĐẾM NGƯỢC HẾT HẠN =====
         function demNguoc(expiryStr,elId){
             if(countdownTimer) clearInterval(countdownTimer);
             var el=document.getElementById(elId);
@@ -293,9 +275,9 @@
             },1000);
         }
 
-        // ===== LƯU LOCAL =====
+        // ===== QUẢN LÝ LOCALSTORAGE =====
         function luuLocal(key,token,expiry){
-            var data={key:key,token:token,expiry:expiry};
+            var data={key,token,expiry};
             localStorage.setItem('apex_key_data',JSON.stringify(data));
         }
 
@@ -310,7 +292,7 @@
             return null;
         }
 
-        // ===== HIỂN THỊ =====
+        // ===== CHUYỂN ĐỔI GIAO DIỆN =====
         function hien(id){
             ['loadingSection','generateSection','keySection','blockedSection'].forEach(function(x){
                 document.getElementById(x).classList.add('hidden');
@@ -318,7 +300,25 @@
             document.getElementById(id).classList.remove('hidden');
         }
 
-        // ===== TẠO KEY =====
+        function hienKey(key,expiry){
+            hien('keySection');
+            document.getElementById('keyDisplay').textContent=key;
+            demNguoc(expiry,'countdown');
+        }
+
+        function hienBlocked(key,expiry){
+            hien('blockedSection');
+            document.getElementById('blockedKeyDisplay').textContent=key;
+            demNguoc(expiry,'blockedCountdown');
+        }
+
+        function getNewKey(){
+            localStorage.removeItem('apex_key_data');
+            if(countdownTimer) clearInterval(countdownTimer);
+            window.location.href=HOME_URL;
+        }
+
+        // ===== HÀM TẠO KEY CHÍNH =====
         async function taoKey(){
             var btn=document.getElementById('btnGenerate');
             btn.disabled=true;
@@ -343,7 +343,7 @@
             luuLocal(key,token,expiryISO);
 
             var newURL=BASE_URL+'?token='+token;
-            window.history.replaceState({token:token},'',newURL);
+            window.history.replaceState({token: token},'',newURL);
 
             hienKey(key,expiryISO);
 
@@ -351,67 +351,63 @@
             btn.querySelector('.btn-text').textContent='Tạo Key';
         }
 
-        function hienKey(key,expiry){
-            hien('keySection');
-            document.getElementById('keyDisplay').textContent=key;
-            demNguoc(expiry,'countdown');
-        }
-
-        function hienBlocked(key,expiry){
-            hien('blockedSection');
-            document.getElementById('blockedKeyDisplay').textContent=key;
-            demNguoc(expiry,'blockedCountdown');
-        }
-
-        function getNewKey(){
-            localStorage.removeItem('apex_key_data');
-            if(countdownTimer) clearInterval(countdownTimer);
-            window.location.href=HOME_URL;
-        }
-
-        // ===== KHỞI TẠO =====
+        // ===== KHỞI TẠO TRANG (INIT) =====
         async function init(){
-            // Ưu tiên 1: Đọc token từ URL
-            var token = layTokenURL();
-            if(token){
+            var tokenURL = layTokenURL();
+
+            // Bước 1: Nếu có token trên URL, gọi Server xác thực token này trước
+            if(tokenURL){
                 try{
-                    var kqToken = await kiemTraToken(token);
-                    if(kqToken.success){
-                        luuLocal(kqToken.key, token, kqToken.expiry);
-                        window.history.replaceState({token:token},'',BASE_URL+'?token='+token);
-                        hienKey(kqToken.key, kqToken.expiry);
+                    var r = await fetch(API_URL + "?action=get&token=" + encodeURIComponent(tokenURL));
+                    var d = await r.json();
+                    if(d.success){
+                        // Token hợp lệ -> Cập nhật Local và hiển thị Key thành công
+                        luuLocal(d.key, tokenURL, d.expiry);
+                        hienKey(d.key, d.expiry);
                         return;
                     }
-                }catch(e){}
+                }catch(e){
+                    console.log("Lỗi đồng bộ token URL");
+                }
             }
 
-            // Ưu tiên 2: Kiểm tra localStorage
-            var localData = layLocal();
+            // Bước 2: Nếu không có token URL hợp lệ, kiểm tra tới Local Storage
+            var localData=layLocal();
             if(localData){
-                var newURL = BASE_URL+'?token='+localData.token;
-                window.history.replaceState({token:localData.token},'',newURL);
-                hienKey(localData.key, localData.expiry);
+                var newURL=BASE_URL+'?token='+localData.token;
+                window.history.replaceState({token: localData.token},'',newURL);
+                hienKey(localData.key,localData.expiry);
                 return;
             }
 
-            // Ưu tiên 3: Kiểm tra IP với server
-            var kq = await kiemTraServer();
+            // Bước 3: Nếu cả 2 đều không có dữ liệu, check IP hệ thống để quyết định cho tạo hay block
+            var kq=await kiemTraServer();
+
             if(!kq.allowed){
-                luuLocal(kq.key, taoToken(), kq.expiry);
-                hienBlocked(kq.key, kq.expiry);
+                luuLocal(kq.key,taoToken(),kq.expiry);
+                hienBlocked(kq.key,kq.expiry);
             }else{
                 hien('generateSection');
             }
         }
 
-        // Kiểm tra mỗi 3 giây - chống xóa token URL
+        // Vòng lặp kiểm tra mỗi 3 giây - chống xóa tham số token trên URL hoặc lỗi UI đột ngột
         setInterval(function(){
-            var localData = layLocal();
-            var keySection = document.getElementById('keySection');
-            var blockedSection = document.getElementById('blockedSection');
+            var localData=layLocal();
+            var keySection=document.getElementById('keySection');
+            var blockedSection=document.getElementById('blockedSection');
 
-            if(localData && keySection.classList.contains('hidden') && blockedSection.classList.contains('hidden')){
-                hienKey(localData.key, localData.expiry);
+            if(localData){
+                // Nếu đang hiển thị giao diện có key nhưng URL bị mất token -> Ghi đè lại URL ngay lập tức
+                var hiệnTạiToken = layTokenURL();
+                if(!hiệnTạiToken || hiệnTạiToken !== localData.token){
+                    var newURL = BASE_URL + '?token=' + localData.token;
+                    window.history.replaceState({token: localData.token}, '', newURL);
+                }
+
+                if(keySection.classList.contains('hidden') && blockedSection.classList.contains('hidden')){
+                    hienKey(localData.key,localData.expiry);
+                }
             }
         },3000);
 
