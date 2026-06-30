@@ -130,11 +130,13 @@
                 <div class="logo-subtitle">Premium Access</div>
                 <div class="divider"></div>
 
+                <!-- LOADING -->
                 <div id="loadingSection">
                     <div class="page-title"><span class="loading-spinner"></span>Checking...</div>
                     <div class="page-subtitle">Vui lòng đợi</div>
                 </div>
 
+                <!-- TẠO KEY -->
                 <div id="generateSection" class="hidden">
                     <div class="page-title">Tạo Key</div>
                     <div class="page-subtitle">Nhấn nút để tạo key mới</div>
@@ -144,6 +146,7 @@
                     <p class="error-text hidden" id="errorMsg"></p>
                 </div>
 
+                <!-- HIỂN THỊ KEY -->
                 <div id="keySection" class="hidden">
                     <div class="page-title">Key Của Bạn</div>
                     <div class="page-subtitle">Đang hoạt động</div>
@@ -158,6 +161,7 @@
                     </button>
                 </div>
 
+                <!-- CHẶN - ĐÃ CÓ KEY -->
                 <div id="blockedSection" class="hidden">
                     <div class="page-title">Đã Có Key</div>
                     <div class="page-subtitle">Mỗi IP chỉ được 1 key</div>
@@ -175,7 +179,9 @@
 
     <script>
         // ===== CONFIG =====
-        const API_URL = 'https://script.google.com/macros/s/AKfycbx0ILea_LqQdv_Zf9JcuxvHglJNeumXa1lDLMD7HxSoeXrrN8Na9OW3uiec4O72ztPR/exec';
+        // Link API Google Apps Script MỚI CỦA BẠN ĐÃ ĐƯỢC CẬP NHẬT TẠI ĐÂY
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzYQmvDkjlQPn743Dbf6xZOXc9v_ffysY3PSla39q4gaK26jx766DwYcjJHQhVBsi0F/exec';
+        
         const HOME_URL = 'https://getkeyapexhub.vercel.app/';
         const BASE_URL = 'https://getkeyapexhub.vercel.app/key.html';
         const PHUT = 5;
@@ -244,7 +250,7 @@
 
         // ===== TẠO CHUỖI KEY =====
         function taoChuoi(){
-            var c="qptoeugjwmxnalkjf0123456789bcz-_@#%^*"; // Đã sửa cú pháp chuỗi bị lỗi
+            var c="qptoeugjwmxnalkjf0123456789bcz-_@#%^*"; 
             var r='';
             for(var i=0;i<15;i++) r+=c[Math.floor(Math.random()*c.length)];
             var p=['dau','giua','cuoi'][Math.floor(Math.random()*3)];
@@ -399,8 +405,8 @@
 
             if(localData){
                 // Nếu đang hiển thị giao diện có key nhưng URL bị mất token -> Ghi đè lại URL ngay lập tức
-                var hiệnTạiToken = layTokenURL();
-                if(!hiệnTạiToken || hiệnTạiToken !== localData.token){
+                var hienTaiToken = layTokenURL();
+                if(!hienTaiToken || hienTaiToken !== localData.token){
                     var newURL = BASE_URL + '?token=' + localData.token;
                     window.history.replaceState({token: localData.token}, '', newURL);
                 }
