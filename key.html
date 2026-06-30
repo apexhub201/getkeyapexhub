@@ -1,335 +1,171 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APEX HUB | Your Key</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background: #050505;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            position: relative;
-        }
-        .bg-gradient {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: 
-                radial-gradient(ellipse at 20% 50%, rgba(180, 0, 0, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 50%, rgba(0, 0, 0, 0.3) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 0%, rgba(255, 50, 50, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 100%, rgba(180, 0, 0, 0.1) 0%, transparent 50%);
-            z-index: 0;
-        }
-        .grid-pattern {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-            background-size: 60px 60px;
-            z-index: 0;
-            animation: gridMove 20s linear infinite;
-        }
-        @keyframes gridMove { 0% { transform: translate(0,0); } 100% { transform: translate(60px,60px); } }
-        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-        .particle { position: absolute; border-radius: 50%; animation: floatUp 8s infinite ease-in; opacity: 0; }
-        @keyframes floatUp {
-            0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
-            10% { opacity: 1; } 90% { opacity: 1; }
-            100% { transform: translateY(-100px) translateX(100px) scale(1); opacity: 0; }
-        }
-        .container { position: relative; z-index: 2; width: 100%; max-width: 520px; padding: 20px; }
-        .card {
-            background: rgba(10,10,10,0.9); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-            border: 1px solid rgba(230,57,70,0.2); border-radius: 24px; padding: 50px 40px;
-            text-align: center;
-            box-shadow: 0 0 80px rgba(220,20,20,0.08), 0 30px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.03);
-            position: relative; overflow: hidden;
-        }
-        .card::before {
-            content: '';
-            position: absolute; top: -100%; left: -100%; width: 300%; height: 300%;
-            background: conic-gradient(from 0deg, transparent, rgba(220,20,20,0.05), transparent, rgba(255,80,80,0.08), transparent, rgba(220,20,20,0.05), transparent);
-            animation: rotateGlow 15s linear infinite; z-index: 0;
-        }
-        @keyframes rotateGlow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .card::after {
-            content: '';
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 50%, rgba(0,0,0,0.3) 100%);
-            z-index: 0; pointer-events: none;
-        }
-        .card-content { position: relative; z-index: 1; }
-        .logo-text { font-size: 48px; font-weight: 700; letter-spacing: 6px; color: #fff; margin-bottom: 5px; animation: fadeInUp 0.8s ease-out; text-shadow: 0 0 40px rgba(255,50,50,0.3); }
-        .logo-text span { color: #e63946; text-shadow: 0 0 60px rgba(230,57,70,0.6); }
-        .logo-subtitle { font-size: 13px; color: rgba(255,255,255,0.5); letter-spacing: 8px; text-transform: uppercase; margin-bottom: 40px; animation: fadeInUp 0.8s ease-out 0.15s both; }
-        .divider { width: 80px; height: 2px; background: linear-gradient(90deg, transparent, #e63946, transparent); margin: 0 auto 35px; animation: fadeInUp 0.8s ease-out 0.3s both; }
-        .page-title { font-size: 22px; color: #ccc; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 8px; animation: fadeInUp 0.8s ease-out 0.35s both; }
-        .page-subtitle { font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 3px; margin-bottom: 40px; animation: fadeInUp 0.8s ease-out 0.4s both; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
-        .key-box { margin-top: 35px; padding: 22px 20px; background: rgba(0,0,0,0.6); border: 1px solid rgba(230,57,70,0.25); border-radius: 16px; animation: fadeInUp 0.8s ease-out 0.4s both; }
-        .key-label { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; }
-        .key-value { font-family: 'Courier New', monospace; font-size: 13px; color: #e63946; word-break: break-all; letter-spacing: 1px; text-shadow: 0 0 20px rgba(230,57,70,0.4); }
-        .expiry-text { margin-top: 15px; font-size: 11px; color: rgba(255,255,255,0.3); letter-spacing: 2px; animation: fadeInUp 0.8s ease-out 0.5s both; }
-        .countdown-timer { margin-top: 8px; margin-bottom: 30px; font-size: 14px; font-weight: 500; color: #e63946; letter-spacing: 2px; animation: fadeInUp 0.8s ease-out 0.55s both; text-shadow: 0 0 15px rgba(230,57,70,0.5); }
-        .countdown-timer.expired { color: #ff3333; animation: blink 0.8s infinite; }
-        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-        .btn-get-key {
-            position: relative; display: inline-block; padding: 16px 55px; font-size: 15px; font-weight: 500;
-            letter-spacing: 4px; text-transform: uppercase; color: #fff;
-            background: linear-gradient(135deg, #1a0000 0%, #2d0000 50%, #1a0000 100%);
-            border: 1px solid rgba(230,57,70,0.5); border-radius: 50px;
-            cursor: pointer; overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.4,0,0.2,1);
-            animation: fadeInUp 0.8s ease-out 0.6s both; z-index: 1;
-        }
-        .btn-get-key::before {
-            content: '';
-            position: absolute; top: 50%; left: 50%; width: 0; height: 0;
-            border-radius: 50%; background: rgba(230,57,70,0.25);
-            transform: translate(-50%,-50%); transition: width 0.7s, height 0.7s;
-        }
-        .btn-get-key:hover::before { width: 400px; height: 400px; }
-        .btn-get-key:hover {
-            border-color: #e63946;
-            box-shadow: 0 0 30px rgba(230,57,70,0.3), 0 0 60px rgba(230,57,70,0.15), 0 15px 40px rgba(0,0,0,0.4);
-            transform: translateY(-3px); letter-spacing: 6px;
-        }
-        .btn-text { position: relative; z-index: 1; }
-        .card-glow {
-            position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;
-            border-radius: 26px;
-            background: linear-gradient(45deg, transparent 40%, rgba(230,57,70,0.15) 50%, transparent 60%);
-            z-index: -1; animation: borderGlow 4s ease-in-out infinite; pointer-events: none;
-        }
-        @keyframes borderGlow { 0%,100% { opacity: 0.3; } 50% { opacity: 0.8; } }
-        .corner-accent { position: absolute; width: 30px; height: 30px; border-color: rgba(230,57,70,0.4); border-style: solid; z-index: 2; pointer-events: none; }
-        .corner-accent.top-left { top: 15px; left: 15px; border-width: 1px 0 0 1px; border-radius: 6px 0 0 0; }
-        .corner-accent.bottom-right { bottom: 15px; right: 15px; border-width: 0 1px 1px 0; border-radius: 0 0 6px 0; }
-        .hidden { display: none !important; }
-        .loading-spinner {
-            width: 40px; height: 40px;
-            border: 3px solid rgba(230,57,70,0.2);
-            border-top: 3px solid #e63946;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 20px auto;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .error-text { color: #ff4444; font-size: 13px; margin-top: 15px; letter-spacing: 1px; }
-    </style>
-</head>
-<body>
-    <div class="bg-gradient"></div>
-    <div class="grid-pattern"></div>
-    <div class="particles" id="particles"></div>
+// ===== CONFIG =====
+const API_URL = '/api/create-key';
+const VERIFY_URL = '/api/verify-key';
+const HOME_URL = '/';
+// ==================
 
-    <div class="container">
-        <div class="card">
-            <div class="card-glow"></div>
-            <div class="corner-accent top-left"></div>
-            <div class="corner-accent bottom-right"></div>
-            <div class="card-content">
-                <div class="logo-text">APEX <span>HUB</span></div>
-                <div class="logo-subtitle">Premium Access</div>
-                <div class="divider"></div>
+function createParticles() {
+    const container = document.getElementById('particles');
+    const colors = ['#e63946', '#ff4d4d', '#cc2936', '#ff6666', '#b32430'];
+    for (let i = 0; i < 25; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        const size = Math.random() * 3 + 1;
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.animationDelay = Math.random() * 8 + 's';
+        particle.style.animationDuration = (Math.random() * 6 + 5) + 's';
+        container.appendChild(particle);
+    }
+}
 
-                <!-- Generate Section -->
-                <div id="generateSection">
-                    <div class="page-title">Generate Key</div>
-                    <div class="page-subtitle">Click to create your key via secure API</div>
-                    <button class="btn-get-key" id="btnGenerate" onclick="generateKeyViaAPI()">
-                        <span class="btn-text">Tạo Key</span>
-                    </button>
-                    <div class="loading-spinner hidden" id="loadingSpinner"></div>
-                    <p class="error-text hidden" id="errorMsg"></p>
-                </div>
+function getTokenFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('token');
+}
 
-                <!-- Key Section -->
-                <div id="keySection" class="hidden">
-                    <div class="page-title">Your Key</div>
-                    <div class="page-subtitle">Active & Valid</div>
-                    <div class="key-box">
-                        <div class="key-label">Key</div>
-                        <div class="key-value" id="keyDisplay"></div>
-                    </div>
-                    <p class="expiry-text" id="expiryText"></p>
-                    <div class="countdown-timer" id="countdown"></div>
-                    <button class="btn-get-key" onclick="getNewKey()">
-                        <span class="btn-text">Get New Key</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+function showLoading() {
+    document.getElementById('btnGenerate').classList.add('hidden');
+    document.getElementById('loadingSpinner').classList.remove('hidden');
+    document.getElementById('errorMsg').classList.add('hidden');
+}
 
-    <script>
-        // ===== CONFIG =====
-        const API_URL = '/api/create-key';
-        const HOME_URL = '/';
-        // ==================
+function hideLoading() {
+    document.getElementById('btnGenerate').classList.remove('hidden');
+    document.getElementById('loadingSpinner').classList.add('hidden');
+}
 
-        function createParticles() {
-            const container = document.getElementById('particles');
-            const colors = ['#e63946', '#ff4d4d', '#cc2936', '#ff6666', '#b32430'];
-            for (let i = 0; i < 25; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                const size = Math.random() * 3 + 1;
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                particle.style.animationDelay = Math.random() * 8 + 's';
-                particle.style.animationDuration = (Math.random() * 6 + 5) + 's';
-                container.appendChild(particle);
-            }
+function showError(msg) {
+    document.getElementById('errorMsg').textContent = msg;
+    document.getElementById('errorMsg').classList.remove('hidden');
+    hideLoading();
+}
+
+let countdownInterval;
+
+function startCountdown(expiryTime) {
+    if (countdownInterval) clearInterval(countdownInterval);
+    
+    const countdownEl = document.getElementById('countdown');
+    
+    countdownInterval = setInterval(() => {
+        const distance = expiryTime - Date.now();
+        
+        if (distance <= 0) {
+            clearInterval(countdownInterval);
+            countdownEl.textContent = 'KEY EXPIRED - Redirecting...';
+            countdownEl.classList.add('expired');
+            setTimeout(() => { window.location.href = HOME_URL; }, 2000);
+            return;
         }
+        
+        const h = Math.floor(distance / (1000 * 60 * 60));
+        const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        if (h > 0) countdownEl.textContent = `Time remaining: ${h}h ${m}m ${s}s`;
+        else if (m > 0) countdownEl.textContent = `Time remaining: ${m}m ${s}s`;
+        else countdownEl.textContent = `Time remaining: ${s}s`;
+        
+        if (distance < 60000) countdownEl.style.color = '#ff3333';
+    }, 1000);
+}
 
-        function getTokenFromURL() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('token');
+function showKeySection(keyData) {
+    document.getElementById('generateSection').classList.add('hidden');
+    document.getElementById('keySection').classList.remove('hidden');
+    document.getElementById('keyDisplay').textContent = keyData.key;
+    
+    // Tính thời gian để hiển thị text phù hợp
+    const now = Date.now();
+    const diffMs = keyData.expiresAt - now;
+    const diffMin = Math.floor(diffMs / 60000);
+    
+    if (diffMin < 60) {
+        document.getElementById('expiryText').textContent = 'Key expires in ' + diffMin + ' minutes';
+    } else {
+        const diffH = Math.floor(diffMin / 60);
+        document.getElementById('expiryText').textContent = 'Key expires in ' + diffH + ' hours';
+    }
+    
+    const newURL = window.location.pathname + '?token=' + keyData.token;
+    window.history.pushState({ token: keyData.token }, '', newURL);
+    
+    startCountdown(keyData.expiresAt);
+}
+
+async function generateKeyViaAPI() {
+    showLoading();
+    
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showKeySection({
+                key: data.key,
+                token: data.token,
+                signature: data.signature,
+                expiresAt: data.expiresAt
+            });
+        } else {
+            showError(data.error || 'Failed to create key');
         }
+    } catch (error) {
+        showError('Network error. Please try again.');
+        console.error('API Error:', error);
+    }
+}
 
-        function showLoading() {
-            document.getElementById('btnGenerate').classList.add('hidden');
-            document.getElementById('loadingSpinner').classList.remove('hidden');
-            document.getElementById('errorMsg').classList.add('hidden');
-        }
+async function verifyKeyWithAPI(token) {
+    try {
+        const response = await fetch(VERIFY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: token })
+        });
+        
+        return await response.json();
+    } catch (error) {
+        return { valid: false, error: 'Network error' };
+    }
+}
 
-        function hideLoading() {
-            document.getElementById('btnGenerate').classList.remove('hidden');
-            document.getElementById('loadingSpinner').classList.add('hidden');
-        }
+function getNewKey() {
+    window.location.href = HOME_URL;
+}
 
-        function showError(msg) {
-            document.getElementById('errorMsg').textContent = msg;
-            document.getElementById('errorMsg').classList.remove('hidden');
-            hideLoading();
-        }
+// Khởi tạo
+async function init() {
+    const token = getTokenFromURL();
+    
+    if (!token) {
+        document.getElementById('generateSection').classList.remove('hidden');
+        return;
+    }
+    
+    showLoading();
+    const result = await verifyKeyWithAPI(token);
+    
+    if (result.valid) {
+        showKeySection({
+            key: result.key,
+            token: token,
+            expiresAt: result.expiresAt
+        });
+    } else {
+        hideLoading();
+        document.getElementById('generateSection').classList.remove('hidden');
+        showError('Token invalid or expired. Please create new key.');
+    }
+}
 
-        let countdownInterval;
-
-        function startCountdown(expiryTime) {
-            if (countdownInterval) clearInterval(countdownInterval);
-            
-            const countdownEl = document.getElementById('countdown');
-            
-            countdownInterval = setInterval(() => {
-                const distance = expiryTime - Date.now();
-                
-                if (distance <= 0) {
-                    clearInterval(countdownInterval);
-                    countdownEl.textContent = 'KEY EXPIRED - Redirecting...';
-                    countdownEl.classList.add('expired');
-                    setTimeout(() => { window.location.href = HOME_URL; }, 2000);
-                    return;
-                }
-                
-                const h = Math.floor(distance / (1000 * 60 * 60));
-                const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const s = Math.floor((distance % (1000 * 60)) / 1000);
-                
-                if (h > 0) countdownEl.textContent = `Time remaining: ${h}h ${m}m ${s}s`;
-                else if (m > 0) countdownEl.textContent = `Time remaining: ${m}m ${s}s`;
-                else countdownEl.textContent = `Time remaining: ${s}s`;
-                
-                if (distance < 60000) countdownEl.style.color = '#ff3333';
-            }, 1000);
-        }
-
-        function showKeySection(keyData) {
-            document.getElementById('generateSection').classList.add('hidden');
-            document.getElementById('keySection').classList.remove('hidden');
-            document.getElementById('keyDisplay').textContent = keyData.key;
-            document.getElementById('expiryText').textContent = 'Key expires in 24 hours';
-            
-            // Cập nhật URL với token
-            const newURL = window.location.pathname + '?token=' + keyData.token;
-            window.history.pushState({ token: keyData.token }, '', newURL);
-            
-            startCountdown(keyData.expiresAt);
-        }
-
-        async function generateKeyViaAPI() {
-            showLoading();
-            
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({})
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    showKeySection({
-                        key: data.key,
-                        token: data.token,
-                        signature: data.signature,
-                        expiresAt: data.expiresAt
-                    });
-                } else {
-                    showError(data.error || 'Failed to create key');
-                }
-            } catch (error) {
-                showError('Network error. Please try again.');
-                console.error('API Error:', error);
-            }
-        }
-
-        async function verifyKeyWithAPI(token) {
-            try {
-                const response = await fetch('/api/verify-key', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: token })
-                });
-                
-                return await response.json();
-            } catch (error) {
-                return { valid: false, error: 'Network error' };
-            }
-        }
-
-        function getNewKey() {
-            window.location.href = HOME_URL;
-        }
-
-        // Khởi tạo
-        async function init() {
-            const token = getTokenFromURL();
-            
-            if (!token) {
-                // Không có token → hiện nút tạo key
-                document.getElementById('generateSection').classList.remove('hidden');
-                return;
-            }
-            
-            // Có token → verify với server
-            showLoading();
-            const result = await verifyKeyWithAPI(token);
-            
-            if (result.valid) {
-                showKeySection({
-                    key: result.key,
-                    token: token,
-                    expiresAt: result.expiresAt
-                });
-            } else {
-                // Token không hợp lệ
-                hideLoading();
-                document.getElementById('generateSection').classList.remove('hidden');
-                showError('Token invalid or expired. Please create new key.');
-            }
-        }
-
-        createParticles();
-        init();
-    </script>
-</body>
-</html>
+createParticles();
+init();
