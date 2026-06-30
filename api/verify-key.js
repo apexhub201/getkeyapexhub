@@ -1,4 +1,5 @@
-const { kv } = require('@vercel/kv');
+const fs = require('fs');
+const path = require('path');
 const crypto = require('crypto');
 
 const SECRET_SIGNING_KEY = process.env.SECRET_SIGNING_KEY || 'apex-secret-2024';
@@ -7,6 +8,16 @@ function verifySignature(key, timestamp, signature) {
   const data = key + timestamp + SECRET_SIGNING_KEY;
   const expected = crypto.createHash('sha256').update(data).digest('hex').substring(0, 16);
   return expected === signature;
+}
+
+function readKeys() {
+  try {
+    const filePath = path.join(process.cwd(), 'data', 'keys.json');
+    const data = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    return {};
+  }
 }
 
 module.exports = async (req, res) => {
@@ -27,16 +38,16 @@ module.exports = async (req, res) => {
   }
   
   try {
-    const keyData = await kv.get(`key:${token}`);
+    const keys = readKeys();
+    const keyData = keys[token];
     
     if (!keyData) {
-      return res.status(404).json({ valid: false, error: 'Key không tồn tại hoặc đã hết hạn' });
+      return res.status(404).json({ valid: false, error: 'Key không tồn tại' });
     }
     
     const now = Date.now();
     
     if (now > keyData.expiresAt) {
-      await kv.del(`key:${token}`);
       return res.status(401).json({ valid: false, error: 'Key đã hết hạn' });
     }
     
