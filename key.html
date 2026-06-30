@@ -270,7 +270,7 @@
                 <div class="logo-subtitle">Premium Access</div>
                 <div class="divider"></div>
 
-                <!-- Nút Tạo Key (hiện khi chưa có key) -->
+                <!-- Nút Tạo Key -->
                 <div id="generateSection">
                     <div class="page-title">Generate Key</div>
                     <div class="page-subtitle">Click to create your key</div>
@@ -279,7 +279,7 @@
                     </button>
                 </div>
 
-                <!-- Key Display (ẩn cho đến khi bấm Tạo Key) -->
+                <!-- Key Display -->
                 <div id="keySection" class="hidden">
                     <div class="page-title">Your Key</div>
                     <div class="page-subtitle">Active & Valid</div>
@@ -287,9 +287,9 @@
                         <div class="key-label">Key</div>
                         <div class="key-value" id="keyDisplay"></div>
                     </div>
-                    <p class="expiry-text">Key expires in 24 hours</p>
+                    <p class="expiry-text" id="expiryText">Key expires in 5 minutes</p>
                     <div class="countdown-timer" id="countdown"></div>
-                    <button class="btn-get-key" onclick="closeAndGoBack()">
+                    <button class="btn-get-key" onclick="getNewKey()">
                         <span class="btn-text">Get New Key</span>
                     </button>
                 </div>
@@ -298,6 +298,11 @@
     </div>
 
     <script>
+        // ===== CONFIG: Đổi thời gian ở đây =====
+        const EXPIRY_MINUTES = 5; // Test 5 phút. Sau khi OK đổi thành: 1440 (24h = 1440 phút)
+        const EXPIRY_TEXT = '5 minutes'; // Đổi thành '24 hours' khi deploy chính thức
+        // =====================================
+
         function createParticles() {
             const container = document.getElementById('particles');
             const colors = ['#e63946', '#ff4d4d', '#cc2936', '#ff6666', '#b32430'];
@@ -348,7 +353,7 @@
 
         function storeKey(key) {
             const now = new Date();
-            const expiry = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+            const expiry = new Date(now.getTime() + EXPIRY_MINUTES * 60 * 1000);
             localStorage.setItem('apexhub_key', JSON.stringify({
                 key: key,
                 expiry: expiry.getTime()
@@ -381,10 +386,9 @@
                 
                 if (distance <= 0) {
                     clearInterval(countdownInterval);
-                    countdownEl.textContent = 'KEY EXPIRED';
+                    countdownEl.textContent = 'KEY EXPIRED - Closing...';
                     countdownEl.classList.add('expired');
                     
-                    // Xóa key và đóng tab sau 2 giây
                     setTimeout(() => {
                         closeAndGoBack();
                     }, 2000);
@@ -395,7 +399,13 @@
                 const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 const s = Math.floor((distance % (1000 * 60)) / 1000);
                 
-                countdownEl.textContent = `Time remaining: ${h}h ${m}m ${s}s`;
+                if (h > 0) {
+                    countdownEl.textContent = `Time remaining: ${h}h ${m}m ${s}s`;
+                } else if (m > 0) {
+                    countdownEl.textContent = `Time remaining: ${m}m ${s}s`;
+                } else {
+                    countdownEl.textContent = `Time remaining: ${s}s`;
+                }
                 
                 if (distance < 60000) {
                     countdownEl.style.color = '#ff3333';
@@ -404,14 +414,12 @@
         }
 
         function generateAndShowKey() {
-            // Kiểm tra nếu đã có key còn hạn
             const existingKey = getStoredKey();
             if (existingKey) {
                 showKeySection(existingKey);
                 return;
             }
 
-            // Tạo key mới
             const key = generateKey();
             const expiryTime = storeKey(key);
             
@@ -422,37 +430,31 @@
             document.getElementById('generateSection').classList.add('hidden');
             document.getElementById('keySection').classList.remove('hidden');
             document.getElementById('keyDisplay').textContent = keyData.key;
+            document.getElementById('expiryText').textContent = 'Key expires in ' + EXPIRY_TEXT;
             startCountdown(keyData.expiry);
+        }
+
+        function getNewKey() {
+            localStorage.removeItem('apexhub_key');
+            if (countdownInterval) clearInterval(countdownInterval);
+            window.location.href = 'https://getkeyapexhub.vercel.app/';
         }
 
         function closeAndGoBack() {
             localStorage.removeItem('apexhub_key');
             if (countdownInterval) clearInterval(countdownInterval);
-            
-            // Mở trang index.html
-            window.open('index.html', '_blank');
-            
-            // Đóng tab hiện tại
-            setTimeout(() => {
-                window.close();
-            }, 500);
-            
-            // Fallback nếu không đóng được tab
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 1000);
+            window.open('https://getkeyapexhub.vercel.app/', '_blank');
+            setTimeout(() => { window.close(); }, 500);
+            setTimeout(() => { window.location.href = 'https://getkeyapexhub.vercel.app/'; }, 1000);
         }
 
-        // Kiểm tra khi load trang
         function init() {
             const keyData = getStoredKey();
             if (keyData) {
                 showKeySection(keyData);
             }
-            // Nếu không có key, hiển thị nút Tạo Key (mặc định)
         }
 
-        // Kiểm tra mỗi 30 giây
         setInterval(() => {
             const keySection = document.getElementById('keySection');
             if (!keySection.classList.contains('hidden')) {
@@ -461,7 +463,7 @@
                     closeAndGoBack();
                 }
             }
-        }, 30000);
+        }, 10000);
 
         createParticles();
         init();
