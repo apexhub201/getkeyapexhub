@@ -45,30 +45,42 @@
         }
         @keyframes rotateGlow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .card-content { position: relative; z-index: 1; }
-        .logo-text { font-size: 48px; font-weight: 700; letter-spacing: 6px; color: #fff; text-shadow: 0 0 40px rgba(255, 50, 50, 0.3); }
+        .logo-text { font-size: 48px; font-weight: 700; letter-spacing: 6px; color: #fff; margin-bottom: 5px; text-shadow: 0 0 40px rgba(255, 50, 50, 0.3); }
         .logo-text span { color: #e63946; text-shadow: 0 0 60px rgba(230, 57, 70, 0.6); }
         .logo-subtitle { font-size: 13px; color: rgba(255,255,255,0.5); letter-spacing: 8px; text-transform: uppercase; margin-bottom: 40px; }
         .divider { width: 80px; height: 2px; background: linear-gradient(90deg, transparent, #e63946, transparent); margin: 0 auto 35px; }
         .page-title { font-size: 22px; color: #ccc; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 8px; }
         .page-subtitle { font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 3px; margin-bottom: 40px; }
         .key-box { margin-top: 35px; padding: 22px 20px; background: rgba(0,0,0,0.6); border: 1px solid rgba(230,57,70,0.25); border-radius: 16px; }
-        .key-label { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 3px; margin-bottom: 10px; }
-        .key-value { font-family: 'Courier New', monospace; font-size: 13px; color: #e63946; word-break: break-all; }
+        .key-label { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; }
+        .key-value { font-family: 'Courier New', monospace; font-size: 13px; color: #e63946; word-break: break-all; text-shadow: 0 0 20px rgba(230,57,70,0.4); }
         .countdown-timer { margin-top: 8px; margin-bottom: 30px; font-size: 14px; font-weight: 500; color: #e63946; letter-spacing: 2px; }
+        .countdown-timer.expired { color: #ff3333; animation: blink 0.8s infinite; }
+        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
         .btn-get-key {
             display: inline-block; padding: 16px 55px; font-size: 15px; font-weight: 500;
             letter-spacing: 4px; text-transform: uppercase; color: #fff;
             background: linear-gradient(135deg, #1a0000 0%, #2d0000 50%, #1a0000 100%);
             border: 1px solid rgba(230,57,70,0.5); border-radius: 50px; cursor: pointer;
-            transition: all 0.5s;
+            transition: all 0.5s; text-decoration: none;
         }
         .btn-get-key:hover { border-color: #e63946; box-shadow: 0 0 30px rgba(230,57,70,0.3); transform: translateY(-3px); }
         .hidden { display: none !important; }
-        .error-text { color: #ff4444; font-size: 13px; margin-top: 15px; }
+        .error-text { color: #ff4444; font-size: 13px; margin-top: 15px; letter-spacing: 1px; }
+        .loading-text { color: #e63946; font-size: 13px; margin-top: 15px; }
+        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        .particle { position: absolute; border-radius: 50%; animation: floatUp 8s infinite ease-in; opacity: 0; }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+            10% { opacity: 1; } 90% { opacity: 1; }
+            100% { transform: translateY(-100px) translateX(100px) scale(1); opacity: 0; }
+        }
     </style>
 </head>
 <body>
     <div class="bg-gradient"></div>
+    <div class="particles" id="particles"></div>
+
     <div class="container">
         <div class="card">
             <div class="card-content">
@@ -79,22 +91,23 @@
                 <div id="generateSection">
                     <div class="page-title">Generate Key</div>
                     <div class="page-subtitle">Key được tạo bởi server bảo mật</div>
-                    <button class="btn-get-key" onclick="createKeyFromServer()">
+                    <button class="btn-get-key" id="btnCreate" onclick="createKey()">
                         <span>Tạo Key</span>
                     </button>
+                    <p class="loading-text hidden" id="loadingMsg">Đang kết nối server...</p>
                     <p class="error-text hidden" id="errorMsg"></p>
                 </div>
 
                 <div id="keySection" class="hidden">
                     <div class="page-title">Your Key</div>
-                    <div class="page-subtitle">Được tạo bởi APEX HUB Server</div>
+                    <div class="page-subtitle">Active & Valid</div>
                     <div class="key-box">
                         <div class="key-label">KEY</div>
                         <div class="key-value" id="keyDisplay"></div>
                     </div>
                     <p style="color:#888;font-size:11px;margin-top:15px;" id="expiryText"></p>
                     <div class="countdown-timer" id="countdown"></div>
-                    <button class="btn-get-key" onclick="window.location.href='/'">
+                    <button class="btn-get-key" onclick="resetKey()">
                         <span>Get New Key</span>
                     </button>
                 </div>
@@ -103,53 +116,85 @@
     </div>
 
     <script>
-        // CLIENT CHỈ GỌI API - KHÔNG BIẾT CÁCH SINH KEY
-        const API_URL = '/api/create-key';
-        
-        async function createKeyFromServer() {
+        // Particles
+        (function(){
+            const c = document.getElementById('particles');
+            const cl = ['#e63946','#ff4d4d','#cc2936','#ff6666','#b32430'];
+            for(let i=0;i<25;i++){
+                const p = document.createElement('div');
+                p.className='particle';
+                const s = Math.random()*3+1;
+                p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cl[Math.floor(Math.random()*cl.length)]};animation-delay:${Math.random()*8}s;animation-duration:${Math.random()*6+5}s`;
+                c.appendChild(p);
+            }
+        })();
+
+        async function createKey() {
+            // Hiển thị loading
+            document.getElementById('btnCreate').classList.add('hidden');
+            document.getElementById('loadingMsg').classList.remove('hidden');
             document.getElementById('errorMsg').classList.add('hidden');
-            document.getElementById('errorMsg').textContent = 'Đang kết nối server...';
-            document.getElementById('errorMsg').classList.remove('hidden');
-            
+
             try {
-                const response = await fetch(API_URL, {
+                const response = await fetch('/api/create-key', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 });
-                
+
                 const data = await response.json();
-                
+                console.log('Server response:', data); // Debug
+
                 if (data.success) {
                     showKey(data);
                 } else {
-                    document.getElementById('errorMsg').textContent = '❌ ' + data.error;
+                    document.getElementById('btnCreate').classList.remove('hidden');
+                    document.getElementById('loadingMsg').classList.add('hidden');
+                    document.getElementById('errorMsg').textContent = '❌ ' + (data.error || 'Lỗi không xác định');
                     document.getElementById('errorMsg').classList.remove('hidden');
                 }
             } catch (error) {
-                document.getElementById('errorMsg').textContent = '❌ Lỗi kết nối server!';
+                console.error('Fetch error:', error);
+                document.getElementById('btnCreate').classList.remove('hidden');
+                document.getElementById('loadingMsg').classList.add('hidden');
+                document.getElementById('errorMsg').textContent = '❌ Lỗi kết nối server! Vui lòng thử lại.';
                 document.getElementById('errorMsg').classList.remove('hidden');
             }
         }
-        
+
+        let timer;
+
         function showKey(data) {
             document.getElementById('generateSection').classList.add('hidden');
             document.getElementById('keySection').classList.remove('hidden');
             document.getElementById('keyDisplay').textContent = data.key;
-            document.getElementById('expiryText').textContent = 'Key hết hạn sau ' + data.expiresInMin + ' phút';
-            
-            // Đếm ngược
-            const expiresAt = data.expiresAt;
-            setInterval(() => {
+            document.getElementById('expiryText').textContent = 'Key hết hạn sau ' + (data.expiresInMin || 5) + ' phút';
+            startCountdown(data.expiresAt);
+        }
+
+        function startCountdown(expiresAt) {
+            if (timer) clearInterval(timer);
+            const el = document.getElementById('countdown');
+            el.classList.remove('expired');
+
+            timer = setInterval(() => {
                 const dist = expiresAt - Date.now();
                 if (dist <= 0) {
-                    document.getElementById('countdown').textContent = 'ĐÃ HẾT HẠN';
+                    clearInterval(timer);
+                    el.textContent = 'KEY EXPIRED';
+                    el.classList.add('expired');
                     return;
                 }
                 const m = Math.floor(dist / 60000);
                 const s = Math.floor((dist % 60000) / 1000);
-                document.getElementById('countdown').textContent = `Còn lại: ${m}m ${s}s`;
+                el.textContent = `Time remaining: ${m}m ${s}s`;
+                if (dist < 60000) el.style.color = '#ff3333';
             }, 1000);
         }
+
+        window.resetKey = function() {
+            if (timer) clearInterval(timer);
+            window.location.href = '/';
+        };
     </script>
 </body>
 </html>
