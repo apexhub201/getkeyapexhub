@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Key System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            background: linear-gradient(45deg, #c9a84c, #ffd700);
+            border-radius: 50%;
+            animation: float 6s infinite ease-in-out;
+            opacity: 0.1;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0) scale(1);
+                opacity: 0.1;
+            }
+            25% {
+                transform: translateY(-100px) translateX(50px) scale(1.5);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translateY(-50px) translateX(-30px) scale(1);
+                opacity: 0.1;
+            }
+            75% {
+                transform: translateY(-150px) translateX(-50px) scale(1.8);
+                opacity: 0.4;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+        }
+
+        .card {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(201, 168, 76, 0.3);
+            border-radius: 30px;
+            padding: 60px 40px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                        0 0 40px rgba(201, 168, 76, 0.1),
+                        inset 0 0 30px rgba(201, 168, 76, 0.05);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent,
+                rgba(201, 168, 76, 0.05),
+                transparent,
+                rgba(201, 168, 76, 0.1),
+                transparent
+            );
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .card:hover {
+            border-color: rgba(201, 168, 76, 0.6);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6),
+                        0 0 60px rgba(201, 168, 76, 0.2),
+                        inset 0 0 40px rgba(201, 168, 76, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: 300;
+            color: #ffffff;
+            margin-bottom: 15px;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 2;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: rgba(201, 168, 76, 0.8);
+            margin-bottom: 50px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 2;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .line {
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #c9a84c, transparent);
+            margin: 0 auto 40px;
+            position: relative;
+            z-index: 2;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .get-key-btn {
+            position: relative;
+            z-index: 2;
+            padding: 18px 60px;
+            font-size: 18px;
+            font-weight: 500;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #ffffff;
+            background: linear-gradient(135deg, 
+                rgba(201, 168, 76, 0.2) 0%, 
+                rgba(201, 168, 76, 0.4) 50%, 
+                rgba(201, 168, 76, 0.2) 100%);
+            border: 1px solid rgba(201, 168, 76, 0.5);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+            overflow: hidden;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .get-key-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(201, 168, 76, 0.4);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .get-key-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .get-key-btn:hover {
+            background: linear-gradient(135deg, 
+                rgba(201, 168, 76, 0.4) 0%, 
+                rgba(201, 168, 76, 0.6) 50%, 
+                rgba(201, 168, 76, 0.4) 100%);
+            border-color: rgba(201, 168, 76, 0.8);
+            box-shadow: 0 10px 30px rgba(201, 168, 76, 0.3),
+                        0 0 20px rgba(201, 168, 76, 0.2);
+            transform: translateY(-2px);
+            letter-spacing: 5px;
+        }
+
+        .get-key-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .shine {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.05),
+                transparent
+            );
+            animation: shine 3s infinite;
+            z-index: 1;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 200%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <div class="card" id="card">
+            <div class="shine"></div>
+            
+            <h1 class="title">Get Key</h1>
+            <p class="subtitle">Access System</p>
+            <div class="line"></div>
+            <button class="get-key-btn" onclick="openGetKey()">
+                <span>Get Key</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Tạo particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const size = Math.random() * 4 + 1;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 6 + 4) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        function openGetKey() {
+            // Mở link rút gọn trong tab mới
+            window.open('https://link4m.net/qtvvip0J', '_blank');
+        }
+
+        // Khởi tạo
+        createParticles();
+    </script>
+</body>
+</html>
