@@ -1,24 +1,12 @@
-const admin = require('firebase-admin');
+const { kv } = require('@vercel/kv');
+const crypto = require('crypto');
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
-    })
-  });
-}
-
-const db = admin.firestore();
-const SECRET_SIGNING_KEY = process.env.SECRET_SIGNING_KEY || 'apex-hub-secret-2024';
-
-// ===== CONFIG: Đổi thời gian ở đây =====
-const EXPIRY_MINUTES = 5; // Test: 5 phút. OK đổi thành: 1440 (24h)
-// =====================================
+// ===== CONFIG =====
+const EXPIRY_MINUTES = 5; // Test 5 phút. OK đổi thành 1440
+const SECRET_SIGNING_KEY = process.env.SECRET_SIGNING_KEY || 'apex-secret-2024';
+// ==================
 
 function createSignature(key, timestamp) {
-  const crypto = require('crypto');
   const data = key + timestamp + SECRET_SIGNING_KEY;
   return crypto.createHash('sha256').update(data).digest('hex').substring(0, 16);
 }
@@ -50,28 +38,17 @@ function generateKey() {
   return key;
 }
 
-// Rate limiting
-const ipRequests = new Map();
-
-function checkRateLimit(ip) {
-  const now = Date.now();
-  const windowMs = 24 * 60 * 60 * 1000;
-  const maxRequests = 3;
+// Rate limit bằng Vercel KV
+async function checkRateLimit(ip) {
+  const key = `ratelimit:${ip}`;
+  const count = await kv.get(key) || 0;
   
-  if (!ipRequests.has(ip)) {
-    ipRequests.set(ip, []);
+  if (count >= 3) {
+    return false;
   }
   
-  const requests = ipRequests.get(ip).filter(time => now - time < windowMs);
-  ipRequests.set(ip, requests);
-  
-  return requests.length < maxRequests;
-}
-
-function addRequest(ip) {
-  const requests = ipRequests.get(ip) || [];
-  requests.push(Date.now());
-  ipRequests.set(ip, requests);
+  await kv.set(key, count + 1, { ex: 86400 }); // Hết hạn sau 24h
+  return true;
 }
 
 module.exports = async (req, res) => {
@@ -79,22 +56,18 @@ module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
   
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
   
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
-  const userAgent = req.headers['user-agent'] || 'unknown';
+  const ip = req.headers['x-forwarded-for'] || 'unknown';
   
-  if (!checkRateLimit(ip)) {
-    return res.status(429).json({ 
-      error: 'Rate limit exceeded. Max 3 keys per 24 hours.',
-      retryAfter: '24 hours'
-    });
+  // Rate limit
+  const allowed = await checkRateLimit(ip);
+  if (!allowed) {
+    return res.status(429).json({ error: 'Quá giới hạn! Tối đa 3 key/24h.' });
   }
   
   try {
@@ -102,24 +75,16 @@ module.exports = async (req, res) => {
     const timestamp = Date.now();
     const expiryTime = timestamp + (EXPIRY_MINUTES * 60 * 1000);
     const signature = createSignature(key, timestamp);
+    const token = crypto.randomBytes(16).toString('hex');
     
-    const token = require('crypto').randomBytes(16).toString('hex');
-    
-    const keyDoc = {
+    // Lưu vào Vercel KV
+    await kv.set(`key:${token}`, {
       key: key,
-      token: token,
       signature: signature,
-      createdAt: admin.firestore.Timestamp.fromMillis(timestamp),
-      expiresAt: admin.firestore.Timestamp.fromMillis(expiryTime),
-      used: false,
-      ip: ip,
-      userAgent: userAgent.substring(0, 200),
+      createdAt: timestamp,
+      expiresAt: expiryTime,
       status: 'active'
-    };
-    
-    await db.collection('keys').doc(token).set(keyDoc);
-    
-    addRequest(ip);
+    }, { ex: EXPIRY_MINUTES * 60 }); // Tự động xóa khi hết hạn
     
     return res.status(200).json({
       success: true,
@@ -127,11 +92,11 @@ module.exports = async (req, res) => {
       key: key,
       signature: signature,
       expiresAt: expiryTime,
-      expiresIn: EXPIRY_MINUTES + ' minutes'
+      expiresIn: EXPIRY_MINUTES + ' phút'
     });
     
   } catch (error) {
-    console.error('Error creating key:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error('Lỗi:', error);
+    return res.status(500).json({ error: 'Lỗi server' });
   }
 };
