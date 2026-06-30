@@ -252,7 +252,6 @@
         .corner-accent.bottom-right { bottom: 15px; right: 15px; border-width: 0 1px 1px 0; border-radius: 0 0 6px 0; }
 
         .hidden { display: none !important; }
-        .error-text { color: #ff4444; font-size: 14px; letter-spacing: 2px; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -271,17 +270,16 @@
                 <div class="logo-subtitle">Premium Access</div>
                 <div class="divider"></div>
 
-                <!-- Khu vực tạo key -->
-                <div id="generateSection" class="hidden">
+                <!-- Nút Tạo Key -->
+                <div id="generateSection">
                     <div class="page-title">Generate Key</div>
                     <div class="page-subtitle">Click to create your key</div>
                     <button class="btn-generate" onclick="generateAndShowKey()">
                         <span class="btn-text">Tạo Key</span>
                     </button>
-                    <p class="error-text hidden" id="errorMsg"></p>
                 </div>
 
-                <!-- Khu vực hiển thị key -->
+                <!-- Hiển thị Key -->
                 <div id="keySection" class="hidden">
                     <div class="page-title">Your Key</div>
                     <div class="page-subtitle">Active & Valid</div>
@@ -295,13 +293,6 @@
                         <span class="btn-text">Get New Key</span>
                     </button>
                 </div>
-
-                <!-- Đã tạo key rồi - bắt đợi hết hạn -->
-                <div id="waitSection" class="hidden">
-                    <div class="page-title">Already Generated</div>
-                    <div class="page-subtitle">You have an active key</div>
-                    <p class="error-text">Bạn đã tạo key rồi! Hãy dùng key hiện tại. Không thể tạo key mới cho đến khi key cũ hết hạn.</p>
-                </div>
             </div>
         </div>
     </div>
@@ -311,7 +302,7 @@
         const EXPIRY_MINUTES = 5; // Test: 5 phút. OK đổi thành 1440
         const EXPIRY_TEXT = '5 minutes'; // OK đổi thành '24 hours'
         const BASE_URL = 'https://getkeyapexhub.vercel.app/key.html';
-        const STORAGE_KEY = 'apexhub_main_key'; // Key chính lưu trạng thái
+        const HOME_URL = 'https://getkeyapexhub.vercel.app/';
         // ==================
 
         function createParticles() {
@@ -371,35 +362,35 @@
             return key;
         }
 
-        // Lưu data chính (chỉ 1 key mỗi trình duyệt)
-        function getMainData() {
-            const stored = localStorage.getItem(STORAGE_KEY);
+        // Lưu key với token
+        function saveKeyData(token, key) {
+            const now = new Date();
+            const expiry = new Date(now.getTime() + EXPIRY_MINUTES * 60 * 1000);
+            const data = { key: key, expiry: expiry.getTime() };
+            localStorage.setItem('key_' + token, JSON.stringify(data));
+            return data;
+        }
+
+        function getKeyData(token) {
+            const stored = localStorage.getItem('key_' + token);
             if (stored) {
                 const data = JSON.parse(stored);
                 if (new Date().getTime() < data.expiry) {
                     return data;
                 } else {
-                    localStorage.removeItem(STORAGE_KEY);
+                    localStorage.removeItem('key_' + token);
                 }
             }
             return null;
         }
 
-        function saveMainData(key, token) {
-            const now = new Date();
-            const expiry = new Date(now.getTime() + EXPIRY_MINUTES * 60 * 1000);
-            const data = {
-                key: key,
-                token: token,
-                expiry: expiry.getTime()
-            };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            return data;
-        }
-
         function getTokenFromURL() {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get('token');
+        }
+
+        function redirectToHome() {
+            window.location.href = HOME_URL;
         }
 
         let countdownInterval;
@@ -416,11 +407,11 @@
                     clearInterval(countdownInterval);
                     countdownEl.textContent = 'KEY EXPIRED - Redirecting...';
                     countdownEl.classList.add('expired');
-                    localStorage.removeItem(STORAGE_KEY);
                     
-                    setTimeout(() => {
-                        redirectToHome();
-                    }, 2000);
+                    const token = getTokenFromURL();
+                    if (token) localStorage.removeItem('key_' + token);
+                    
+                    setTimeout(() => { redirectToHome(); }, 2000);
                     return;
                 }
                 
@@ -436,101 +427,66 @@
                     countdownEl.textContent = `Time remaining: ${s}s`;
                 }
                 
-                if (distance < 60000) {
-                    countdownEl.style.color = '#ff3333';
-                }
+                if (distance < 60000) countdownEl.style.color = '#ff3333';
             }, 1000);
         }
 
         function generateAndShowKey() {
-            // Kiểm tra xem đã có key chưa hết hạn chưa
-            const existingData = getMainData();
-            if (existingData) {
-                // Đã có key, không cho tạo mới
-                showWaitSection();
-                return;
-            }
-
-            // Tạo key mới
             const token = generateToken();
             const key = generateKey();
-            const data = saveMainData(key, token);
+            const data = saveKeyData(token, key);
             
-            // Cập nhật URL với token
-            const newURL = BASE_URL + '?token=' + token;
-            window.history.pushState({ token: token }, '', newURL);
-            
-            // Hiển thị key
-            showKeySection(data);
+            // Chuyển hướng đến URL có token
+            window.location.href = BASE_URL + '?token=' + token;
         }
 
         function showKeySection(data) {
             document.getElementById('generateSection').classList.add('hidden');
-            document.getElementById('waitSection').classList.add('hidden');
             document.getElementById('keySection').classList.remove('hidden');
             document.getElementById('keyDisplay').textContent = data.key;
             document.getElementById('expiryText').textContent = 'Key expires in ' + EXPIRY_TEXT;
             startCountdown(data.expiry);
         }
 
-        function showGenerateSection() {
-            document.getElementById('keySection').classList.add('hidden');
-            document.getElementById('waitSection').classList.add('hidden');
-            document.getElementById('generateSection').classList.remove('hidden');
-        }
-
-        function showWaitSection() {
-            document.getElementById('keySection').classList.add('hidden');
-            document.getElementById('generateSection').classList.add('hidden');
-            document.getElementById('waitSection').classList.remove('hidden');
-        }
-
-        function redirectToHome() {
-            window.location.href = 'https://getkeyapexhub.vercel.app/';
-        }
-
         function getNewKey() {
-            localStorage.removeItem(STORAGE_KEY);
-            if (countdownInterval) clearInterval(countdownInterval);
+            const token = getTokenFromURL();
+            if (token) localStorage.removeItem('key_' + token);
             redirectToHome();
         }
 
-        // Khởi tạo
+        // ===== KHỞI TẠO =====
         function init() {
-            const mainData = getMainData();
-            const urlToken = getTokenFromURL();
+            const token = getTokenFromURL();
             
-            if (mainData) {
-                // Có key trong localStorage
-                if (urlToken && urlToken === mainData.token) {
-                    // Token URL khớp → hiển thị key
-                    showKeySection(mainData);
-                } else if (urlToken && urlToken !== mainData.token) {
-                    // Token URL khác → đây là link cũ/của người khác, hiển thị key của trình duyệt này
-                    const newURL = BASE_URL + '?token=' + mainData.token;
-                    window.history.pushState({ token: mainData.token }, '', newURL);
-                    showKeySection(mainData);
-                } else {
-                    // Không có token URL → thêm token vào URL và hiển thị key
-                    const newURL = BASE_URL + '?token=' + mainData.token;
-                    window.history.pushState({ token: mainData.token }, '', newURL);
-                    showKeySection(mainData);
-                }
+            if (!token) {
+                // KHÔNG CÓ TOKEN → REDIRECT VỀ TRANG CHỦ
+                redirectToHome();
+                return;
+            }
+            
+            // Có token → kiểm tra
+            const keyData = getKeyData(token);
+            
+            if (keyData) {
+                // Token hợp lệ → hiển thị key
+                showKeySection(keyData);
             } else {
-                // Không có key → hiển thị nút tạo key
-                showGenerateSection();
+                // Token hết hạn hoặc không tồn tại → redirect
+                redirectToHome();
             }
         }
 
-        // Kiểm tra định kỳ
+        // Kiểm tra mỗi 5 giây
         setInterval(() => {
-            const mainData = getMainData();
-            if (!mainData) {
-                const keySection = document.getElementById('keySection');
-                if (!keySection.classList.contains('hidden')) {
+            const token = getTokenFromURL();
+            const keySection = document.getElementById('keySection');
+            
+            if (!keySection.classList.contains('hidden')) {
+                if (!token) {
                     redirectToHome();
                 } else {
-                    showGenerateSection();
+                    const keyData = getKeyData(token);
+                    if (!keyData) redirectToHome();
                 }
             }
         }, 5000);
