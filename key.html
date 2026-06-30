@@ -92,18 +92,14 @@
                 <div class="sub">Premium Access</div>
                 <div class="line"></div>
 
-                <!-- Loading -->
                 <div id="loading"><div class="ttl">Đang kiểm tra...</div><div class="load">Vui lòng đợi</div></div>
 
-                <!-- Tạo Key -->
                 <div id="generate" class="hid">
                     <div class="ttl">Tạo Key</div>
                     <div class="stl">Nhấn nút để tạo key mới</div>
                     <button class="btn" id="btnGen" onclick="taoKey()"><span>Tạo Key</span></button>
-                    <div class="err hid" id="errMsg"></div>
                 </div>
 
-                <!-- Đã có key -->
                 <div id="blocked" class="hid">
                     <div class="ttl">Đã Có Key</div>
                     <div class="stl">Mỗi IP chỉ được 1 key/24h</div>
@@ -115,7 +111,6 @@
                     <div class="cdown" id="blockedCountdown"></div>
                 </div>
 
-                <!-- Key mới tạo -->
                 <div id="keySection" class="hid">
                     <div class="ttl">Key Của Bạn</div>
                     <div class="stl">Đang hoạt động</div>
@@ -123,27 +118,20 @@
                         <div class="klbl">Key</div>
                         <div class="kval" id="keyDisplay"></div>
                     </div>
-                    <p class="etxt">Key hết hạn sau 24 giờ</p>
+                    <p class="etxt">Key hết hạn sau 5 phút</p>
                     <div class="cdown" id="countdown"></div>
                     <button class="btn" onclick="keyMoi()"><span>Lấy Key Mới</span></button>
-                </div>
-
-                <!-- Từ chối truy cập -->
-                <div id="denied" class="hid">
-                    <div class="ttl">Truy Cập Bị Từ Chối</div>
-                    <div class="stl">Bạn phải qua link rút gọn!</div>
-                    <div class="err">Vui lòng vào trang chủ và bấm GET KEY</div>
-                    <br>
-                    <button class="btn" onclick="location.href='https://getkeyapexhub.vercel.app/'"><span>Về Trang Chủ</span></button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // ===== TEST 5 PHÚT =====
         var API = 'https://script.google.com/macros/s/AKfycbxTAnKVDFLYDbpzsFk5eQZizdwhdSC7lGcydZE1dra1bywjmG9QZmyKRd02wHOVy5mi/exec';
         var HOME = 'https://getkeyapexhub.vercel.app/';
-        var GIO = 24;
+        var PHUT = 5; // Test 5 phút
+        // ======================
 
         function taoHat(){
             var c=document.getElementById('parts');
@@ -155,24 +143,6 @@
                 p.style.cssText='width:'+s+'px;height:'+s+'px;left:'+Math.random()*100+'%;background:'+cl[Math.floor(Math.random()*4)]+';animation-delay:'+Math.random()*8+'s;animation-duration:'+(Math.random()*6+5)+'s';
                 c.appendChild(p);
             }
-        }
-
-        // ===== KIỂM TRA REFERRER =====
-        function kiemTraReferrer(){
-            var ref = document.referrer;
-            console.log('Referrer:', ref);
-            
-            // Cho phép nếu đến từ link4m
-            if(ref.indexOf('link4m.net') > -1 || ref.indexOf('link4m.org') > -1){
-                return true;
-            }
-            
-            // Cho phép nếu đã có key trong localStorage (đã từng được phép)
-            if(localStorage.getItem('apex_allowed') === 'true'){
-                return true;
-            }
-            
-            return false;
         }
 
         async function layIP(){
@@ -192,8 +162,7 @@
                 clearTimeout(timeout);
                 return await r.json();
             }catch(e){
-                console.log('Loi API:',e);
-                return {allowed:true,message:'Loi ket noi'};
+                return {allowed:true};
             }
         }
 
@@ -202,7 +171,7 @@
                 var ip=await layIP();
                 var token=Math.random().toString(36).substr(2);
                 await fetch(API+'?action=save&ip='+encodeURIComponent(ip)+'&token='+token+'&key='+encodeURIComponent(key)+'&expiry='+encodeURIComponent(expiry));
-            }catch(e){console.log('Loi luu:',e);}
+            }catch(e){}
         }
 
         function taoChuoi(){
@@ -226,20 +195,18 @@
                     clearInterval(timer);
                     el.textContent='HẾT HẠN';
                     el.classList.add('ex');
-                    localStorage.removeItem('apex_allowed');
                     setTimeout(function(){location.href=HOME;},2000);
                     return;
                 }
-                var h=Math.floor(d/3600000);
-                var m=Math.floor((d%3600000)/60000);
+                var m=Math.floor(d/60000);
                 var s=Math.floor((d%60000)/1000);
-                el.textContent=h+'h '+m+'m '+s+'s';
+                el.textContent=m+'m '+s+'s';
                 if(d<60000) el.style.color='#f33';
             },1000);
         }
 
         function hien(id){
-            ['loading','generate','blocked','keySection','denied'].forEach(function(x){
+            ['loading','generate','blocked','keySection'].forEach(function(x){
                 document.getElementById(x).classList.add('hid');
             });
             document.getElementById(id).classList.remove('hid');
@@ -259,41 +226,23 @@
             }
             
             var key=taoChuoi();
-            var exp=new Date(Date.now()+GIO*3600000).toISOString();
+            var exp=new Date(Date.now()+PHUT*60000).toISOString();
             await luuKey(key,exp);
-            
-            // Lưu trạng thái đã được phép
-            localStorage.setItem('apex_allowed','true');
             
             hien('keySection');
             document.getElementById('keyDisplay').textContent=key;
             demNguoc(exp,'countdown');
         }
 
-        function keyMoi(){
-            localStorage.removeItem('apex_allowed');
-            location.href=HOME;
-        }
+        function keyMoi(){location.href=HOME;}
 
         async function init(){
-            // ===== KIỂM TRA REFERRER TRƯỚC =====
-            if(!kiemTraReferrer()){
-                hien('denied');
-                return;
-            }
-            
-            // Đã qua link4m → kiểm tra tiếp
-            try{
-                var kq=await kiemTraIP();
-                if(!kq.allowed){
-                    hien('blocked');
-                    document.getElementById('blockedKey').textContent=kq.key;
-                    demNguoc(kq.expiry,'blockedCountdown');
-                } else {
-                    hien('generate');
-                }
-            }catch(e){
-                console.log('Loi init:',e);
+            var kq=await kiemTraIP();
+            if(!kq.allowed){
+                hien('blocked');
+                document.getElementById('blockedKey').textContent=kq.key;
+                demNguoc(kq.expiry,'blockedCountdown');
+            } else {
                 hien('generate');
             }
         }
