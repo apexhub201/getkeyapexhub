@@ -31,35 +31,28 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
   
-  const { key, signature } = req.body;
+  const { token } = req.body;
   
-  if (!key || !signature) {
-    return res.status(400).json({ valid: false, error: 'Missing key or signature' });
+  if (!token) {
+    return res.status(400).json({ valid: false, error: 'Missing token' });
   }
   
   try {
-    // Tìm key trong database
-    const snapshot = await db.collection('keys')
-      .where('key', '==', key)
-      .where('status', '==', 'active')
-      .limit(1)
-      .get();
+    const doc = await db.collection('keys').doc(token).get();
     
-    if (snapshot.empty) {
+    if (!doc.exists) {
       return res.status(404).json({ valid: false, error: 'Key not found' });
     }
     
-    const keyDoc = snapshot.docs[0].data();
+    const keyDoc = doc.data();
     const now = Date.now();
     
-    // Kiểm tra hết hạn
     if (now > keyDoc.expiresAt.toMillis()) {
-      await snapshot.docs[0].ref.update({ status: 'expired' });
+      await doc.ref.update({ status: 'expired' });
       return res.status(401).json({ valid: false, error: 'Key expired' });
     }
     
-    // Verify chữ ký
-    if (!verifySignature(key, keyDoc.createdAt.toMillis(), signature)) {
+    if (!verifySignature(keyDoc.key, keyDoc.createdAt.toMillis(), keyDoc.signature)) {
       return res.status(403).json({ valid: false, error: 'Invalid signature' });
     }
     
