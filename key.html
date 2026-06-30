@@ -46,18 +46,18 @@
         }
         @keyframes rg{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
         .in{position:relative;z-index:1}
-        .logo{font-size:48px;font-weight:700;letter-spacing:6px;color:#fff;text-shadow:0 0 40px rgba(255,50,50,.3);margin-bottom:5px;animation:fi .8s}
+        .logo{font-size:48px;font-weight:700;letter-spacing:6px;color:#fff;text-shadow:0 0 40px rgba(255,50,50,.3);margin-bottom:5px}
         .logo span{color:#e63946;text-shadow:0 0 60px rgba(230,57,70,.6)}
-        .sub{font-size:13px;color:rgba(255,255,255,.5);letter-spacing:8px;text-transform:uppercase;margin-bottom:40px;animation:fi .8s .15s both}
-        .line{width:80px;height:2px;background:linear-gradient(90deg,transparent,#e63946,transparent);margin:0 auto 35px;animation:fi .8s .3s both}
+        .sub{font-size:13px;color:rgba(255,255,255,.5);letter-spacing:8px;text-transform:uppercase;margin-bottom:40px}
+        .line{width:80px;height:2px;background:linear-gradient(90deg,transparent,#e63946,transparent);margin:0 auto 35px}
         .ttl{font-size:22px;color:#ccc;letter-spacing:4px;text-transform:uppercase;margin-bottom:8px}
         .stl{font-size:11px;color:rgba(255,255,255,.35);letter-spacing:3px;margin-bottom:30px}
         @keyframes fi{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
-        .kbox{margin-top:35px;padding:22px 20px;background:rgba(0,0,0,.6);border:1px solid rgba(230,57,70,.25);border-radius:16px;animation:fi .8s .4s both}
+        .kbox{margin-top:35px;padding:22px 20px;background:rgba(0,0,0,.6);border:1px solid rgba(230,57,70,.25);border-radius:16px}
         .klbl{font-size:10px;color:rgba(255,255,255,.4);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
         .kval{font-family:'Courier New',monospace;font-size:13px;color:#e63946;word-break:break-all;text-shadow:0 0 20px rgba(230,57,70,.4)}
-        .etxt{margin-top:15px;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:2px;animation:fi .8s .5s both}
-        .cdown{margin-top:8px;margin-bottom:30px;font-size:14px;font-weight:500;color:#e63946;letter-spacing:2px;animation:fi .8s .55s both}
+        .etxt{margin-top:15px;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:2px}
+        .cdown{margin-top:8px;margin-bottom:30px;font-size:14px;font-weight:500;color:#e63946;letter-spacing:2px}
         .cdown.ex{color:#f33;animation:bl .8s infinite}
         @keyframes bl{0%,100%{opacity:1}50%{opacity:.4}}
         .btn{
@@ -65,7 +65,7 @@
             letter-spacing:4px;text-transform:uppercase;color:#fff;
             background:linear-gradient(135deg,#1a0000,#2d0000,#1a0000);
             border:1px solid rgba(230,57,70,.5);border-radius:50px;cursor:pointer;
-            transition:all .5s;position:relative;overflow:hidden;animation:fi .8s .6s both;
+            transition:all .5s;position:relative;overflow:hidden;
         }
         .btn::before{
             content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;
@@ -92,8 +92,10 @@
                 <div class="sub">Premium Access</div>
                 <div class="line"></div>
 
+                <!-- Loading -->
                 <div id="loading"><div class="ttl">Đang kiểm tra...</div><div class="load">Vui lòng đợi</div></div>
 
+                <!-- Tạo Key -->
                 <div id="generate" class="hid">
                     <div class="ttl">Tạo Key</div>
                     <div class="stl">Nhấn nút để tạo key mới</div>
@@ -101,6 +103,7 @@
                     <div class="err hid" id="errMsg"></div>
                 </div>
 
+                <!-- Đã có key -->
                 <div id="blocked" class="hid">
                     <div class="ttl">Đã Có Key</div>
                     <div class="stl">Mỗi IP chỉ được 1 key/24h</div>
@@ -112,6 +115,7 @@
                     <div class="cdown" id="blockedCountdown"></div>
                 </div>
 
+                <!-- Key mới tạo -->
                 <div id="keySection" class="hid">
                     <div class="ttl">Key Của Bạn</div>
                     <div class="stl">Đang hoạt động</div>
@@ -123,16 +127,23 @@
                     <div class="cdown" id="countdown"></div>
                     <button class="btn" onclick="keyMoi()"><span>Lấy Key Mới</span></button>
                 </div>
+
+                <!-- Từ chối truy cập -->
+                <div id="denied" class="hid">
+                    <div class="ttl">Truy Cập Bị Từ Chối</div>
+                    <div class="stl">Bạn phải qua link rút gọn!</div>
+                    <div class="err">Vui lòng vào trang chủ và bấm GET KEY</div>
+                    <br>
+                    <button class="btn" onclick="location.href='https://getkeyapexhub.vercel.app/'"><span>Về Trang Chủ</span></button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // ===== CẤU HÌNH =====
         var API = 'https://script.google.com/macros/s/AKfycbxTAnKVDFLYDbpzsFk5eQZizdwhdSC7lGcydZE1dra1bywjmG9QZmyKRd02wHOVy5mi/exec';
         var HOME = 'https://getkeyapexhub.vercel.app/';
         var GIO = 24;
-        // ==================
 
         function taoHat(){
             var c=document.getElementById('parts');
@@ -144,6 +155,24 @@
                 p.style.cssText='width:'+s+'px;height:'+s+'px;left:'+Math.random()*100+'%;background:'+cl[Math.floor(Math.random()*4)]+';animation-delay:'+Math.random()*8+'s;animation-duration:'+(Math.random()*6+5)+'s';
                 c.appendChild(p);
             }
+        }
+
+        // ===== KIỂM TRA REFERRER =====
+        function kiemTraReferrer(){
+            var ref = document.referrer;
+            console.log('Referrer:', ref);
+            
+            // Cho phép nếu đến từ link4m
+            if(ref.indexOf('link4m.net') > -1 || ref.indexOf('link4m.org') > -1){
+                return true;
+            }
+            
+            // Cho phép nếu đã có key trong localStorage (đã từng được phép)
+            if(localStorage.getItem('apex_allowed') === 'true'){
+                return true;
+            }
+            
+            return false;
         }
 
         async function layIP(){
@@ -197,6 +226,7 @@
                     clearInterval(timer);
                     el.textContent='HẾT HẠN';
                     el.classList.add('ex');
+                    localStorage.removeItem('apex_allowed');
                     setTimeout(function(){location.href=HOME;},2000);
                     return;
                 }
@@ -209,7 +239,7 @@
         }
 
         function hien(id){
-            ['loading','generate','blocked','keySection'].forEach(function(x){
+            ['loading','generate','blocked','keySection','denied'].forEach(function(x){
                 document.getElementById(x).classList.add('hid');
             });
             document.getElementById(id).classList.remove('hid');
@@ -232,14 +262,27 @@
             var exp=new Date(Date.now()+GIO*3600000).toISOString();
             await luuKey(key,exp);
             
+            // Lưu trạng thái đã được phép
+            localStorage.setItem('apex_allowed','true');
+            
             hien('keySection');
             document.getElementById('keyDisplay').textContent=key;
             demNguoc(exp,'countdown');
         }
 
-        function keyMoi(){location.href=HOME;}
+        function keyMoi(){
+            localStorage.removeItem('apex_allowed');
+            location.href=HOME;
+        }
 
         async function init(){
+            // ===== KIỂM TRA REFERRER TRƯỚC =====
+            if(!kiemTraReferrer()){
+                hien('denied');
+                return;
+            }
+            
+            // Đã qua link4m → kiểm tra tiếp
             try{
                 var kq=await kiemTraIP();
                 if(!kq.allowed){
