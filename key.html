@@ -3,198 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APEX HUB | Your Key</title>
+    <title>APEX HUB | Key Của Bạn</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background: #050505;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            position: relative;
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+            font-family:'Montserrat',sans-serif;background:#050505;
+            min-height:100vh;display:flex;justify-content:center;align-items:center;
+            overflow:hidden;position:relative;
         }
-        .bg-gradient {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: 
-                radial-gradient(ellipse at 20% 50%, rgba(180, 0, 0, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 50%, rgba(0, 0, 0, 0.3) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 0%, rgba(255, 50, 50, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 100%, rgba(180, 0, 0, 0.1) 0%, transparent 50%);
-            z-index: 0;
+        .bg{
+            position:fixed;top:0;left:0;width:100%;height:100%;
+            background:radial-gradient(ellipse at 20% 50%,rgba(180,0,0,.15) 0%,transparent 50%),
+                      radial-gradient(ellipse at 80% 50%,rgba(0,0,0,.3) 0%,transparent 50%),
+                      radial-gradient(ellipse at 50% 0%,rgba(255,50,50,.08) 0%,transparent 50%),
+                      radial-gradient(ellipse at 50% 100%,rgba(180,0,0,.1) 0%,transparent 50%);
+            z-index:0;
         }
-        .container { position: relative; z-index: 2; width: 100%; max-width: 520px; padding: 20px; }
-        .card {
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(30px);
-            border: 1px solid rgba(230, 57, 70, 0.3);
-            border-radius: 24px;
-            padding: 50px 40px;
-            text-align: center;
-            box-shadow: 0 0 80px rgba(220, 20, 20, 0.1), 0 30px 60px rgba(0, 0, 0, 0.6);
-            position: relative; overflow: hidden;
+        .grid{
+            position:fixed;top:0;left:0;width:100%;height:100%;
+            background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),
+                           linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
+            background-size:60px 60px;z-index:0;animation:gm 20s linear infinite;
         }
-        .card::before {
-            content: '';
-            position: absolute; top: -100%; left: -100%; width: 300%; height: 300%;
-            background: conic-gradient(from 0deg, transparent, rgba(220, 20, 20, 0.05), transparent, rgba(255, 80, 80, 0.08), transparent);
-            animation: rotateGlow 15s linear infinite; z-index: 0;
+        @keyframes gm{0%{transform:translate(0,0)}100%{transform:translate(60px,60px)}}
+        .parts{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1}
+        .part{
+            position:absolute;border-radius:50%;animation:fu 8s infinite ease-in;opacity:0;
         }
-        @keyframes rotateGlow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .card-content { position: relative; z-index: 1; }
-        .logo-text { font-size: 48px; font-weight: 700; letter-spacing: 6px; color: #fff; margin-bottom: 5px; text-shadow: 0 0 40px rgba(255, 50, 50, 0.3); }
-        .logo-text span { color: #e63946; text-shadow: 0 0 60px rgba(230, 57, 70, 0.6); }
-        .logo-subtitle { font-size: 13px; color: rgba(255,255,255,0.5); letter-spacing: 8px; text-transform: uppercase; margin-bottom: 40px; }
-        .divider { width: 80px; height: 2px; background: linear-gradient(90deg, transparent, #e63946, transparent); margin: 0 auto 35px; }
-        .page-title { font-size: 22px; color: #ccc; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 8px; }
-        .page-subtitle { font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 3px; margin-bottom: 40px; }
-        .key-box { margin-top: 35px; padding: 22px 20px; background: rgba(0,0,0,0.6); border: 1px solid rgba(230,57,70,0.25); border-radius: 16px; }
-        .key-label { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; }
-        .key-value { font-family: 'Courier New', monospace; font-size: 13px; color: #e63946; word-break: break-all; text-shadow: 0 0 20px rgba(230,57,70,0.4); }
-        .countdown-timer { margin-top: 8px; margin-bottom: 30px; font-size: 14px; font-weight: 500; color: #e63946; letter-spacing: 2px; }
-        .countdown-timer.expired { color: #ff3333; animation: blink 0.8s infinite; }
-        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-        .btn-get-key {
-            display: inline-block; padding: 16px 55px; font-size: 15px; font-weight: 500;
-            letter-spacing: 4px; text-transform: uppercase; color: #fff;
-            background: linear-gradient(135deg, #1a0000 0%, #2d0000 50%, #1a0000 100%);
-            border: 1px solid rgba(230,57,70,0.5); border-radius: 50px; cursor: pointer;
-            transition: all 0.5s; text-decoration: none;
+        @keyframes fu{
+            0%{transform:translateY(100vh) scale(0);opacity:0}
+            10%{opacity:1}90%{opacity:1}
+            100%{transform:translateY(-100px) scale(1);opacity:0}
         }
-        .btn-get-key:hover { border-color: #e63946; box-shadow: 0 0 30px rgba(230,57,70,0.3); transform: translateY(-3px); }
-        .hidden { display: none !important; }
-        .error-text { color: #ff4444; font-size: 13px; margin-top: 15px; letter-spacing: 1px; }
-        .loading-text { color: #e63946; font-size: 13px; margin-top: 15px; }
-        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-        .particle { position: absolute; border-radius: 50%; animation: floatUp 8s infinite ease-in; opacity: 0; }
-        @keyframes floatUp {
-            0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
-            10% { opacity: 1; } 90% { opacity: 1; }
-            100% { transform: translateY(-100px) translateX(100px) scale(1); opacity: 0; }
+        .ctn{position:relative;z-index:2;width:100%;max-width:520px;padding:20px}
+        .card{
+            background:rgba(10,10,10,.9);backdrop-filter:blur(30px);
+            border:1px solid rgba(230,57,70,.2);border-radius:24px;
+            padding:50px 40px;text-align:center;
+            box-shadow:0 0 80px rgba(220,20,20,.08),0 30px 60px rgba(0,0,0,.6);
+            position:relative;overflow:hidden;transition:all .4s;
         }
+        .card:hover{transform:translateY(-5px);border-color:rgba(230,57,70,.6);box-shadow:0 0 60px rgba(230,57,70,.2),0 30px 60px rgba(0,0,0,.6)}
+        .card::before{
+            content:'';position:absolute;top:-100%;left:-100%;width:300%;height:300%;
+            background:conic-gradient(from 0deg,transparent,rgba(220,20,20,.05),transparent,rgba(255,80,80,.08),transparent);
+            animation:rg 15s linear infinite;z-index:0;
+        }
+        @keyframes rg{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        .in{position:relative;z-index:1}
+        .logo{font-size:48px;font-weight:700;letter-spacing:6px;color:#fff;text-shadow:0 0 40px rgba(255,50,50,.3);margin-bottom:5px;animation:fi .8s}
+        .logo span{color:#e63946;text-shadow:0 0 60px rgba(230,57,70,.6)}
+        .sub{font-size:13px;color:rgba(255,255,255,.5);letter-spacing:8px;text-transform:uppercase;margin-bottom:40px;animation:fi .8s .15s both}
+        .line{width:80px;height:2px;background:linear-gradient(90deg,transparent,#e63946,transparent);margin:0 auto 35px;animation:fi .8s .3s both}
+        .ttl{font-size:22px;color:#ccc;letter-spacing:4px;text-transform:uppercase;margin-bottom:8px}
+        .stl{font-size:11px;color:rgba(255,255,255,.35);letter-spacing:3px;margin-bottom:30px}
+        @keyframes fi{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
+        .kbox{margin-top:35px;padding:22px 20px;background:rgba(0,0,0,.6);border:1px solid rgba(230,57,70,.25);border-radius:16px;animation:fi .8s .4s both}
+        .klbl{font-size:10px;color:rgba(255,255,255,.4);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
+        .kval{font-family:'Courier New',monospace;font-size:13px;color:#e63946;word-break:break-all;text-shadow:0 0 20px rgba(230,57,70,.4)}
+        .etxt{margin-top:15px;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:2px;animation:fi .8s .5s both}
+        .cdown{margin-top:8px;margin-bottom:30px;font-size:14px;font-weight:500;color:#e63946;letter-spacing:2px;animation:fi .8s .55s both}
+        .cdown.ex{color:#f33;animation:bl .8s infinite}
+        @keyframes bl{0%,100%{opacity:1}50%{opacity:.4}}
+        .btn{
+            display:inline-block;padding:16px 55px;font-size:15px;font-weight:500;
+            letter-spacing:4px;text-transform:uppercase;color:#fff;
+            background:linear-gradient(135deg,#1a0000,#2d0000,#1a0000);
+            border:1px solid rgba(230,57,70,.5);border-radius:50px;cursor:pointer;
+            transition:all .5s;position:relative;overflow:hidden;animation:fi .8s .6s both;
+        }
+        .btn::before{
+            content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;
+            background:rgba(230,57,70,.25);transform:translate(-50%,-50%);transition:width .7s,height .7s;
+        }
+        .btn:hover::before{width:400px;height:400px}
+        .btn:hover{border-color:#e63946;box-shadow:0 0 30px rgba(230,57,70,.3);transform:translateY(-3px);letter-spacing:6px}
+        .btn:disabled{opacity:.5;pointer-events:none}
+        .btn span{position:relative;z-index:1}
+        .hid{display:none!important}
+        .err{color:#f44;font-size:14px;margin-top:15px}
+        .load{color:#e63946;font-size:14px;margin-top:15px}
+        .glow{
+            position:absolute;top:-2px;left:-2px;right:-2px;bottom:-2px;border-radius:26px;
+            background:linear-gradient(45deg,transparent 40%,rgba(230,57,70,.15) 50%,transparent 60%);
+            z-index:-1;animation:bg 4s infinite;pointer-events:none;
+        }
+        @keyframes bg{0%,100%{opacity:.3}50%{opacity:.8}}
     </style>
 </head>
 <body>
-    <div class="bg-gradient"></div>
-    <div class="particles" id="particles"></div>
+    <div class="bg"></div>
+    <div class="grid"></div>
+    <div class="parts" id="parts"></div>
 
-    <div class="container">
+    <div class="ctn">
         <div class="card">
-            <div class="card-content">
-                <div class="logo-text">APEX <span>HUB</span></div>
-                <div class="logo-subtitle">Premium Access</div>
-                <div class="divider"></div>
+            <div class="glow"></div>
+            <div class="in">
+                <div class="logo">APEX <span>HUB</span></div>
+                <div class="sub">Premium Access</div>
+                <div class="line"></div>
 
-                <div id="generateSection">
-                    <div class="page-title">Generate Key</div>
-                    <div class="page-subtitle">Key được tạo bởi server bảo mật</div>
-                    <button class="btn-get-key" id="btnCreate" onclick="createKey()">
-                        <span>Tạo Key</span>
-                    </button>
-                    <p class="loading-text hidden" id="loadingMsg">Đang kết nối server...</p>
-                    <p class="error-text hidden" id="errorMsg"></p>
+                <!-- Loading -->
+                <div id="loading"><div class="ttl">Đang kiểm tra...</div><div class="load">Vui lòng đợi</div></div>
+
+                <!-- Tạo Key -->
+                <div id="generate" class="hid">
+                    <div class="ttl">Tạo Key</div>
+                    <div class="stl">Nhấn nút để tạo key mới</div>
+                    <button class="btn" id="btnGen" onclick="taoKey()"><span>Tạo Key</span></button>
                 </div>
 
-                <div id="keySection" class="hidden">
-                    <div class="page-title">Your Key</div>
-                    <div class="page-subtitle">Active & Valid</div>
-                    <div class="key-box">
-                        <div class="key-label">KEY</div>
-                        <div class="key-value" id="keyDisplay"></div>
+                <!-- Đã có key -->
+                <div id="blocked" class="hid">
+                    <div class="ttl">Đã Có Key</div>
+                    <div class="stl">Mỗi IP chỉ được 1 key/24h</div>
+                    <div class="kbox">
+                        <div class="klbl">Key của bạn</div>
+                        <div class="kval" id="blockedKey"></div>
                     </div>
-                    <p style="color:#888;font-size:11px;margin-top:15px;" id="expiryText"></p>
-                    <div class="countdown-timer" id="countdown"></div>
-                    <button class="btn-get-key" onclick="resetKey()">
-                        <span>Get New Key</span>
-                    </button>
+                    <p class="etxt">Hết hạn sau:</p>
+                    <div class="cdown" id="blockedCountdown"></div>
+                </div>
+
+                <!-- Key mới tạo -->
+                <div id="keySection" class="hid">
+                    <div class="ttl">Key Của Bạn</div>
+                    <div class="stl">Đang hoạt động</div>
+                    <div class="kbox">
+                        <div class="klbl">Key</div>
+                        <div class="kval" id="keyDisplay"></div>
+                    </div>
+                    <p class="etxt">Key hết hạn sau 24 giờ</p>
+                    <div class="cdown" id="countdown"></div>
+                    <button class="btn" onclick="keyMoi()"><span>Lấy Key Mới</span></button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Particles
-        (function(){
-            const c = document.getElementById('particles');
-            const cl = ['#e63946','#ff4d4d','#cc2936','#ff6666','#b32430'];
-            for(let i=0;i<25;i++){
-                const p = document.createElement('div');
-                p.className='particle';
-                const s = Math.random()*3+1;
-                p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cl[Math.floor(Math.random()*cl.length)]};animation-delay:${Math.random()*8}s;animation-duration:${Math.random()*6+5}s`;
+        // ===== CẤU HÌNH =====
+        var API = 'https://script.google.com/macros/s/AKfycbzheq01I7DS4-FF2SOrUAbTTnKLY6TYn7AUIQ905AJ77eQmZ_LAvN4kXc4DnOzbnN8/exec';
+        var HOME = 'https://getkeyapexhub.vercel.app/';
+        var GIO = 24;
+        // ==================
+
+        // Tạo hạt
+        function taoHat(){
+            var c=document.getElementById('parts');
+            var cl=['#e63946','#ff4d4d','#cc2936','#ff6666'];
+            for(var i=0;i<25;i++){
+                var p=document.createElement('div');
+                p.className='part';
+                var s=Math.random()*3+1;
+                p.style.cssText='width:'+s+'px;height:'+s+'px;left:'+Math.random()*100+'%;background:'+cl[Math.floor(Math.random()*4)]+';animation-delay:'+Math.random()*8+'s;animation-duration:'+(Math.random()*6+5)+'s';
                 c.appendChild(p);
             }
-        })();
+        }
 
-        async function createKey() {
-            // Hiển thị loading
-            document.getElementById('btnCreate').classList.add('hidden');
-            document.getElementById('loadingMsg').classList.remove('hidden');
-            document.getElementById('errorMsg').classList.add('hidden');
+        // Lấy IP
+        async function layIP(){
+            try{
+                var r=await fetch('https://api.ipify.org?format=json');
+                var d=await r.json();
+                return d.ip;
+            }catch(e){return 'khong-co-ip';}
+        }
 
-            try {
-                const response = await fetch('/api/create-key', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
+        // Kiểm tra IP
+        async function kiemTraIP(){
+            var ip=await layIP();
+            var r=await fetch(API+'?action=check&ip='+encodeURIComponent(ip));
+            return await r.json();
+        }
 
-                const data = await response.json();
-                console.log('Server response:', data); // Debug
+        // Lưu key
+        async function luuKey(key,expiry){
+            var ip=await layIP();
+            var token=Math.random().toString(36).substr(2);
+            await fetch(API+'?action=save&ip='+encodeURIComponent(ip)+'&token='+token+'&key='+encodeURIComponent(key)+'&expiry='+encodeURIComponent(expiry));
+        }
 
-                if (data.success) {
-                    showKey(data);
-                } else {
-                    document.getElementById('btnCreate').classList.remove('hidden');
-                    document.getElementById('loadingMsg').classList.add('hidden');
-                    document.getElementById('errorMsg').textContent = '❌ ' + (data.error || 'Lỗi không xác định');
-                    document.getElementById('errorMsg').classList.remove('hidden');
+        // Tạo key
+        function taoChuoi(){
+            var chars='qptoeugjwmxnalkjf¡¿\'-:;₫&@9275023#%*^+€¥$_|\\[]{}bcz';
+            var r='';
+            for(var i=0;i<15;i++) r+=chars[Math.floor(Math.random()*chars.length)];
+            var p=['dau','giua','cuoi'][Math.floor(Math.random()*3)];
+            if(p==='dau') return 'Free_apex'+r;
+            if(p==='cuoi') return 'Free_'+r+'apex';
+            var m=Math.floor(r.length/2);
+            return 'Free_'+r.slice(0,m)+'apex'+r.slice(m);
+        }
+
+        // Đếm ngược
+        var timer;
+        function demNguoc(exp,elId){
+            clearInterval(timer);
+            var el=document.getElementById(elId);
+            timer=setInterval(function(){
+                var d=new Date(exp).getTime()-Date.now();
+                if(d<=0){
+                    clearInterval(timer);
+                    el.textContent='HẾT HẠN';
+                    el.classList.add('ex');
+                    setTimeout(function(){location.href=HOME;},2000);
+                    return;
                 }
-            } catch (error) {
-                console.error('Fetch error:', error);
-                document.getElementById('btnCreate').classList.remove('hidden');
-                document.getElementById('loadingMsg').classList.add('hidden');
-                document.getElementById('errorMsg').textContent = '❌ Lỗi kết nối server! Vui lòng thử lại.';
-                document.getElementById('errorMsg').classList.remove('hidden');
+                var h=Math.floor(d/3600000);
+                var m=Math.floor((d%3600000)/60000);
+                var s=Math.floor((d%60000)/1000);
+                el.textContent=h+'h '+m+'m '+s+'s';
+                if(d<60000) el.style.color='#f33';
+            },1000);
+        }
+
+        // Hiển thị
+        function hien(id){
+            ['loading','generate','blocked','keySection'].forEach(function(x){
+                document.getElementById(x).classList.add('hid');
+            });
+            document.getElementById(id).classList.remove('hid');
+        }
+
+        // Tạo key
+        async function taoKey(){
+            var btn=document.getElementById('btnGen');
+            btn.disabled=true;
+            btn.querySelector('span').textContent='Đang tạo...';
+            
+            var kq=await kiemTraIP();
+            if(!kq.allowed){
+                hien('blocked');
+                document.getElementById('blockedKey').textContent=kq.key;
+                demNguoc(kq.expiry,'blockedCountdown');
+                return;
+            }
+            
+            var key=taoChuoi();
+            var exp=new Date(Date.now()+GIO*3600000).toISOString();
+            await luuKey(key,exp);
+            
+            hien('keySection');
+            document.getElementById('keyDisplay').textContent=key;
+            demNguoc(exp,'countdown');
+        }
+
+        function keyMoi(){location.href=HOME;}
+
+        // Khởi tạo
+        async function init(){
+            var kq=await kiemTraIP();
+            
+            if(!kq.allowed){
+                hien('blocked');
+                document.getElementById('blockedKey').textContent=kq.key;
+                demNguoc(kq.expiry,'blockedCountdown');
+            } else {
+                hien('generate');
             }
         }
 
-        let timer;
-
-        function showKey(data) {
-            document.getElementById('generateSection').classList.add('hidden');
-            document.getElementById('keySection').classList.remove('hidden');
-            document.getElementById('keyDisplay').textContent = data.key;
-            document.getElementById('expiryText').textContent = 'Key hết hạn sau ' + (data.expiresInMin || 5) + ' phút';
-            startCountdown(data.expiresAt);
-        }
-
-        function startCountdown(expiresAt) {
-            if (timer) clearInterval(timer);
-            const el = document.getElementById('countdown');
-            el.classList.remove('expired');
-
-            timer = setInterval(() => {
-                const dist = expiresAt - Date.now();
-                if (dist <= 0) {
-                    clearInterval(timer);
-                    el.textContent = 'KEY EXPIRED';
-                    el.classList.add('expired');
-                    return;
-                }
-                const m = Math.floor(dist / 60000);
-                const s = Math.floor((dist % 60000) / 1000);
-                el.textContent = `Time remaining: ${m}m ${s}s`;
-                if (dist < 60000) el.style.color = '#ff3333';
-            }, 1000);
-        }
-
-        window.resetKey = function() {
-            if (timer) clearInterval(timer);
-            window.location.href = '/';
-        };
+        taoHat();
+        init();
     </script>
 </body>
 </html>
