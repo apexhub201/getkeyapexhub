@@ -93,6 +93,12 @@
                 <div class="line"></div>
 
                 <div id="loading"><div class="ttl">Đang kiểm tra...</div><div class="load">Vui lòng đợi</div></div>
+                
+                <div id="unauthorized" class="hid">
+                    <div class="ttl" style="color:#f44;">Truy Cập Bị Từ Chối</div>
+                    <div class="stl" style="color:#f44;">Vui lòng truy cập từ trang chính</div>
+                    <button class="btn" onclick="window.location.href=HOME"><span>Về Trang Chủ</span></button>
+                </div>
 
                 <div id="generate" class="hid">
                     <div class="ttl">Tạo Key</div>
@@ -102,7 +108,7 @@
 
                 <div id="blocked" class="hid">
                     <div class="ttl">Đã Có Key</div>
-                    <div class="stl">Mỗi IP chỉ được 1 key/24h</div>
+                    <div class="stl">Mỗi thiết bị chỉ được 1 key/24h</div>
                     <div class="kbox">
                         <div class="klbl">Key của bạn</div>
                         <div class="kval" id="blockedKey"></div>
@@ -127,11 +133,147 @@
     </div>
 
     <script>
-        // ===== TEST 5 PHÚT =====
+        // ===== CẤU HÌNH =====
         var API = 'https://script.google.com/macros/s/AKfycbxTAnKVDFLYDbpzsFk5eQZizdwhdSC7lGcydZE1dra1bywjmG9QZmyKRd02wHOVy5mi/exec';
         var HOME = 'https://getkeyapexhub.vercel.app/';
-        var PHUT = 5; // Test 5 phút
+        var PHUT = 5;
         // ======================
+
+        // ===== BẢO MẬT: Tạo mã định danh thiết bị (không thể xóa) =====
+        function taoDeviceFingerprint() {
+            var components = [];
+            
+            // Canvas fingerprinting
+            try {
+                var canvas = document.createElement('canvas');
+                var ctx = canvas.getContext('2d');
+                var txt = 'APEX_HUB_SECURITY_FINGERPRINT_2024';
+                ctx.textBaseline = 'top';
+                ctx.font = '14px Arial';
+                ctx.fillStyle = '#f60';
+                ctx.fillRect(125,1,62,20);
+                ctx.fillStyle = '#069';
+                ctx.fillText(txt, 2, 15);
+                ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
+                ctx.fillText(txt, 4, 17);
+                components.push(canvas.toDataURL());
+            } catch(e) {}
+            
+            // WebGL fingerprinting
+            try {
+                var glCanvas = document.createElement('canvas');
+                var gl = glCanvas.getContext('webgl') || glCanvas.getContext('experimental-webgl');
+                if(gl) {
+                    var debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    if(debugInfo) {
+                        components.push(gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
+                        components.push(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+                    }
+                }
+            } catch(e) {}
+            
+            // Browser characteristics
+            components.push(navigator.userAgent);
+            components.push(navigator.language);
+            components.push(screen.colorDepth.toString());
+            components.push(screen.width + 'x' + screen.height);
+            components.push(new Date().getTimezoneOffset().toString());
+            
+            // Audio fingerprinting
+            try {
+                var AudioContext = window.AudioContext || window.webkitAudioContext;
+                if(AudioContext) {
+                    var audioCtx = new AudioContext();
+                    var oscillator = audioCtx.createOscillator();
+                    var analyser = audioCtx.createAnalyser();
+                    oscillator.connect(analyser);
+                    analyser.connect(audioCtx.destination);
+                    components.push(oscillator.type);
+                    components.push(analyser.fftSize.toString());
+                    oscillator.disconnect();
+                    analyser.disconnect();
+                    audioCtx.close();
+                }
+            } catch(e) {}
+            
+            var fingerprint = components.join('###');
+            
+            // Simple hash function
+            var hash = 0;
+            for (var i = 0; i < fingerprint.length; i++) {
+                var char = fingerprint.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            
+            var deviceID = 'APEX_' + Math.abs(hash).toString(36) + '_' + Date.now().toString(36);
+            
+            // Lưu vào nhiều nơi
+            try {
+                localStorage.setItem('__apex_hub_device', deviceID);
+                sessionStorage.setItem('__apex_hub_device', deviceID);
+                document.cookie = '__apex_hub_device=' + deviceID + ';path=/;max-age=31536000;SameSite=Strict';
+            } catch(e) {}
+            
+            return deviceID;
+        }
+
+        function layDeviceID() {
+            var id = null;
+            
+            // Kiểm tra từ cookie
+            try {
+                var cookies = document.cookie.split(';');
+                for(var i = 0; i < cookies.length; i++) {
+                    var c = cookies[i].trim();
+                    if(c.startsWith('__apex_hub_device=')) {
+                        id = c.substring('__apex_hub_device='.length);
+                        break;
+                    }
+                }
+            } catch(e) {}
+            
+            // Kiểm tra localStorage
+            if(!id) {
+                try { id = localStorage.getItem('__apex_hub_device'); } catch(e) {}
+            }
+            
+            // Kiểm tra sessionStorage
+            if(!id) {
+                try { id = sessionStorage.getItem('__apex_hub_device'); } catch(e) {}
+            }
+            
+            // Tạo mới nếu chưa có
+            if(!id) {
+                id = taoDeviceFingerprint();
+            }
+            
+            return id;
+        }
+
+        // ===== BẢO MẬT: Kiểm tra quyền truy cập =====
+        function kiemTraQuyenTruyCap() {
+            // 1. Kiểm tra xem có phải mở từ trang chính không
+            var referrer = document.referrer;
+            var currentUrl = window.location.href;
+            
+            // Nếu không có referrer và không phải redirect từ chính nó
+            if (!referrer || referrer === '') {
+                // Cho phép nếu đang test local
+                if (currentUrl.indexOf('localhost') !== -1 || currentUrl.indexOf('127.0.0.1') !== -1) {
+                    return true;
+                }
+                return false;
+            }
+            
+            // 2. Kiểm tra referrer có từ trang chính không
+            var homeDomain = HOME.replace(/\/$/, ''); // Bỏ dấu / cuối
+            if (referrer.indexOf(homeDomain) === -1) {
+                return false;
+            }
+            
+            return true;
+        }
 
         function taoHat(){
             var c=document.getElementById('parts');
@@ -153,12 +295,12 @@
             }catch(e){return 'khong-co-ip';}
         }
 
-        async function kiemTraIP(){
+        async function kiemTraIP(deviceID){
             try{
                 var ip=await layIP();
                 var controller=new AbortController();
                 var timeout=setTimeout(function(){controller.abort();},10000);
-                var r=await fetch(API+'?action=check&ip='+encodeURIComponent(ip),{signal:controller.signal});
+                var r=await fetch(API+'?action=check&ip='+encodeURIComponent(ip)+'&device='+encodeURIComponent(deviceID),{signal:controller.signal});
                 clearTimeout(timeout);
                 return await r.json();
             }catch(e){
@@ -166,11 +308,11 @@
             }
         }
 
-        async function luuKey(key,expiry){
+        async function luuKey(key,expiry,deviceID){
             try{
                 var ip=await layIP();
                 var token=Math.random().toString(36).substr(2);
-                await fetch(API+'?action=save&ip='+encodeURIComponent(ip)+'&token='+token+'&key='+encodeURIComponent(key)+'&expiry='+encodeURIComponent(expiry));
+                await fetch(API+'?action=save&ip='+encodeURIComponent(ip)+'&device='+encodeURIComponent(deviceID)+'&token='+token+'&key='+encodeURIComponent(key)+'&expiry='+encodeURIComponent(expiry));
             }catch(e){}
         }
 
@@ -206,7 +348,7 @@
         }
 
         function hien(id){
-            ['loading','generate','blocked','keySection'].forEach(function(x){
+            ['loading','unauthorized','generate','blocked','keySection'].forEach(function(x){
                 document.getElementById(x).classList.add('hid');
             });
             document.getElementById(id).classList.remove('hid');
@@ -217,7 +359,9 @@
             btn.disabled=true;
             btn.querySelector('span').textContent='Đang tạo...';
             
-            var kq=await kiemTraIP();
+            var deviceID = layDeviceID();
+            var kq=await kiemTraIP(deviceID);
+            
             if(!kq.allowed){
                 hien('blocked');
                 document.getElementById('blockedKey').textContent=kq.key;
@@ -227,7 +371,7 @@
             
             var key=taoChuoi();
             var exp=new Date(Date.now()+PHUT*60000).toISOString();
-            await luuKey(key,exp);
+            await luuKey(key,exp,deviceID);
             
             hien('keySection');
             document.getElementById('keyDisplay').textContent=key;
@@ -237,7 +381,15 @@
         function keyMoi(){location.href=HOME;}
 
         async function init(){
-            var kq=await kiemTraIP();
+            // Kiểm tra quyền truy cập
+            if(!kiemTraQuyenTruyCap()){
+                hien('unauthorized');
+                return;
+            }
+            
+            var deviceID = layDeviceID();
+            var kq=await kiemTraIP(deviceID);
+            
             if(!kq.allowed){
                 hien('blocked');
                 document.getElementById('blockedKey').textContent=kq.key;
