@@ -1,6 +1,5 @@
 const admin = require('firebase-admin');
 
-// Khởi tạo Firebase (chỉ làm 1 lần)
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert({
@@ -12,18 +11,18 @@ if (!admin.apps.length) {
 }
 
 const db = admin.firestore();
-
-// Secret key để tạo chữ ký (chỉ server biết)
 const SECRET_SIGNING_KEY = process.env.SECRET_SIGNING_KEY || 'apex-hub-secret-2024';
 
-// Hàm tạo chữ ký SHA256
+// ===== CONFIG: Đổi thời gian ở đây =====
+const EXPIRY_MINUTES = 5; // Test: 5 phút. OK đổi thành: 1440 (24h)
+// =====================================
+
 function createSignature(key, timestamp) {
   const crypto = require('crypto');
   const data = key + timestamp + SECRET_SIGNING_KEY;
   return crypto.createHash('sha256').update(data).digest('hex').substring(0, 16);
 }
 
-// Hàm sinh key (CHỈ SERVER BIẾT)
 function generateKey() {
   const randomChars = 'qptoeugjwmxnalkjf¡¿\'-:;₫&@9275023#%*^+€¥$_|\\[]{}bcz';
   let randomPart = '';
@@ -51,13 +50,13 @@ function generateKey() {
   return key;
 }
 
-// Rate limiting đơn giản
+// Rate limiting
 const ipRequests = new Map();
 
 function checkRateLimit(ip) {
   const now = Date.now();
-  const windowMs = 24 * 60 * 60 * 1000; // 24 giờ
-  const maxRequests = 3; // Tối đa 3 key/24h
+  const windowMs = 24 * 60 * 60 * 1000;
+  const maxRequests = 3;
   
   if (!ipRequests.has(ip)) {
     ipRequests.set(ip, []);
@@ -76,7 +75,6 @@ function addRequest(ip) {
 }
 
 module.exports = async (req, res) => {
-  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -89,11 +87,9 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
   
-  // Lấy IP và User-Agent
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
   const userAgent = req.headers['user-agent'] || 'unknown';
   
-  // Rate limiting
   if (!checkRateLimit(ip)) {
     return res.status(429).json({ 
       error: 'Rate limit exceeded. Max 3 keys per 24 hours.',
@@ -102,16 +98,13 @@ module.exports = async (req, res) => {
   }
   
   try {
-    // Sinh key
     const key = generateKey();
     const timestamp = Date.now();
-    const expiryTime = timestamp + (24 * 60 * 60 * 1000); // 24 giờ
+    const expiryTime = timestamp + (EXPIRY_MINUTES * 60 * 1000);
     const signature = createSignature(key, timestamp);
     
-    // Tạo token
     const token = require('crypto').randomBytes(16).toString('hex');
     
-    // Lưu vào Firestore
     const keyDoc = {
       key: key,
       token: token,
@@ -126,17 +119,15 @@ module.exports = async (req, res) => {
     
     await db.collection('keys').doc(token).set(keyDoc);
     
-    // Ghi nhận request
     addRequest(ip);
     
-    // Trả về cho client
     return res.status(200).json({
       success: true,
       token: token,
       key: key,
       signature: signature,
       expiresAt: expiryTime,
-      expiresIn: '24 hours'
+      expiresIn: EXPIRY_MINUTES + ' minutes'
     });
     
   } catch (error) {
