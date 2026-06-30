@@ -252,6 +252,7 @@
         .corner-accent.bottom-right { bottom: 15px; right: 15px; border-width: 0 1px 1px 0; border-radius: 0 0 6px 0; }
 
         .hidden { display: none !important; }
+        .error-text { color: #ff4444; font-size: 14px; letter-spacing: 2px; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -270,16 +271,17 @@
                 <div class="logo-subtitle">Premium Access</div>
                 <div class="divider"></div>
 
-                <!-- Nút Tạo Key -->
+                <!-- Khu vực tạo key (chỉ hiện khi không có token hợp lệ) -->
                 <div id="generateSection">
                     <div class="page-title">Generate Key</div>
                     <div class="page-subtitle">Click to create your key</div>
                     <button class="btn-generate" onclick="generateAndShowKey()">
                         <span class="btn-text">Tạo Key</span>
                     </button>
+                    <p class="error-text hidden" id="errorMsg"></p>
                 </div>
 
-                <!-- Key Display -->
+                <!-- Khu vực hiển thị key -->
                 <div id="keySection" class="hidden">
                     <div class="page-title">Your Key</div>
                     <div class="page-subtitle">Active & Valid</div>
@@ -298,10 +300,11 @@
     </div>
 
     <script>
-        // ===== CONFIG: Đổi thời gian ở đây =====
-        const EXPIRY_MINUTES = 5; // Test 5 phút. Sau khi OK đổi thành: 1440 (24h = 1440 phút)
-        const EXPIRY_TEXT = '5 minutes'; // Đổi thành '24 hours' khi deploy chính thức
-        // =====================================
+        // ===== CONFIG =====
+        const EXPIRY_MINUTES = 5; // Test: 5 phút: Sau OK đổi thành 1440
+        const EXPIRY_TEXT = '5 minutes'; // Sau OK đổi thành '24 hours'
+        const BASE_URL = 'https://getkeyapexhub.vercel.app/key.html';
+        // ==================
 
         function createParticles() {
             const container = document.getElementById('particles');
@@ -319,6 +322,16 @@
                 particle.style.boxShadow = `0 0 ${size * 3}px ${colors[Math.floor(Math.random() * colors.length)]}`;
                 container.appendChild(particle);
             }
+        }
+
+        // Tạo token ngẫu nhiên
+        function generateToken() {
+            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            let token = '';
+            for (let i = 0; i < 32; i++) {
+                token += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return token;
         }
 
         function generateRandomString(length) {
@@ -351,27 +364,37 @@
             return key;
         }
 
-        function storeKey(key) {
+        // Lưu key + token vào localStorage
+        function storeKeyData(key, token) {
             const now = new Date();
             const expiry = new Date(now.getTime() + EXPIRY_MINUTES * 60 * 1000);
-            localStorage.setItem('apexhub_key', JSON.stringify({
+            const keyData = {
                 key: key,
+                token: token,
                 expiry: expiry.getTime()
-            }));
+            };
+            localStorage.setItem('apexhub_key_' + token, JSON.stringify(keyData));
             return expiry.getTime();
         }
 
-        function getStoredKey() {
-            const stored = localStorage.getItem('apexhub_key');
+        // Lấy key data theo token
+        function getKeyData(token) {
+            const stored = localStorage.getItem('apexhub_key_' + token);
             if (stored) {
                 const data = JSON.parse(stored);
                 if (new Date().getTime() < data.expiry) {
                     return data;
                 } else {
-                    localStorage.removeItem('apexhub_key');
+                    localStorage.removeItem('apexhub_key_' + token);
                 }
             }
             return null;
+        }
+
+        // Lấy token từ URL
+        function getTokenFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('token');
         }
 
         let countdownInterval;
@@ -386,11 +409,11 @@
                 
                 if (distance <= 0) {
                     clearInterval(countdownInterval);
-                    countdownEl.textContent = 'KEY EXPIRED - Closing...';
+                    countdownEl.textContent = 'KEY EXPIRED - Redirecting...';
                     countdownEl.classList.add('expired');
                     
                     setTimeout(() => {
-                        closeAndGoBack();
+                        redirectToHome();
                     }, 2000);
                     return;
                 }
@@ -414,15 +437,16 @@
         }
 
         function generateAndShowKey() {
-            const existingKey = getStoredKey();
-            if (existingKey) {
-                showKeySection(existingKey);
-                return;
-            }
-
+            // Tạo token mới
+            const token = generateToken();
             const key = generateKey();
-            const expiryTime = storeKey(key);
+            const expiryTime = storeKeyData(key, token);
             
+            // Cập nhật URL với token
+            const newURL = BASE_URL + '?token=' + token;
+            window.history.pushState({ token: token }, '', newURL);
+            
+            // Hiển thị key
             showKeySection({ key: key, expiry: expiryTime });
         }
 
@@ -434,33 +458,54 @@
             startCountdown(keyData.expiry);
         }
 
-        function getNewKey() {
-            localStorage.removeItem('apexhub_key');
-            if (countdownInterval) clearInterval(countdownInterval);
+        function showError(msg) {
+            document.getElementById('errorMsg').textContent = msg;
+            document.getElementById('errorMsg').classList.remove('hidden');
+        }
+
+        function redirectToHome() {
             window.location.href = 'https://getkeyapexhub.vercel.app/';
         }
 
-        function closeAndGoBack() {
-            localStorage.removeItem('apexhub_key');
+        function getNewKey() {
+            const token = getTokenFromURL();
+            if (token) {
+                localStorage.removeItem('apexhub_key_' + token);
+            }
             if (countdownInterval) clearInterval(countdownInterval);
-            window.open('https://getkeyapexhub.vercel.app/', '_blank');
-            setTimeout(() => { window.close(); }, 500);
-            setTimeout(() => { window.location.href = 'https://getkeyapexhub.vercel.app/'; }, 1000);
+            redirectToHome();
         }
 
+        // Khởi tạo
         function init() {
-            const keyData = getStoredKey();
-            if (keyData) {
-                showKeySection(keyData);
+            const token = getTokenFromURL();
+            
+            if (token) {
+                // Có token trong URL, kiểm tra hợp lệ
+                const keyData = getKeyData(token);
+                if (keyData) {
+                    // Token hợp lệ, hiển thị key
+                    showKeySection(keyData);
+                } else {
+                    // Token hết hạn hoặc không hợp lệ
+                    document.getElementById('generateSection').classList.remove('hidden');
+                    showError('Token expired or invalid. Please generate new key.');
+                }
+            } else {
+                // Không có token, hiển thị nút tạo key
+                document.getElementById('generateSection').classList.remove('hidden');
             }
         }
 
+        // Kiểm tra định kỳ
         setInterval(() => {
+            const token = getTokenFromURL();
             const keySection = document.getElementById('keySection');
-            if (!keySection.classList.contains('hidden')) {
-                const keyData = getStoredKey();
+            
+            if (token && !keySection.classList.contains('hidden')) {
+                const keyData = getKeyData(token);
                 if (!keyData) {
-                    closeAndGoBack();
+                    redirectToHome();
                 }
             }
         }, 10000);
