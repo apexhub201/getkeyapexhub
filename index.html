@@ -4,17 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>APEX HUB | Key System</title>
-    
-    <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self';
-        script-src 'self' 'unsafe-inline';
-        style-src 'self' 'unsafe-inline';
-        connect-src 'self' https://getkeyapexhub.vercel.app;
-        img-src 'self' data:;
-        font-src 'self';
-        frame-src 'none';
-    ">
-    
     <style>
         * {
             margin: 0;
@@ -31,10 +20,6 @@
             justify-content: center;
             overflow: hidden;
             position: relative;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
         }
 
         .bg-aurora {
@@ -158,8 +143,12 @@
             transition: all 0.5s ease;
         }
 
-        .card.loading-card {
-            pointer-events: none;
+        .card.expired {
+            border-color: rgba(255, 100, 100, 0.3);
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.9),
+                0 0 0 1px rgba(255, 100, 100, 0.1) inset,
+                0 0 100px rgba(255, 50, 50, 0.1);
         }
 
         @keyframes cardGlow {
@@ -189,6 +178,15 @@
             animation: borderRotate 8s linear infinite;
         }
 
+        .card.expired::before {
+            background: linear-gradient(45deg, 
+                transparent 0%, 
+                rgba(255, 80, 80, 0.1) 25%, 
+                rgba(255, 100, 100, 0.1) 50%, 
+                rgba(255, 80, 80, 0.1) 75%, 
+                transparent 100%);
+        }
+
         @keyframes borderRotate {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -215,6 +213,16 @@
             background-clip: text;
             animation: brandShine 4s linear infinite;
             filter: drop-shadow(0 0 40px rgba(140, 100, 255, 0.6));
+            transition: all 0.5s ease;
+        }
+
+        .brand.expired {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e, #ff6b6b);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 40px rgba(255, 80, 80, 0.6));
         }
 
         @keyframes brandShine {
@@ -231,6 +239,14 @@
                 transparent);
             margin: 15px auto;
             animation: dividerPulse 2s ease-in-out infinite;
+            transition: all 0.5s ease;
+        }
+
+        .divider.expired {
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 100, 100, 0.8), 
+                transparent);
         }
 
         @keyframes dividerPulse {
@@ -244,6 +260,11 @@
             letter-spacing: 3px;
             text-transform: uppercase;
             animation: subtitleFade 3s ease-in-out infinite;
+            transition: all 0.5s ease;
+        }
+
+        .subtitle.expired {
+            color: rgba(255, 150, 150, 0.8);
         }
 
         @keyframes subtitleFade {
@@ -263,6 +284,17 @@
             overflow: hidden;
         }
 
+        .key-area.expired-area {
+            border-color: rgba(255, 100, 100, 0.2);
+            background: rgba(25, 10, 10, 0.7);
+            animation: expiredPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes expiredPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 50, 50, 0.1); }
+            50% { box-shadow: 0 0 40px rgba(255, 50, 50, 0.2); }
+        }
+
         .key-area::before {
             content: '';
             position: absolute;
@@ -277,6 +309,13 @@
             animation: scanLine 4s ease-in-out infinite;
         }
 
+        .key-area.expired-area::before {
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 100, 100, 0.5), 
+                transparent);
+        }
+
         @keyframes scanLine {
             0% { left: -100%; }
             50% { left: 100%; }
@@ -288,6 +327,11 @@
             font-size: 0.85rem;
             letter-spacing: 2px;
             margin-bottom: 15px;
+            transition: all 0.5s ease;
+        }
+
+        .key-label.expired-label {
+            color: rgba(255, 150, 150, 0.8);
         }
 
         .key-value {
@@ -300,13 +344,49 @@
             border: 1px solid rgba(160, 140, 220, 0.3);
             word-break: break-all;
             letter-spacing: 0.5px;
+            user-select: all;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.5s ease;
             position: relative;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        }
+
+        .key-value.expired-key {
+            color: #ff6b6b;
+            border-color: rgba(255, 100, 100, 0.3);
+            background: rgba(25, 0, 0, 0.4);
+            animation: expiredKeyGlow 1.5s ease-in-out infinite;
+            cursor: not-allowed;
+            user-select: none;
+        }
+
+        @keyframes expiredKeyGlow {
+            0%, 100% { 
+                border-color: rgba(255, 100, 100, 0.3);
+                box-shadow: 0 0 10px rgba(255, 50, 50, 0.1);
+            }
+            50% { 
+                border-color: rgba(255, 100, 100, 0.6);
+                box-shadow: 0 0 30px rgba(255, 50, 50, 0.3);
+            }
+        }
+
+        .key-value::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                transparent 30%, 
+                rgba(160, 140, 255, 0.05) 50%, 
+                transparent 70%);
+            animation: keyHighlight 3s ease-in-out infinite;
+        }
+
+        @keyframes keyHighlight {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
         }
 
         .key-value:hover {
@@ -315,21 +395,10 @@
             transform: scale(1.02);
         }
 
-        .key-value.loading-key {
-            opacity: 0.5;
-            animation: loadingPulse 1.5s ease-in-out infinite;
-            cursor: default;
-        }
-
-        .key-value.loading-key:hover {
+        .key-value.expired-key:hover {
             transform: none;
             box-shadow: none;
-            border-color: rgba(160, 140, 220, 0.3);
-        }
-
-        @keyframes loadingPulse {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.6; }
+            border-color: rgba(255, 100, 100, 0.3);
         }
 
         .timer-container {
@@ -340,6 +409,11 @@
             margin-top: 18px;
             color: #b8a9e0;
             font-size: 0.9rem;
+            transition: all 0.5s ease;
+        }
+
+        .timer-container.hidden {
+            display: none;
         }
 
         .timer {
@@ -402,7 +476,7 @@
             100% { transform: scale(2); opacity: 0; }
         }
 
-        .btn:hover:not(:disabled) {
+        .btn:hover {
             transform: translateY(-5px) scale(1.02);
             border-color: rgba(200, 170, 255, 0.6);
             box-shadow: 
@@ -411,16 +485,38 @@
             animation: none;
         }
 
-        .btn:active:not(:disabled) {
+        .btn:active {
             transform: translateY(0) scale(0.98);
             transition: all 0.1s;
         }
 
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            animation: none;
-            filter: grayscale(30%);
+        .btn-new-key {
+            background: linear-gradient(135deg, 
+                rgba(80, 25, 25, 0.9), 
+                rgba(60, 20, 20, 0.9));
+            border-color: rgba(255, 100, 100, 0.3);
+            color: #ffcccc;
+            animation: newKeyBtnPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes newKeyBtnPulse {
+            0%, 100% { 
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 50, 50, 0.2);
+            }
+            50% { 
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 40px rgba(255, 50, 50, 0.4);
+            }
+        }
+
+        .btn-new-key:hover {
+            border-color: rgba(255, 150, 150, 0.6);
+            box-shadow: 
+                0 20px 40px rgba(255, 50, 50, 0.4),
+                0 0 80px rgba(255, 80, 80, 0.3);
+        }
+
+        .hidden {
+            display: none !important;
         }
 
         .status-message {
@@ -430,22 +526,22 @@
             margin-top: 20px;
             opacity: 0.8;
             animation: messageFade 2s ease-in-out infinite;
-            min-height: 24px;
+            transition: all 0.5s ease;
+        }
+
+        .status-message.expired-message {
+            color: #ff9999;
+            animation: expiredMessagePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes expiredMessagePulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
         }
 
         @keyframes messageFade {
             0%, 100% { opacity: 0.6; }
             50% { opacity: 1; }
-        }
-
-        .status-message.error {
-            color: #ff6b6b;
-            animation: none;
-        }
-
-        .status-message.success {
-            color: #6bff9e;
-            animation: none;
         }
 
         .copy-notification {
@@ -463,30 +559,10 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            pointer-events: none;
         }
 
         .copy-notification.show {
             transform: translateX(-50%) translateY(0);
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-top: 2px solid #b894f7;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-right: 8px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
 
         @media (max-width: 600px) {
@@ -513,130 +589,59 @@
         <div class="card-wrapper">
             <div class="card" id="mainCard">
                 <div class="brand-container">
-                    <div class="brand">APEX HUB</div>
-                    <div class="divider"></div>
-                    <div class="subtitle">Secure Key System</div>
+                    <div class="brand" id="brandText">APEX HUB</div>
+                    <div class="divider" id="dividerLine"></div>
+                    <div class="subtitle" id="subtitleText">Secure Key System</div>
                 </div>
 
-                <!-- Key Area (Luôn hiển thị) -->
-                <div class="key-area">
-                    <div class="key-label" id="keyLabel">🔑 YOUR LICENSE KEY</div>
-                    <div class="key-value loading-key" id="keyDisplay" title="Click to copy">
-                        <span class="spinner"></span> Loading...
+                <!-- TRANG 1: GET KEY -->
+                <div id="page1">
+                    <div class="key-area">
+                        <div class="key-label">YOUR LICENSE KEY</div>
+                        <div class="key-value" style="opacity: 0.5;">-----</div>
                     </div>
-                    <div class="timer-container hidden" id="timerContainer">
-                        <span>⏱ Time Remaining</span>
-                        <span class="timer" id="countdown">24:00:00</span>
-                    </div>
+                    <button class="btn" id="getKeyBtn">GET KEY</button>
+                    <div class="status-message">Click to verify and get your key</div>
                 </div>
 
-                <!-- Button Area -->
-                <button class="btn hidden" id="getKeyBtn">🔑 GET KEY</button>
-                <button class="btn hidden" id="newKeyBtn">🔄 GET NEW KEY</button>
-                
-                <!-- Status Message -->
-                <div class="status-message" id="statusMessage">Initializing secure connection...</div>
+                <!-- TRANG 2: HIỂN THỊ KEY + ĐẾM NGƯỢC -->
+                <div id="page2" class="hidden">
+                    <div class="key-area" id="keyArea">
+                        <div class="key-label" id="keyLabel">YOUR LICENSE KEY</div>
+                        <div class="key-value" id="keyDisplay" title="Click to copy">-----</div>
+                        <div class="timer-container" id="timerContainer">
+                            <span>Time remaining</span>
+                            <span class="timer" id="countdown">24:00:00</span>
+                        </div>
+                    </div>
+                    <!-- Nút GET NEW KEY (chỉ hiện khi hết hạn) -->
+                    <button class="btn btn-new-key hidden" id="newKeyBtn">GET NEW KEY</button>
+                    <div class="status-message" id="statusMessage"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="copy-notification" id="copyNotification">✅ Key copied to clipboard!</div>
-
     <script>
         (function() {
-            'use strict';
+            // ============ CONFIGURATION ============
+            const SHORTENER_URL = 'https://link4m.org/hXPIjdW';
+            const SHORTENER_DOMAINS = ['link4m.org', 'link4m.net', 'link4m.com', 'link4m'];
+            const KEY_PREFIX = 'Free_';
+            const REQUIRED_WORD = 'apex';
+            const SPECIAL_CHARS = 'qptoeugjwmxnalkjf¡¿\'-:;₫&@9275023#%*^+€¥$_|\\[]{}bcz';
+            const KEY_DURATION = 24 * 60 * 60 * 1000;
+            
+            const STORAGE_PREFIX = btoa(unescape(encodeURIComponent('apex_hub_'))).substring(0, 8);
+            const KEY_DATA_KEY = STORAGE_PREFIX + '_kd';
+            const VERIFICATION_KEY = STORAGE_PREFIX + '_vf';
+            const TIMESTAMP_KEY = STORAGE_PREFIX + '_ts';
+            const TOKEN_KEY = STORAGE_PREFIX + '_tk';
+            const HASH_KEY = STORAGE_PREFIX + '_hs';
+            const COUNTER_KEY = STORAGE_PREFIX + '_ct';
+            const FINGERPRINT_KEY = STORAGE_PREFIX + '_fp';
 
-            // ========== CONFIGURATION ==========
-            const CONFIG = {
-                SHORTENER_URL: 'https://link4m.org/hPXljdW',
-                SHORTENER_DOMAINS: ['link4m.org', 'link4m.net', 'link4m.com'],
-                KEY_PREFIX: 'Free_',
-                REQUIRED_WORD: 'apex',
-                SPECIAL_CHARS: 'qptoeugjwmxnalkjf¡¿\'-:;₫&@9275023#%*^+€¥$_|\\[]{}bcz',
-                KEY_DURATION: 24 * 60 * 60 * 1000,
-                STORAGE_PREFIX: 'axph_',
-                FINGERPRINT_KEY: 'axph_fp'
-            };
-
-            // ========== SECURITY SYSTEM ==========
-            const SecuritySystem = {
-                tamperDetected: false,
-                
-                init: function() {
-                    this.detectDevTools();
-                    this.protectConsole();
-                    this.blockShortcuts();
-                    this.preventContextMenu();
-                },
-
-                detectDevTools: function() {
-                    setInterval(() => {
-                        const threshold = 160;
-                        const widthDiff = window.outerWidth - window.innerWidth > threshold;
-                        const heightDiff = window.outerHeight - window.innerHeight > threshold;
-                        
-                        if ((widthDiff || heightDiff) && !this.tamperDetected) {
-                            this.triggerAlert();
-                        }
-                    }, 1000);
-                },
-
-                protectConsole: function() {
-                    const noop = () => {};
-                    const methods = ['log', 'warn', 'info', 'debug', 'clear', 'table', 'trace'];
-                    
-                    methods.forEach(method => {
-                        const original = console[method];
-                        console[method] = function(...args) {
-                            if (SecuritySystem.tamperDetected) return;
-                            if (method === 'error' && args[0] && args[0].includes('[APEX]')) {
-                                original.apply(console, args);
-                            }
-                        };
-                    });
-                },
-
-                blockShortcuts: function() {
-                    document.addEventListener('keydown', function(e) {
-                        if (
-                            (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) ||
-                            (e.ctrlKey && e.key === 'U') ||
-                            e.key === 'F12'
-                        ) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            return false;
-                        }
-                    }, true);
-                },
-
-                preventContextMenu: function() {
-                    document.addEventListener('contextmenu', function(e) {
-                        e.preventDefault();
-                        return false;
-                    }, true);
-                },
-
-                triggerAlert: function() {
-                    this.tamperDetected = true;
-                    StorageManager.clearAll();
-                    
-                    const keyDisplay = document.getElementById('keyDisplay');
-                    if (keyDisplay) {
-                        keyDisplay.textContent = '⚠️ SECURITY BREACH - PLEASE REFRESH';
-                        keyDisplay.style.color = '#ff0000';
-                        keyDisplay.style.cursor = 'not-allowed';
-                    }
-                    
-                    UIManager.showStatus('Security breach detected! Data cleared.', 'error');
-                },
-
-                isSecure: function() {
-                    return !this.tamperDetected;
-                }
-            };
-
-            // ========== FINGERPRINT ==========
+            // ============ SECURITY FUNCTIONS ============
             function generateFingerprint() {
                 const components = [
                     navigator.userAgent,
@@ -644,438 +649,519 @@
                     screen.colorDepth,
                     screen.width + 'x' + screen.height,
                     new Date().getTimezoneOffset(),
+                    !!window.sessionStorage,
+                    !!window.localStorage,
                     navigator.hardwareConcurrency || 'unknown',
                     navigator.deviceMemory || 'unknown'
                 ];
-                
-                let hash = 0;
-                const str = components.join('||');
-                for (let i = 0; i < str.length; i++) {
-                    const char = str.charCodeAt(i);
-                    hash = ((hash << 5) - hash) + char;
-                    hash = hash & hash;
-                }
-                
-                return Math.abs(hash).toString(36) + '_' + Date.now().toString(36);
+                return btoa(components.join('||')).substring(0, 32);
             }
 
             function verifyFingerprint() {
-                const stored = sessionStorage.getItem(CONFIG.FINGERPRINT_KEY);
+                const stored = sessionStorage.getItem(FINGERPRINT_KEY);
                 const current = generateFingerprint();
-                
                 if (!stored) {
-                    sessionStorage.setItem(CONFIG.FINGERPRINT_KEY, current);
+                    sessionStorage.setItem(FINGERPRINT_KEY, current);
                     return true;
                 }
-                
-                // So sánh phần hash (bỏ timestamp)
-                const storedHash = stored.split('_')[0];
-                const currentHash = current.split('_')[0];
-                return storedHash === currentHash;
+                return stored === current;
             }
 
-            // ========== KEY GENERATOR ==========
-            function generateKey() {
-                let key = CONFIG.KEY_PREFIX;
+            function checkRateLimit() {
+                const counter = parseInt(sessionStorage.getItem(COUNTER_KEY) || '0');
+                if (counter > 10) return false;
+                sessionStorage.setItem(COUNTER_KEY, (counter + 1).toString());
+                return true;
+            }
+
+            function advancedEncode(str) {
+                let encoded = btoa(unescape(encodeURIComponent(str)));
+                const salt = Date.now().toString(36);
+                return salt + '.' + encoded.split('').reverse().join('');
+            }
+
+            function advancedDecode(str) {
+                try {
+                    const parts = str.split('.');
+                    if (parts.length !== 2) return null;
+                    const reversed = parts[1].split('').reverse().join('');
+                    return decodeURIComponent(escape(atob(reversed)));
+                } catch(e) {
+                    return null;
+                }
+            }
+
+            function generateMultiHash(data) {
+                let hash1 = 0;
+                let hash2 = 0;
+                const str = JSON.stringify(data);
+                for (let i = 0; i < str.length; i++) {
+                    const char = str.charCodeAt(i);
+                    hash1 = ((hash1 << 5) - hash1) + char;
+                    hash1 = hash1 & hash1;
+                    hash2 = ((hash2 << 7) - hash2) + char;
+                    hash2 = hash2 & hash2;
+                }
+                return Math.abs(hash1).toString(36) + '_' + Math.abs(hash2).toString(36);
+            }
+
+            function antiDebug() {
+                let devtoolsOpen = false;
+                const threshold = 160;
+                
+                setInterval(() => {
+                    const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+                    const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+                    if (widthThreshold || heightThreshold) {
+                        if (!devtoolsOpen) {
+                            devtoolsOpen = true;
+                            clearAllData();
+                            console.clear();
+                        }
+                    } else {
+                        devtoolsOpen = false;
+                    }
+                }, 1000);
+                
+                document.addEventListener('keydown', function(e) {
+                    if (
+                        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+                        (e.ctrlKey && e.key === 'U') ||
+                        e.key === 'F12'
+                    ) {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+                
+                document.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    return false;
+                });
+            }
+
+            function multiLayerVerification() {
+                const checks = [];
+                
+                const referrer = document.referrer.toLowerCase();
+                const fromShortener = SHORTENER_DOMAINS.some(domain => referrer.includes(domain));
+                checks.push(fromShortener);
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                const hasToken = urlParams.get('token') === 'auto';
+                const isKeyPage = urlParams.get('page') === 'key';
+                checks.push(hasToken && isKeyPage);
+                
+                const storedToken = sessionStorage.getItem(TOKEN_KEY);
+                const storedTimestamp = sessionStorage.getItem(TIMESTAMP_KEY);
+                if (storedToken && storedTimestamp) {
+                    const timeDiff = Date.now() - parseInt(storedTimestamp);
+                    checks.push(storedToken === 'auto' && timeDiff < 300000);
+                }
+                
+                checks.push(sessionStorage.getItem(VERIFICATION_KEY) === 'true');
+                checks.push(verifyFingerprint());
+                checks.push(checkRateLimit());
+                
+                return checks.filter(c => c).length >= 3;
+            }
+
+            const usedNonces = new Set();
+            
+            function generateNonce() {
+                const nonce = crypto.randomUUID ? crypto.randomUUID() : 
+                    Math.random().toString(36) + Date.now().toString(36);
+                usedNonces.add(nonce);
+                return nonce;
+            }
+
+            function generateKey(nonce) {
+                let key = KEY_PREFIX;
                 const randomBytes = new Uint8Array(16);
                 crypto.getRandomValues(randomBytes);
                 const randomStr = Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
                 
-                const specialPart = CONFIG.SPECIAL_CHARS.substring(0, Math.floor(Math.random() * 20) + 10);
+                const specialPart = SPECIAL_CHARS.substring(0, Math.floor(Math.random() * 20) + 10);
                 const position = Math.floor(Math.random() * 3);
                 
                 switch(position) {
                     case 0:
-                        key += CONFIG.REQUIRED_WORD + specialPart + randomStr;
+                        key += REQUIRED_WORD + specialPart + randomStr;
                         break;
                     case 1:
                         const mid = Math.floor(specialPart.length / 2);
-                        key += specialPart.substring(0, mid) + CONFIG.REQUIRED_WORD + specialPart.substring(mid) + randomStr;
+                        key += specialPart.substring(0, mid) + REQUIRED_WORD + specialPart.substring(mid) + randomStr;
                         break;
                     case 2:
-                        key += specialPart + randomStr + CONFIG.REQUIRED_WORD;
+                        key += specialPart + randomStr + REQUIRED_WORD;
                         break;
                 }
                 
                 if (!/[¡¿'\-:;₫&@#%*^+€¥$_|\\\[\]{}]/.test(key)) {
-                    key += CONFIG.SPECIAL_CHARS.substring(0, 8);
+                    key += SPECIAL_CHARS.substring(0, 8);
                 }
+                
+                const nonceHash = btoa(nonce).substring(0, 4);
+                key += nonceHash;
                 
                 return key;
             }
 
             function validateKey(key) {
                 if (!key || typeof key !== 'string') return false;
-                if (!key.startsWith(CONFIG.KEY_PREFIX)) return false;
-                if (!key.includes(CONFIG.REQUIRED_WORD)) return false;
+                if (!key.startsWith(KEY_PREFIX)) return false;
+                if (!key.includes(REQUIRED_WORD)) return false;
                 if (!/[¡¿'\-:;₫&@#%*^+€¥$_|\\\[\]{}]/.test(key)) return false;
-                return key.length >= 35;
+                if (key.length < 35) return false;
+                return true;
             }
 
-            // ========== STORAGE MANAGER ==========
-            const StorageManager = {
-                saveKeyData: function(keyData) {
-                    try {
-                        const data = {
-                            ...keyData,
-                            fingerprint: generateFingerprint().split('_')[0],
-                            savedAt: Date.now()
-                        };
-                        sessionStorage.setItem(CONFIG.STORAGE_PREFIX + 'kd', JSON.stringify(data));
-                        return true;
-                    } catch(e) {
-                        return false;
-                    }
-                },
+            // ============ STORAGE ============
+            function saveSecureData(keyData) {
+                const nonce = generateNonce();
+                const hash = generateMultiHash(keyData);
+                const encoded = advancedEncode(JSON.stringify(keyData));
+                
+                const secureData = {
+                    data: encoded,
+                    hash: hash,
+                    nonce: nonce,
+                    timestamp: Date.now(),
+                    fingerprint: generateFingerprint()
+                };
+                
+                sessionStorage.setItem(KEY_DATA_KEY, JSON.stringify(secureData));
+                sessionStorage.setItem(HASH_KEY, hash);
+            }
 
-                loadKeyData: function() {
-                    try {
-                        const raw = sessionStorage.getItem(CONFIG.STORAGE_PREFIX + 'kd');
-                        if (!raw) return null;
-                        
-                        const data = JSON.parse(raw);
-                        
-                        // Verify fingerprint
-                        const currentFingerprint = generateFingerprint().split('_')[0];
-                        if (data.fingerprint !== currentFingerprint) {
-                            this.clearAll();
-                            return null;
-                        }
-                        
-                        // Check expiry
-                        if (Date.now() - data.savedAt > CONFIG.KEY_DURATION) {
-                            this.clearAll();
-                            return null;
-                        }
-                        
-                        return data;
-                    } catch(e) {
-                        this.clearAll();
+            function getSecureData() {
+                try {
+                    const raw = sessionStorage.getItem(KEY_DATA_KEY);
+                    if (!raw) return null;
+                    
+                    const secureData = JSON.parse(raw);
+                    const storedHash = sessionStorage.getItem(HASH_KEY);
+                    
+                    if (secureData.hash !== storedHash) {
+                        clearAllData();
                         return null;
                     }
-                },
-
-                clearAll: function() {
-                    const keys = Object.keys(sessionStorage);
-                    keys.forEach(key => {
-                        if (key.startsWith(CONFIG.STORAGE_PREFIX) || key === CONFIG.FINGERPRINT_KEY) {
-                            sessionStorage.removeItem(key);
-                        }
-                    });
+                    
+                    if (secureData.fingerprint !== generateFingerprint()) {
+                        clearAllData();
+                        return null;
+                    }
+                    
+                    const decoded = advancedDecode(secureData.data);
+                    if (!decoded) {
+                        clearAllData();
+                        return null;
+                    }
+                    
+                    const keyData = JSON.parse(decoded);
+                    
+                    // QUAN TRỌNG: Kiểm tra hết hạn
+                    if (Date.now() - secureData.timestamp > KEY_DURATION) {
+                        clearAllData();
+                        return null;
+                    }
+                    
+                    return keyData;
+                } catch(e) {
+                    clearAllData();
+                    return null;
                 }
-            };
+            }
 
-            // ========== UI MANAGER ==========
-            const UIManager = {
-                elements: {
-                    mainCard: document.getElementById('mainCard'),
-                    keyDisplay: document.getElementById('keyDisplay'),
-                    keyLabel: document.getElementById('keyLabel'),
-                    countdown: document.getElementById('countdown'),
-                    timerContainer: document.getElementById('timerContainer'),
-                    getKeyBtn: document.getElementById('getKeyBtn'),
-                    newKeyBtn: document.getElementById('newKeyBtn'),
-                    statusMessage: document.getElementById('statusMessage'),
-                    copyNotification: document.getElementById('copyNotification')
-                },
+            function clearAllData() {
+                const keys = Object.keys(sessionStorage);
+                keys.forEach(key => {
+                    if (key.includes(STORAGE_PREFIX)) {
+                        sessionStorage.removeItem(key);
+                    }
+                });
+            }
 
-                countdownInterval: null,
-                currentExpiry: null,
+            // ============ UI ELEMENTS ============
+            const mainCard = document.getElementById('mainCard');
+            const brandText = document.getElementById('brandText');
+            const dividerLine = document.getElementById('dividerLine');
+            const subtitleText = document.getElementById('subtitleText');
+            const page1 = document.getElementById('page1');
+            const page2 = document.getElementById('page2');
+            const keyArea = document.getElementById('keyArea');
+            const keyLabel = document.getElementById('keyLabel');
+            const getKeyBtn = document.getElementById('getKeyBtn');
+            const newKeyBtn = document.getElementById('newKeyBtn');
+            const keyDisplay = document.getElementById('keyDisplay');
+            const countdown = document.getElementById('countdown');
+            const timerContainer = document.getElementById('timerContainer');
+            const statusMessage = document.getElementById('statusMessage');
+            
+            let countdownInterval = null;
+            let currentExpiry = null;
 
-                // Hiển thị key (từ shortener)
-                showKey: function(key, expiry) {
-                    // Bỏ loading
-                    this.elements.keyDisplay.classList.remove('loading-key');
-                    this.elements.keyDisplay.innerHTML = '';
-                    this.elements.keyDisplay.textContent = key;
-                    this.elements.keyDisplay.style.cursor = 'pointer';
+            // ============ COUNTDOWN ============
+            function startCountdown(expiry) {
+                stopCountdown();
+                currentExpiry = expiry;
+                
+                function update() {
+                    const remaining = currentExpiry - Date.now();
+                    if (remaining <= 0) {
+                        handleExpiry();
+                        return;
+                    }
                     
-                    // Hiển thị timer
-                    this.elements.timerContainer.classList.remove('hidden');
+                    const h = Math.floor(remaining / 3600000);
+                    const m = Math.floor((remaining % 3600000) / 60000);
+                    const s = Math.floor((remaining % 60000) / 1000);
+                    countdown.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                }
+                
+                update();
+                countdownInterval = setInterval(update, 1000);
+            }
+
+            function stopCountdown() {
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                }
+                currentExpiry = null;
+            }
+
+            // ============ HANDLE EXPIRY ============
+            function handleExpiry() {
+                stopCountdown();
+                
+                // Đổi key thành EXPIRED
+                keyDisplay.textContent = 'EXPIRED';
+                keyDisplay.classList.add('expired-key');
+                keyDisplay.style.cursor = 'not-allowed';
+                
+                // Ẩn timer
+                timerContainer.classList.add('hidden');
+                
+                // Đổi giao diện thành trạng thái hết hạn
+                mainCard.classList.add('expired');
+                brandText.classList.add('expired');
+                dividerLine.classList.add('expired');
+                subtitleText.classList.add('expired');
+                keyArea.classList.add('expired-area');
+                keyLabel.classList.add('expired-label');
+                statusMessage.classList.add('expired-message');
+                
+                // Hiện nút GET NEW KEY
+                newKeyBtn.classList.remove('hidden');
+                
+                // Cập nhật message
+                statusMessage.textContent = 'Key has expired. Please get a new key.';
+                
+                // Xóa dữ liệu
+                clearAllData();
+            }
+
+            // ============ RESET EXPIRED STATE ============
+            function resetExpiredState() {
+                mainCard.classList.remove('expired');
+                brandText.classList.remove('expired');
+                dividerLine.classList.remove('expired');
+                subtitleText.classList.remove('expired');
+                keyArea.classList.remove('expired-area');
+                keyLabel.classList.remove('expired-label');
+                keyDisplay.classList.remove('expired-key');
+                keyDisplay.style.cursor = 'pointer';
+                statusMessage.classList.remove('expired-message');
+                timerContainer.classList.remove('hidden');
+                newKeyBtn.classList.add('hidden');
+            }
+
+            // ============ PAGE MANAGEMENT ============
+            function showPage1() {
+                page1.classList.remove('hidden');
+                page2.classList.add('hidden');
+                stopCountdown();
+                resetExpiredState();
+                statusMessage.textContent = 'Click to verify and get your key';
+            }
+
+            function showPage2() {
+                page1.classList.add('hidden');
+                page2.classList.remove('hidden');
+            }
+
+            function displayKey(keyData) {
+                resetExpiredState();
+                
+                keyDisplay.textContent = keyData.key;
+                keyDisplay.style.opacity = '1';
+                timerContainer.classList.remove('hidden');
+                newKeyBtn.classList.add('hidden');
+                statusMessage.textContent = 'Click on key to copy';
+                showPage2();
+                startCountdown(keyData.expiry);
+                
+                sessionStorage.setItem(VERIFICATION_KEY, 'true');
+                sessionStorage.setItem(TOKEN_KEY, 'auto');
+                sessionStorage.setItem(TIMESTAMP_KEY, Date.now().toString());
+            }
+
+            // ============ COPY FUNCTION ============
+            keyDisplay.addEventListener('click', function() {
+                const text = keyDisplay.textContent;
+                if (text && text !== '-----' && text !== 'EXPIRED' && !keyDisplay.classList.contains('expired-key')) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        showCopyNotification('Key copied successfully');
+                    }).catch(() => {});
+                }
+            });
+
+            function showCopyNotification(message) {
+                const oldNotification = document.querySelector('.copy-notification');
+                if (oldNotification) oldNotification.remove();
+                
+                const notification = document.createElement('div');
+                notification.className = 'copy-notification';
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => notification.classList.add('show'), 10);
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => notification.remove(), 400);
+                }, 2000);
+            }
+
+            // ============ INITIALIZATION ============
+            function initialize() {
+                const isVerified = multiLayerVerification();
+                const secureData = getSecureData();
+                
+                // Kiểm tra key còn hạn không
+                if (secureData && secureData.expiry > Date.now() && validateKey(secureData.key)) {
+                    // KEY CÒN HẠN - Hiển thị key với countdown
+                    displayKey(secureData);
                     
-                    // Ẩn tất cả button
-                    this.elements.getKeyBtn.classList.add('hidden');
-                    this.elements.newKeyBtn.classList.add('hidden');
-                    
-                    // Start countdown
-                    this.startCountdown(expiry);
-                    
-                    // Update status
-                    this.showStatus('✅ Key ready! Click to copy.', 'success');
-                    
-                    // Xóa URL params để bảo mật
                     if (window.history && window.history.replaceState) {
                         window.history.replaceState({}, document.title, window.location.pathname);
                     }
-                },
-
-                // Hiển thị trạng thái chưa có key (cần GET KEY)
-                showGetKeyButton: function() {
-                    this.elements.keyDisplay.classList.remove('loading-key');
-                    this.elements.keyDisplay.innerHTML = '-----';
-                    this.elements.keyDisplay.style.opacity = '0.5';
-                    this.elements.keyDisplay.style.cursor = 'default';
-                    
-                    this.elements.timerContainer.classList.add('hidden');
-                    this.elements.getKeyBtn.classList.remove('hidden');
-                    this.elements.newKeyBtn.classList.add('hidden');
-                    
-                    this.showStatus('Click GET KEY to receive your license', '');
-                },
-
-                // Hiển thị đang loading
-                showLoading: function(message) {
-                    this.elements.keyDisplay.classList.add('loading-key');
-                    this.elements.keyDisplay.innerHTML = '<span class="spinner"></span> Loading...';
-                    this.elements.keyDisplay.style.cursor = 'default';
-                    
-                    this.elements.timerContainer.classList.add('hidden');
-                    this.elements.getKeyBtn.classList.add('hidden');
-                    this.elements.newKeyBtn.classList.add('hidden');
-                    
-                    this.showStatus(message || 'Initializing...', '');
-                },
-
-                startCountdown: function(expiryTimestamp) {
-                    this.stopCountdown();
-                    this.currentExpiry = expiryTimestamp;
-
-                    const update = () => {
-                        const remaining = this.currentExpiry - Date.now();
-                        
-                        if (remaining <= 0) {
-                            this.handleExpiry();
-                            return;
-                        }
-
-                        const hours = Math.floor(remaining / 3600000);
-                        const minutes = Math.floor((remaining % 3600000) / 60000);
-                        const seconds = Math.floor((remaining % 60000) / 1000);
-                        
-                        this.elements.countdown.textContent = 
-                            `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                    return;
+                }
+                
+                // KEY HẾT HẠN hoặc không có key
+                if (secureData && secureData.expiry <= Date.now()) {
+                    // Hiển thị trạng thái hết hạn
+                    clearAllData();
+                    showPage2();
+                    handleExpiry();
+                    return;
+                }
+                
+                // Người dùng mới hoặc chưa xác minh
+                if (isVerified) {
+                    // Tạo key mới
+                    const nonce = generateNonce();
+                    const newKey = generateKey(nonce);
+                    const keyData = {
+                        key: newKey,
+                        expiry: Date.now() + KEY_DURATION,
+                        created: Date.now(),
+                        nonce: nonce
                     };
-
-                    update();
-                    this.countdownInterval = setInterval(update, 1000);
-                },
-
-                stopCountdown: function() {
-                    if (this.countdownInterval) {
-                        clearInterval(this.countdownInterval);
-                        this.countdownInterval = null;
+                    saveSecureData(keyData);
+                    displayKey(keyData);
+                    
+                    if (window.history && window.history.replaceState) {
+                        window.history.replaceState({}, document.title, window.location.pathname);
                     }
-                    this.currentExpiry = null;
-                },
-
-                handleExpiry: function() {
-                    this.stopCountdown();
-                    
-                    this.elements.keyDisplay.classList.remove('loading-key');
-                    this.elements.keyDisplay.innerHTML = 'EXPIRED';
-                    this.elements.keyDisplay.style.color = '#ff6b6b';
-                    this.elements.keyDisplay.style.cursor = 'not-allowed';
-                    
-                    this.elements.timerContainer.classList.add('hidden');
-                    this.elements.getKeyBtn.classList.add('hidden');
-                    this.elements.newKeyBtn.classList.remove('hidden');
-                    
-                    this.showStatus('⏰ Key expired. Get a new one.', 'error');
-                    
-                    StorageManager.clearAll();
-                },
-
-                showStatus: function(message, type) {
-                    const el = this.elements.statusMessage;
-                    el.textContent = message;
-                    el.className = 'status-message';
-                    
-                    if (type === 'error') el.classList.add('error');
-                    if (type === 'success') el.classList.add('success');
-                },
-
-                showCopyNotification: function() {
-                    const notif = this.elements.copyNotification;
-                    notif.classList.add('show');
-                    setTimeout(() => {
-                        notif.classList.remove('show');
-                    }, 2000);
+                } else {
+                    showPage1();
                 }
-            };
-
-            // ========== MAIN APPLICATION ==========
-            const App = {
-                init: function() {
-                    // Khởi tạo security
-                    SecuritySystem.init();
-                    
-                    if (!SecuritySystem.isSecure()) {
-                        return;
-                    }
-                    
-                    // Tạo particles
-                    this.createParticles();
-                    
-                    // Setup events
-                    this.setupEvents();
-                    
-                    // Kiểm tra URL và quyết định flow
-                    this.checkURLAndProceed();
-                },
-
-                createParticles: function() {
-                    const container = document.getElementById('particles');
-                    const fragment = document.createDocumentFragment();
-                    
-                    for (let i = 0; i < 40; i++) {
-                        const particle = document.createElement('div');
-                        particle.className = 'particle';
-                        const size = Math.random() * 5 + 2;
-                        particle.style.width = size + 'px';
-                        particle.style.height = size + 'px';
-                        particle.style.left = Math.random() * 100 + '%';
-                        particle.style.top = Math.random() * 100 + '%';
-                        particle.style.animationDelay = Math.random() * 20 + 's';
-                        particle.style.animationDuration = (Math.random() * 15 + 15) + 's';
-                        fragment.appendChild(particle);
-                    }
-                    
-                    container.appendChild(fragment);
-                },
-
-                setupEvents: function() {
-                    // GET KEY button
-                    UIManager.elements.getKeyBtn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        this.handleGetKey();
-                    });
-
-                    // NEW KEY button
-                    UIManager.elements.newKeyBtn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        StorageManager.clearAll();
-                        UIManager.showGetKeyButton();
-                    });
-
-                    // Copy key
-                    UIManager.elements.keyDisplay.addEventListener('click', () => {
-                        const text = UIManager.elements.keyDisplay.textContent;
-                        if (text && 
-                            text !== '-----' && 
-                            text !== 'EXPIRED' && 
-                            text !== '⚠️ SECURITY BREACH - PLEASE REFRESH' &&
-                            !text.includes('Loading') &&
-                            !UIManager.elements.keyDisplay.classList.contains('loading-key')) {
-                            
-                            navigator.clipboard.writeText(text).then(() => {
-                                UIManager.showCopyNotification();
-                            }).catch(() => {
-                                const textarea = document.createElement('textarea');
-                                textarea.value = text;
-                                textarea.style.position = 'fixed';
-                                textarea.style.opacity = '0';
-                                document.body.appendChild(textarea);
-                                textarea.select();
-                                document.execCommand('copy');
-                                document.body.removeChild(textarea);
-                                UIManager.showCopyNotification();
-                            });
-                        }
-                    });
-                },
-
-                checkURLAndProceed: function() {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const page = urlParams.get('page');
-                    const token = urlParams.get('token');
-                    
-                    // ===== CASE 1: TỪ SHORTENER (có ?page=key&token=auto) =====
-                    if (page === 'key' && token === 'auto') {
-                        const referrer = document.referrer.toLowerCase();
-                        const isFromShortener = CONFIG.SHORTENER_DOMAINS.some(
-                            domain => referrer.includes(domain)
-                        );
-                        
-                        if (isFromShortener) {
-                            // HỢP LỆ: Đến từ shortener -> TỰ ĐỘNG TẠO KEY
-                            UIManager.showLoading('Verifying from shortener...');
-                            
-                            setTimeout(() => {
-                                const newKey = generateKey();
-                                const keyData = {
-                                    key: newKey,
-                                    expiry: Date.now() + CONFIG.KEY_DURATION
-                                };
-                                
-                                StorageManager.saveKeyData(keyData);
-                                sessionStorage.setItem(CONFIG.FINGERPRINT_KEY, generateFingerprint());
-                                
-                                UIManager.showKey(newKey, keyData.expiry);
-                            }, 1500);
-                            
-                            return;
-                        } else {
-                            // KHÔNG HỢP LỆ: URL giả mạo -> Chuyển về GET KEY
-                            UIManager.showGetKeyButton();
-                            UIManager.showStatus('⚠️ Invalid access. Please use GET KEY.', 'error');
-                            return;
-                        }
-                    }
-                    
-                    // ===== CASE 2: KIỂM TRA KEY CŨ TRONG STORAGE =====
-                    const existingKey = StorageManager.loadKeyData();
-                    
-                    if (existingKey && existingKey.expiry > Date.now() && validateKey(existingKey.key)) {
-                        // Key còn hạn -> Hiển thị
-                        UIManager.showKey(existingKey.key, existingKey.expiry);
-                        return;
-                    }
-                    
-                    if (existingKey && existingKey.expiry <= Date.now()) {
-                        // Key hết hạn
-                        UIManager.handleExpiry();
-                        return;
-                    }
-                    
-                    // ===== CASE 3: MẶC ĐỊNH -> HIỂN THỊ GET KEY =====
-                    UIManager.showGetKeyButton();
-                },
-
-                handleGetKey: function() {
-                    if (!SecuritySystem.isSecure()) {
-                        UIManager.showStatus('⚠️ Security error. Refresh page.', 'error');
-                        return;
-                    }
-                    
-                    UIManager.showStatus('🔄 Opening verification page...', '');
-                    
-                    // Lưu fingerprint
-                    sessionStorage.setItem(CONFIG.FINGERPRINT_KEY, generateFingerprint());
-                    
-                    // Mở shortener
-                    setTimeout(() => {
-                        window.open(CONFIG.SHORTENER_URL, '_blank');
-                    }, 300);
-                }
-            };
-
-            // ========== START ==========
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', () => App.init());
-            } else {
-                App.init();
             }
 
-            // Periodic check
-            setInterval(() => {
-                if (!SecuritySystem.isSecure() || !verifyFingerprint()) {
-                    StorageManager.clearAll();
-                    UIManager.showGetKeyButton();
-                    UIManager.showStatus('⚠️ Session expired. Please get new key.', 'error');
+            // ============ BUTTON HANDLERS ============
+            getKeyBtn.addEventListener('click', function() {
+                if (!checkRateLimit()) {
+                    statusMessage.textContent = 'Too many requests. Please wait.';
+                    return;
                 }
-            }, 10000);
+                
+                const nonce = generateNonce();
+                const newKey = generateKey(nonce);
+                const keyData = {
+                    key: newKey,
+                    expiry: Date.now() + KEY_DURATION,
+                    created: Date.now(),
+                    nonce: nonce
+                };
+                saveSecureData(keyData);
+                
+                sessionStorage.setItem(VERIFICATION_KEY, 'true');
+                sessionStorage.setItem(TOKEN_KEY, 'auto');
+                sessionStorage.setItem(TIMESTAMP_KEY, Date.now().toString());
+                sessionStorage.setItem(FINGERPRINT_KEY, generateFingerprint());
+                
+                window.open(SHORTENER_URL, '_blank');
+                statusMessage.textContent = 'Opening verification page...';
+            });
+
+            // NÚT GET NEW KEY - Quay về trang 1
+            newKeyBtn.addEventListener('click', function() {
+                clearAllData();
+                stopCountdown();
+                resetExpiredState();
+                showPage1();
+            });
+
+            // ============ PARTICLES ============
+            function createParticles() {
+                const container = document.getElementById('particles');
+                for (let i = 0; i < 40; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    const size = Math.random() * 5 + 2;
+                    particle.style.width = size + 'px';
+                    particle.style.height = size + 'px';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.top = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 20 + 's';
+                    particle.style.animationDuration = (Math.random() * 15 + 15) + 's';
+                    container.appendChild(particle);
+                }
+            }
+
+            // ============ PERIODIC CHECK ============
+            // Kiểm tra mỗi 5 giây xem key đã hết hạn chưa
+            setInterval(() => {
+                const data = getSecureData();
+                if (data && data.expiry <= Date.now() && currentExpiry) {
+                    handleExpiry();
+                }
+                
+                if (!verifyFingerprint()) {
+                    clearAllData();
+                    handleExpiry();
+                }
+            }, 5000);
+
+            // ============ START ============
+            createParticles();
+            antiDebug();
+            initialize();
+            
+            // Production mode - vô hiệu hóa console
+            if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+                const noop = function() {};
+                console.log = noop;
+                console.warn = noop;
+                console.error = noop;
+                console.info = noop;
+                console.debug = noop;
+                console.clear = noop;
+            }
 
         })();
     </script>
 </body>
-</html>
+</html> 
