@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APEX HUB | Key System</title>
+    <title>APEX HUB | Advanced Key System</title>
     <style>
         * {
             margin: 0;
@@ -20,6 +20,27 @@
             justify-content: center;
             overflow: hidden;
             position: relative;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Lớp bảo vệ 1: Watermark ẩn */
+        .watermark-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.03;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 100px,
+                rgba(255,255,255,0.1) 100px,
+                rgba(255,255,255,0.1) 200px
+            );
         }
 
         .bg-aurora {
@@ -29,10 +50,11 @@
             width: 200%;
             height: 200%;
             background: 
-                radial-gradient(ellipse at 20% 50%, rgba(76, 0, 255, 0.1) 0%, transparent 40%),
-                radial-gradient(ellipse at 80% 20%, rgba(0, 180, 255, 0.08) 0%, transparent 40%),
-                radial-gradient(ellipse at 50% 80%, rgba(180, 100, 255, 0.06) 0%, transparent 40%),
-                radial-gradient(ellipse at 70% 60%, rgba(255, 100, 200, 0.04) 0%, transparent 40%);
+                radial-gradient(ellipse at 20% 50%, rgba(76, 0, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 180, 255, 0.12) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 80%, rgba(180, 100, 255, 0.1) 0%, transparent 40%),
+                radial-gradient(ellipse at 70% 60%, rgba(255, 100, 200, 0.06) 0%, transparent 40%),
+                radial-gradient(ellipse at 10% 90%, rgba(0, 255, 200, 0.05) 0%, transparent 30%);
             animation: auroraMove 15s ease-in-out infinite;
             z-index: 0;
             pointer-events: none;
@@ -57,36 +79,18 @@
 
         .particle {
             position: absolute;
-            background: linear-gradient(135deg, rgba(120, 80, 255, 0.4), rgba(0, 180, 255, 0.3));
+            background: linear-gradient(135deg, rgba(120, 80, 255, 0.5), rgba(0, 180, 255, 0.4));
             border-radius: 50%;
             animation: floatParticle 20s infinite;
         }
 
         @keyframes floatParticle {
-            0%, 100% { 
-                transform: translateY(0) translateX(0) scale(1); 
-                opacity: 0.2; 
-            }
-            10% { 
-                transform: translateY(-100px) translateX(30px) scale(1.8); 
-                opacity: 0.6; 
-            }
-            25% { 
-                transform: translateY(-200px) translateX(-50px) scale(0.8); 
-                opacity: 0.1; 
-            }
-            40% { 
-                transform: translateY(-150px) translateX(70px) scale(1.5); 
-                opacity: 0.5; 
-            }
-            60% { 
-                transform: translateY(-300px) translateX(-80px) scale(0.6); 
-                opacity: 0.3; 
-            }
-            80% { 
-                transform: translateY(-100px) translateX(20px) scale(1.3); 
-                opacity: 0.7; 
-            }
+            0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.2; }
+            10% { transform: translateY(-100px) translateX(30px) scale(1.8); opacity: 0.6; }
+            25% { transform: translateY(-200px) translateX(-50px) scale(0.8); opacity: 0.1; }
+            40% { transform: translateY(-150px) translateX(70px) scale(1.5); opacity: 0.5; }
+            60% { transform: translateY(-300px) translateX(-80px) scale(0.6); opacity: 0.3; }
+            80% { transform: translateY(-100px) translateX(20px) scale(1.3); opacity: 0.7; }
         }
 
         .grid-lines {
@@ -96,8 +100,8 @@
             width: 100%;
             height: 100%;
             background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
             background-size: 50px 50px;
             animation: gridMove 30s linear infinite;
             z-index: 0;
@@ -126,17 +130,17 @@
         }
 
         .card {
-            background: rgba(15, 15, 30, 0.8);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 15, 30, 0.85);
+            backdrop-filter: blur(60px);
+            -webkit-backdrop-filter: blur(60px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 32px;
             padding: 50px 40px;
             box-shadow: 
-                0 30px 60px rgba(0, 0, 0, 0.9),
-                0 0 0 1px rgba(255, 255, 255, 0.05) inset,
-                0 1px 0 rgba(255, 255, 255, 0.08) inset,
-                0 0 100px rgba(100, 50, 255, 0.1);
+                0 30px 60px rgba(0, 0, 0, 0.95),
+                0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+                0 1px 0 rgba(255, 255, 255, 0.1) inset,
+                0 0 120px rgba(100, 50, 255, 0.15);
             position: relative;
             overflow: hidden;
             animation: cardGlow 3s ease-in-out infinite;
@@ -144,20 +148,16 @@
         }
 
         .card.expired {
-            border-color: rgba(255, 100, 100, 0.3);
+            border-color: rgba(255, 100, 100, 0.4);
             box-shadow: 
-                0 30px 60px rgba(0, 0, 0, 0.9),
-                0 0 0 1px rgba(255, 100, 100, 0.1) inset,
-                0 0 100px rgba(255, 50, 50, 0.1);
+                0 30px 60px rgba(0, 0, 0, 0.95),
+                0 0 0 1px rgba(255, 100, 100, 0.12) inset,
+                0 0 120px rgba(255, 50, 50, 0.15);
         }
 
         @keyframes cardGlow {
-            0%, 100% { 
-                box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.05) inset, 0 0 100px rgba(100, 50, 255, 0.1);
-            }
-            50% { 
-                box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.05) inset, 0 0 150px rgba(100, 50, 255, 0.2);
-            }
+            0%, 100% { box-shadow: 0 30px 60px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.06) inset, 0 0 120px rgba(100, 50, 255, 0.15); }
+            50% { box-shadow: 0 30px 60px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.06) inset, 0 0 180px rgba(100, 50, 255, 0.25); }
         }
 
         .card::before {
@@ -169,9 +169,9 @@
             bottom: -2px;
             background: linear-gradient(45deg, 
                 transparent 0%, 
-                rgba(120, 80, 255, 0.1) 25%, 
-                rgba(0, 180, 255, 0.1) 50%, 
-                rgba(180, 100, 255, 0.1) 75%, 
+                rgba(120, 80, 255, 0.15) 25%, 
+                rgba(0, 180, 255, 0.15) 50%, 
+                rgba(180, 100, 255, 0.15) 75%, 
                 transparent 100%);
             border-radius: 33px;
             z-index: -2;
@@ -181,15 +181,24 @@
         .card.expired::before {
             background: linear-gradient(45deg, 
                 transparent 0%, 
-                rgba(255, 80, 80, 0.1) 25%, 
-                rgba(255, 100, 100, 0.1) 50%, 
-                rgba(255, 80, 80, 0.1) 75%, 
+                rgba(255, 80, 80, 0.15) 25%, 
+                rgba(255, 100, 100, 0.15) 50%, 
+                rgba(255, 80, 80, 0.15) 75%, 
                 transparent 100%);
         }
 
         @keyframes borderRotate {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        /* Lớp bảo vệ 2: Canvas fingerprint */
+        .fingerprint-canvas {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+            opacity: 0;
+            pointer-events: none;
         }
 
         .brand-container {
@@ -212,7 +221,7 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             animation: brandShine 4s linear infinite;
-            filter: drop-shadow(0 0 40px rgba(140, 100, 255, 0.6));
+            filter: drop-shadow(0 0 40px rgba(140, 100, 255, 0.7));
             transition: all 0.5s ease;
         }
 
@@ -222,7 +231,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            filter: drop-shadow(0 0 40px rgba(255, 80, 80, 0.6));
+            filter: drop-shadow(0 0 40px rgba(255, 80, 80, 0.7));
         }
 
         @keyframes brandShine {
@@ -235,7 +244,7 @@
             height: 2px;
             background: linear-gradient(90deg, 
                 transparent, 
-                rgba(180, 150, 255, 0.8), 
+                rgba(180, 150, 255, 0.9), 
                 transparent);
             margin: 15px auto;
             animation: dividerPulse 2s ease-in-out infinite;
@@ -245,7 +254,7 @@
         .divider.expired {
             background: linear-gradient(90deg, 
                 transparent, 
-                rgba(255, 100, 100, 0.8), 
+                rgba(255, 100, 100, 0.9), 
                 transparent);
         }
 
@@ -273,8 +282,8 @@
         }
 
         .key-area {
-            background: rgba(10, 10, 25, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(10, 10, 25, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             padding: 30px 25px;
             margin: 30px 0;
@@ -285,14 +294,14 @@
         }
 
         .key-area.expired-area {
-            border-color: rgba(255, 100, 100, 0.2);
-            background: rgba(25, 10, 10, 0.7);
+            border-color: rgba(255, 100, 100, 0.25);
+            background: rgba(25, 10, 10, 0.8);
             animation: expiredPulse 2s ease-in-out infinite;
         }
 
         @keyframes expiredPulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(255, 50, 50, 0.1); }
-            50% { box-shadow: 0 0 40px rgba(255, 50, 50, 0.2); }
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 50, 50, 0.15); }
+            50% { box-shadow: 0 0 40px rgba(255, 50, 50, 0.25); }
         }
 
         .key-area::before {
@@ -304,7 +313,7 @@
             height: 2px;
             background: linear-gradient(90deg, 
                 transparent, 
-                rgba(160, 140, 255, 0.5), 
+                rgba(160, 140, 255, 0.6), 
                 transparent);
             animation: scanLine 4s ease-in-out infinite;
         }
@@ -312,7 +321,7 @@
         .key-area.expired-area::before {
             background: linear-gradient(90deg, 
                 transparent, 
-                rgba(255, 100, 100, 0.5), 
+                rgba(255, 100, 100, 0.6), 
                 transparent);
         }
 
@@ -338,13 +347,12 @@
             font-family: 'Fira Code', 'Courier New', monospace;
             font-size: 1.1rem;
             color: #e8dfff;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.5);
             padding: 18px 20px;
             border-radius: 12px;
-            border: 1px solid rgba(160, 140, 220, 0.3);
+            border: 1px solid rgba(160, 140, 220, 0.4);
             word-break: break-all;
             letter-spacing: 0.5px;
-            user-select: all;
             cursor: pointer;
             transition: all 0.5s ease;
             position: relative;
@@ -352,22 +360,17 @@
 
         .key-value.expired-key {
             color: #ff6b6b;
-            border-color: rgba(255, 100, 100, 0.3);
-            background: rgba(25, 0, 0, 0.4);
+            border-color: rgba(255, 100, 100, 0.4);
+            background: rgba(25, 0, 0, 0.5);
             animation: expiredKeyGlow 1.5s ease-in-out infinite;
             cursor: not-allowed;
             user-select: none;
+            -webkit-user-select: none;
         }
 
         @keyframes expiredKeyGlow {
-            0%, 100% { 
-                border-color: rgba(255, 100, 100, 0.3);
-                box-shadow: 0 0 10px rgba(255, 50, 50, 0.1);
-            }
-            50% { 
-                border-color: rgba(255, 100, 100, 0.6);
-                box-shadow: 0 0 30px rgba(255, 50, 50, 0.3);
-            }
+            0%, 100% { border-color: rgba(255, 100, 100, 0.4); box-shadow: 0 0 10px rgba(255, 50, 50, 0.15); }
+            50% { border-color: rgba(255, 100, 100, 0.7); box-shadow: 0 0 30px rgba(255, 50, 50, 0.4); }
         }
 
         .key-value::after {
@@ -379,7 +382,7 @@
             bottom: 0;
             background: linear-gradient(45deg, 
                 transparent 30%, 
-                rgba(160, 140, 255, 0.05) 50%, 
+                rgba(160, 140, 255, 0.06) 50%, 
                 transparent 70%);
             animation: keyHighlight 3s ease-in-out infinite;
         }
@@ -389,16 +392,10 @@
             50% { opacity: 1; }
         }
 
-        .key-value:hover {
-            border-color: rgba(180, 160, 240, 0.6);
-            box-shadow: 0 0 30px rgba(120, 80, 255, 0.2);
+        .key-value:hover:not(.expired-key) {
+            border-color: rgba(180, 160, 240, 0.7);
+            box-shadow: 0 0 30px rgba(120, 80, 255, 0.25);
             transform: scale(1.02);
-        }
-
-        .key-value.expired-key:hover {
-            transform: none;
-            box-shadow: none;
-            border-color: rgba(255, 100, 100, 0.3);
         }
 
         .timer-container {
@@ -445,12 +442,13 @@
             overflow: hidden;
             transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1.2);
             background: linear-gradient(135deg, 
-                rgba(50, 25, 80, 0.9), 
-                rgba(30, 20, 60, 0.9));
+                rgba(50, 25, 80, 0.95), 
+                rgba(30, 20, 60, 0.95));
             color: #e0d0ff;
-            border: 1px solid rgba(200, 170, 255, 0.3);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(200, 170, 255, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
             animation: btnFloat 3s ease-in-out infinite;
+            z-index: 1;
         }
 
         @keyframes btnFloat {
@@ -466,9 +464,10 @@
             width: 200%;
             height: 200%;
             background: radial-gradient(circle, 
-                rgba(255, 255, 255, 0.1) 0%, 
+                rgba(255, 255, 255, 0.12) 0%, 
                 transparent 60%);
             animation: btnRipple 3s infinite;
+            z-index: -1;
         }
 
         @keyframes btnRipple {
@@ -478,10 +477,10 @@
 
         .btn:hover {
             transform: translateY(-5px) scale(1.02);
-            border-color: rgba(200, 170, 255, 0.6);
+            border-color: rgba(200, 170, 255, 0.7);
             box-shadow: 
-                0 20px 40px rgba(100, 50, 200, 0.4),
-                0 0 80px rgba(120, 80, 255, 0.3);
+                0 20px 40px rgba(100, 50, 200, 0.5),
+                0 0 100px rgba(120, 80, 255, 0.4);
             animation: none;
         }
 
@@ -492,27 +491,23 @@
 
         .btn-new-key {
             background: linear-gradient(135deg, 
-                rgba(80, 25, 25, 0.9), 
-                rgba(60, 20, 20, 0.9));
-            border-color: rgba(255, 100, 100, 0.3);
+                rgba(80, 25, 25, 0.95), 
+                rgba(60, 20, 20, 0.95));
+            border-color: rgba(255, 100, 100, 0.4);
             color: #ffcccc;
             animation: newKeyBtnPulse 2s ease-in-out infinite;
         }
 
         @keyframes newKeyBtnPulse {
-            0%, 100% { 
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 50, 50, 0.2);
-            }
-            50% { 
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 40px rgba(255, 50, 50, 0.4);
-            }
+            0%, 100% { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 50, 50, 0.25); }
+            50% { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 50px rgba(255, 50, 50, 0.5); }
         }
 
         .btn-new-key:hover {
-            border-color: rgba(255, 150, 150, 0.6);
+            border-color: rgba(255, 150, 150, 0.7);
             box-shadow: 
-                0 20px 40px rgba(255, 50, 50, 0.4),
-                0 0 80px rgba(255, 80, 80, 0.3);
+                0 20px 40px rgba(255, 50, 50, 0.5),
+                0 0 100px rgba(255, 80, 80, 0.4);
         }
 
         .hidden {
@@ -549,20 +544,33 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%) translateY(-100px);
-            background: rgba(40, 20, 60, 0.95);
+            background: rgba(40, 20, 60, 0.97);
             color: #e0d0ff;
             padding: 14px 28px;
             border-radius: 30px;
             font-size: 0.9rem;
             z-index: 100;
-            border: 1px solid rgba(200, 170, 255, 0.4);
+            border: 1px solid rgba(200, 170, 255, 0.5);
             backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
             transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: none;
         }
 
         .copy-notification.show {
             transform: translateX(-50%) translateY(0);
+        }
+
+        /* Lớp bảo vệ 3: Anti-screenshot overlay */
+        .anti-screenshot {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.001);
+            pointer-events: none;
+            z-index: 9998;
         }
 
         @media (max-width: 600px) {
@@ -581,6 +589,15 @@
     </style>
 </head>
 <body>
+    <!-- Lớp bảo vệ 1: Watermark ẩn -->
+    <div class="watermark-layer" id="watermarkLayer"></div>
+    
+    <!-- Lớp bảo vệ 2: Canvas fingerprint -->
+    <canvas class="fingerprint-canvas" id="fpCanvas" width="200" height="50"></canvas>
+    
+    <!-- Lớp bảo vệ 3: Anti-screenshot -->
+    <div class="anti-screenshot" id="antiScreenshot"></div>
+
     <div class="bg-aurora"></div>
     <div class="grid-lines"></div>
     <div class="particles" id="particles"></div>
@@ -591,7 +608,7 @@
                 <div class="brand-container">
                     <div class="brand" id="brandText">APEX HUB</div>
                     <div class="divider" id="dividerLine"></div>
-                    <div class="subtitle" id="subtitleText">Secure Key System</div>
+                    <div class="subtitle" id="subtitleText">Advanced Security Layer</div>
                 </div>
 
                 <!-- TRANG 1: GET KEY -->
@@ -601,7 +618,7 @@
                         <div class="key-value" style="opacity: 0.5;">-----</div>
                     </div>
                     <button class="btn" id="getKeyBtn">GET KEY</button>
-                    <div class="status-message">Click to verify and get your key</div>
+                    <div class="status-message">Multi-layer verification required</div>
                 </div>
 
                 <!-- TRANG 2: HIỂN THỊ KEY + ĐẾM NGƯỢC -->
@@ -614,7 +631,6 @@
                             <span class="timer" id="countdown">24:00:00</span>
                         </div>
                     </div>
-                    <!-- Nút GET NEW KEY (chỉ hiện khi hết hạn) -->
                     <button class="btn btn-new-key hidden" id="newKeyBtn">GET NEW KEY</button>
                     <div class="status-message" id="statusMessage"></div>
                 </div>
@@ -632,7 +648,7 @@
             const SPECIAL_CHARS = 'qptoeugjwmxnalkjf¡¿\'-:;₫&@9275023#%*^+€¥$_|\\[]{}bcz';
             const KEY_DURATION = 24 * 60 * 60 * 1000;
             
-            const STORAGE_PREFIX = btoa(unescape(encodeURIComponent('apex_hub_'))).substring(0, 8);
+            const STORAGE_PREFIX = btoa(unescape(encodeURIComponent('apex_hub_v2_'))).substring(0, 10);
             const KEY_DATA_KEY = STORAGE_PREFIX + '_kd';
             const VERIFICATION_KEY = STORAGE_PREFIX + '_vf';
             const TIMESTAMP_KEY = STORAGE_PREFIX + '_ts';
@@ -640,6 +656,87 @@
             const HASH_KEY = STORAGE_PREFIX + '_hs';
             const COUNTER_KEY = STORAGE_PREFIX + '_ct';
             const FINGERPRINT_KEY = STORAGE_PREFIX + '_fp';
+            const CANVAS_FP_KEY = STORAGE_PREFIX + '_cfp';
+            const SESSION_ID_KEY = STORAGE_PREFIX + '_sid';
+            const INTEGRITY_KEY = STORAGE_PREFIX + '_int';
+
+            // ============ LỚP BẢO VỆ 2: Canvas Fingerprint ============
+            function generateCanvasFingerprint() {
+                try {
+                    const canvas = document.getElementById('fpCanvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Vẽ text với font đặc biệt
+                    ctx.textBaseline = 'top';
+                    ctx.font = '14px "Segoe UI"';
+                    ctx.textBaseline = 'alphabetic';
+                    ctx.fillStyle = '#f60';
+                    ctx.fillRect(125, 1, 62, 20);
+                    
+                    // Vẽ nhiều thành phần phức tạp
+                    ctx.fillStyle = '#069';
+                    ctx.font = '12px "Arial"';
+                    ctx.fillText('APEX🔒HUB', 2, 15);
+                    ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
+                    ctx.font = '10px "Times New Roman"';
+                    ctx.fillText('Security', 4, 35);
+                    
+                    // Thêm hiệu ứng
+                    ctx.globalCompositeOperation = 'multiply';
+                    ctx.fillStyle = 'rgb(255,0,255)';
+                    ctx.beginPath();
+                    ctx.arc(50, 25, 10, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    return canvas.toDataURL();
+                } catch(e) {
+                    return 'fp_error_' + Date.now();
+                }
+            }
+
+            function verifyCanvasFingerprint() {
+                const stored = sessionStorage.getItem(CANVAS_FP_KEY);
+                const current = generateCanvasFingerprint();
+                if (!stored) {
+                    sessionStorage.setItem(CANVAS_FP_KEY, current);
+                    return true;
+                }
+                return stored === current;
+            }
+
+            // ============ LỚP BẢO VỆ 3: Session ID ============
+            function generateSessionId() {
+                const components = [
+                    Date.now().toString(36),
+                    Math.random().toString(36).substring(2),
+                    navigator.userAgent.length.toString(36),
+                    screen.width.toString(36),
+                    screen.height.toString(36)
+                ];
+                return components.join('-');
+            }
+
+            // ============ LỚP BẢO VỆ 4: Integrity Check ============
+            function calculateIntegrity() {
+                const elements = [
+                    document.getElementById('mainCard').innerHTML.length,
+                    document.getElementById('brandText').textContent,
+                    document.querySelectorAll('.particle').length,
+                    window.innerWidth,
+                    window.innerHeight
+                ];
+                return btoa(elements.join('|')).substring(0, 16);
+            }
+
+            function verifyIntegrity() {
+                const stored = sessionStorage.getItem(INTEGRITY_KEY);
+                const current = calculateIntegrity();
+                if (!stored) {
+                    sessionStorage.setItem(INTEGRITY_KEY, current);
+                    return true;
+                }
+                return stored === current;
+            }
 
             // ============ SECURITY FUNCTIONS ============
             function generateFingerprint() {
@@ -652,9 +749,15 @@
                     !!window.sessionStorage,
                     !!window.localStorage,
                     navigator.hardwareConcurrency || 'unknown',
-                    navigator.deviceMemory || 'unknown'
+                    navigator.deviceMemory || 'unknown',
+                    navigator.platform || 'unknown',
+                    new Date().getFullYear(),
+                    screen.availWidth,
+                    screen.availHeight,
+                    screen.pixelDepth,
+                    navigator.maxTouchPoints || 0
                 ];
-                return btoa(components.join('||')).substring(0, 32);
+                return btoa(components.join('|||')).substring(0, 40);
             }
 
             function verifyFingerprint() {
@@ -669,139 +772,280 @@
 
             function checkRateLimit() {
                 const counter = parseInt(sessionStorage.getItem(COUNTER_KEY) || '0');
-                if (counter > 10) return false;
+                if (counter > 8) {
+                    // Tự động xóa nếu vượt quá
+                    clearAllData();
+                    return false;
+                }
                 sessionStorage.setItem(COUNTER_KEY, (counter + 1).toString());
                 return true;
             }
 
+            // ============ LỚP BẢO VỆ 5: Mã hóa nâng cao ============
             function advancedEncode(str) {
-                let encoded = btoa(unescape(encodeURIComponent(str)));
+                // Mã hóa nhiều lớp
+                let result = str;
+                
+                // Lớp 1: Base64
+                result = btoa(unescape(encodeURIComponent(result)));
+                
+                // Lớp 2: XOR với salt
                 const salt = Date.now().toString(36);
-                return salt + '.' + encoded.split('').reverse().join('');
+                let xored = '';
+                for (let i = 0; i < result.length; i++) {
+                    xored += String.fromCharCode(result.charCodeAt(i) ^ salt.charCodeAt(i % salt.length));
+                }
+                
+                // Lớp 3: Đảo ngược và thêm salt
+                return salt + '.' + btoa(xored).split('').reverse().join('');
             }
 
             function advancedDecode(str) {
                 try {
                     const parts = str.split('.');
                     if (parts.length !== 2) return null;
+                    
+                    const salt = parts[0];
                     const reversed = parts[1].split('').reverse().join('');
-                    return decodeURIComponent(escape(atob(reversed)));
+                    const xored = atob(reversed);
+                    
+                    let result = '';
+                    for (let i = 0; i < xored.length; i++) {
+                        result += String.fromCharCode(xored.charCodeAt(i) ^ salt.charCodeAt(i % salt.length));
+                    }
+                    
+                    return decodeURIComponent(escape(atob(result)));
                 } catch(e) {
                     return null;
                 }
             }
 
             function generateMultiHash(data) {
+                // SHA-like hash đơn giản
                 let hash1 = 0;
                 let hash2 = 0;
+                let hash3 = 0;
                 const str = JSON.stringify(data);
+                
                 for (let i = 0; i < str.length; i++) {
                     const char = str.charCodeAt(i);
                     hash1 = ((hash1 << 5) - hash1) + char;
                     hash1 = hash1 & hash1;
                     hash2 = ((hash2 << 7) - hash2) + char;
                     hash2 = hash2 & hash2;
+                    hash3 = ((hash3 << 3) - hash3) + char;
+                    hash3 = hash3 & hash3;
                 }
-                return Math.abs(hash1).toString(36) + '_' + Math.abs(hash2).toString(36);
+                
+                return Math.abs(hash1).toString(36) + '_' + 
+                       Math.abs(hash2).toString(36) + '_' + 
+                       Math.abs(hash3).toString(36);
             }
 
+            // ============ LỚP BẢO VỆ 6: Anti-Debug nâng cao ============
             function antiDebug() {
                 let devtoolsOpen = false;
-                const threshold = 160;
+                let warningCount = 0;
                 
-                setInterval(() => {
+                // Phát hiện DevTools
+                const detectDevTools = () => {
+                    const threshold = 160;
                     const widthThreshold = window.outerWidth - window.innerWidth > threshold;
                     const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-                    if (widthThreshold || heightThreshold) {
+                    
+                    // Kiểm tra console.time
+                    const startTime = Date.now();
+                    debugger;
+                    const endTime = Date.now();
+                    const debuggerDetected = endTime - startTime > 100;
+                    
+                    if (widthThreshold || heightThreshold || debuggerDetected) {
                         if (!devtoolsOpen) {
                             devtoolsOpen = true;
-                            clearAllData();
+                            warningCount++;
                             console.clear();
+                            
+                            if (warningCount >= 2) {
+                                clearAllData();
+                                location.reload();
+                            }
                         }
                     } else {
                         devtoolsOpen = false;
                     }
-                }, 1000);
+                };
                 
+                setInterval(detectDevTools, 500);
+                
+                // Chặn phím tắt
                 document.addEventListener('keydown', function(e) {
-                    if (
-                        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
-                        (e.ctrlKey && e.key === 'U') ||
-                        e.key === 'F12'
-                    ) {
+                    const blockedKeys = [
+                        { ctrl: true, shift: true, key: 'I' },
+                        { ctrl: true, shift: true, key: 'J' },
+                        { ctrl: true, shift: true, key: 'C' },
+                        { ctrl: true, key: 'U' },
+                        { ctrl: true, key: 'S' },
+                        { key: 'F12' }
+                    ];
+                    
+                    const isBlocked = blockedKeys.some(combo => {
+                        return Object.keys(combo).every(k => {
+                            if (k === 'key') return e.key === combo[k];
+                            return e[k] === combo[k];
+                        });
+                    });
+                    
+                    if (isBlocked) {
                         e.preventDefault();
+                        e.stopPropagation();
                         return false;
                     }
-                });
+                }, true);
                 
+                // Chặn chuột phải
                 document.addEventListener('contextmenu', function(e) {
                     e.preventDefault();
                     return false;
+                }, true);
+                
+                // Chặn copy/paste
+                document.addEventListener('copy', function(e) {
+                    if (!e.target.classList.contains('key-value') || 
+                        e.target.classList.contains('expired-key')) {
+                        e.preventDefault();
+                    }
                 });
+                
+                // Phát hiện sửa đổi DOM
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && 
+                            mutation.target.id === 'keyDisplay') {
+                            clearAllData();
+                            handleExpiry();
+                        }
+                    });
+                });
+                
+                const keyDisplay = document.getElementById('keyDisplay');
+                if (keyDisplay) {
+                    observer.observe(keyDisplay, { 
+                        attributes: true, 
+                        childList: true, 
+                        characterData: true 
+                    });
+                }
             }
 
+            // ============ LỚP BẢO VỆ 7: Multi-layer Verification ============
             function multiLayerVerification() {
                 const checks = [];
+                let score = 0;
                 
+                // Check 1: Referrer từ shortener
                 const referrer = document.referrer.toLowerCase();
                 const fromShortener = SHORTENER_DOMAINS.some(domain => referrer.includes(domain));
-                checks.push(fromShortener);
+                checks.push({ passed: fromShortener, weight: 3 });
                 
+                // Check 2: URL parameters
                 const urlParams = new URLSearchParams(window.location.search);
                 const hasToken = urlParams.get('token') === 'auto';
                 const isKeyPage = urlParams.get('page') === 'key';
-                checks.push(hasToken && isKeyPage);
+                checks.push({ passed: hasToken && isKeyPage, weight: 3 });
                 
+                // Check 3: Token hợp lệ trong session
                 const storedToken = sessionStorage.getItem(TOKEN_KEY);
                 const storedTimestamp = sessionStorage.getItem(TIMESTAMP_KEY);
                 if (storedToken && storedTimestamp) {
                     const timeDiff = Date.now() - parseInt(storedTimestamp);
-                    checks.push(storedToken === 'auto' && timeDiff < 300000);
+                    checks.push({ passed: storedToken === 'auto' && timeDiff < 60000, weight: 2 });
                 }
                 
-                checks.push(sessionStorage.getItem(VERIFICATION_KEY) === 'true');
-                checks.push(verifyFingerprint());
-                checks.push(checkRateLimit());
+                // Check 4: Verification flag
+                checks.push({ passed: sessionStorage.getItem(VERIFICATION_KEY) === 'true', weight: 2 });
                 
-                return checks.filter(c => c).length >= 3;
+                // Check 5: Fingerprint
+                checks.push({ passed: verifyFingerprint(), weight: 2 });
+                
+                // Check 6: Canvas fingerprint
+                checks.push({ passed: verifyCanvasFingerprint(), weight: 1 });
+                
+                // Check 7: Rate limit
+                checks.push({ passed: checkRateLimit(), weight: 1 });
+                
+                // Check 8: Integrity
+                checks.push({ passed: verifyIntegrity(), weight: 1 });
+                
+                // Check 9: Session ID
+                const sessionId = sessionStorage.getItem(SESSION_ID_KEY);
+                checks.push({ passed: !!sessionId, weight: 1 });
+                
+                // Tính điểm
+                checks.forEach(check => {
+                    if (check.passed) score += check.weight;
+                });
+                
+                // Cần ít nhất 8 điểm để pass
+                return score >= 8;
             }
 
             const usedNonces = new Set();
             
             function generateNonce() {
                 const nonce = crypto.randomUUID ? crypto.randomUUID() : 
-                    Math.random().toString(36) + Date.now().toString(36);
+                    Math.random().toString(36) + Date.now().toString(36) + 
+                    Math.random().toString(36);
                 usedNonces.add(nonce);
+                
+                // Giới hạn số lượng nonce
+                if (usedNonces.size > 100) {
+                    const iterator = usedNonces.values();
+                    usedNonces.delete(iterator.next().value);
+                }
+                
                 return nonce;
             }
 
             function generateKey(nonce) {
                 let key = KEY_PREFIX;
-                const randomBytes = new Uint8Array(16);
+                
+                // Tăng cường random
+                const randomBytes = new Uint8Array(24);
                 crypto.getRandomValues(randomBytes);
                 const randomStr = Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
                 
-                const specialPart = SPECIAL_CHARS.substring(0, Math.floor(Math.random() * 20) + 10);
-                const position = Math.floor(Math.random() * 3);
+                // Thêm ký tự đặc biệt ngẫu nhiên
+                const specialPart = SPECIAL_CHARS.substring(0, Math.floor(Math.random() * 25) + 15);
+                const shuffledSpecial = specialPart.split('').sort(() => Math.random() - 0.5).join('');
+                
+                const position = Math.floor(Math.random() * 4);
                 
                 switch(position) {
                     case 0:
-                        key += REQUIRED_WORD + specialPart + randomStr;
+                        key += REQUIRED_WORD + shuffledSpecial + randomStr;
                         break;
                     case 1:
-                        const mid = Math.floor(specialPart.length / 2);
-                        key += specialPart.substring(0, mid) + REQUIRED_WORD + specialPart.substring(mid) + randomStr;
+                        const mid = Math.floor(shuffledSpecial.length / 2);
+                        key += shuffledSpecial.substring(0, mid) + REQUIRED_WORD + 
+                               shuffledSpecial.substring(mid) + randomStr;
                         break;
                     case 2:
-                        key += specialPart + randomStr + REQUIRED_WORD;
+                        key += shuffledSpecial + randomStr + REQUIRED_WORD;
+                        break;
+                    case 3:
+                        const pos = Math.floor(Math.random() * randomStr.length);
+                        key += shuffledSpecial + randomStr.substring(0, pos) + 
+                               REQUIRED_WORD + randomStr.substring(pos);
                         break;
                 }
                 
+                // Đảm bảo có ký tự đặc biệt
                 if (!/[¡¿'\-:;₫&@#%*^+€¥$_|\\\[\]{}]/.test(key)) {
-                    key += SPECIAL_CHARS.substring(0, 8);
+                    key += SPECIAL_CHARS.substring(0, 10);
                 }
                 
-                const nonceHash = btoa(nonce).substring(0, 4);
+                // Thêm hash của nonce
+                const nonceHash = btoa(nonce).substring(0, 6);
                 key += nonceHash;
                 
                 return key;
@@ -812,26 +1056,36 @@
                 if (!key.startsWith(KEY_PREFIX)) return false;
                 if (!key.includes(REQUIRED_WORD)) return false;
                 if (!/[¡¿'\-:;₫&@#%*^+€¥$_|\\\[\]{}]/.test(key)) return false;
-                if (key.length < 35) return false;
+                if (key.length < 40) return false;
+                
+                // Kiểm tra không chứa pattern đáng ngờ
+                const suspiciousPatterns = ['script', 'alert', 'eval', 'http', 'www.'];
+                if (suspiciousPatterns.some(p => key.toLowerCase().includes(p))) return false;
+                
                 return true;
             }
 
-            // ============ STORAGE ============
+            // ============ STORAGE với Integrity Check ============
             function saveSecureData(keyData) {
                 const nonce = generateNonce();
                 const hash = generateMultiHash(keyData);
                 const encoded = advancedEncode(JSON.stringify(keyData));
+                const integrityHash = calculateIntegrity();
                 
                 const secureData = {
                     data: encoded,
                     hash: hash,
                     nonce: nonce,
                     timestamp: Date.now(),
-                    fingerprint: generateFingerprint()
+                    fingerprint: generateFingerprint(),
+                    canvasFp: generateCanvasFingerprint(),
+                    integrity: integrityHash,
+                    sessionId: sessionStorage.getItem(SESSION_ID_KEY)
                 };
                 
                 sessionStorage.setItem(KEY_DATA_KEY, JSON.stringify(secureData));
                 sessionStorage.setItem(HASH_KEY, hash);
+                sessionStorage.setItem(INTEGRITY_KEY, integrityHash);
             }
 
             function getSecureData() {
@@ -840,14 +1094,21 @@
                     if (!raw) return null;
                     
                     const secureData = JSON.parse(raw);
-                    const storedHash = sessionStorage.getItem(HASH_KEY);
                     
-                    if (secureData.hash !== storedHash) {
-                        clearAllData();
-                        return null;
-                    }
+                    // Multiple integrity checks
+                    const checks = [
+                        secureData.hash === sessionStorage.getItem(HASH_KEY),
+                        secureData.fingerprint === generateFingerprint(),
+                        secureData.canvasFp === generateCanvasFingerprint(),
+                        secureData.integrity === calculateIntegrity(),
+                        secureData.sessionId === sessionStorage.getItem(SESSION_ID_KEY),
+                        verifyFingerprint(),
+                        verifyCanvasFingerprint(),
+                        verifyIntegrity()
+                    ];
                     
-                    if (secureData.fingerprint !== generateFingerprint()) {
+                    // Nếu bất kỳ check nào fail
+                    if (checks.some(check => !check)) {
                         clearAllData();
                         return null;
                     }
@@ -860,7 +1121,7 @@
                     
                     const keyData = JSON.parse(decoded);
                     
-                    // QUAN TRỌNG: Kiểm tra hết hạn
+                    // Kiểm tra hết hạn
                     if (Date.now() - secureData.timestamp > KEY_DURATION) {
                         clearAllData();
                         return null;
@@ -880,6 +1141,7 @@
                         sessionStorage.removeItem(key);
                     }
                 });
+                usedNonces.clear();
             }
 
             // ============ UI ELEMENTS ============
@@ -917,6 +1179,11 @@
                     const m = Math.floor((remaining % 3600000) / 60000);
                     const s = Math.floor((remaining % 60000) / 1000);
                     countdown.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                    
+                    // Cảnh báo khi còn 1 giờ
+                    if (remaining < 3600000) {
+                        countdown.style.color = '#ff6b6b';
+                    }
                 }
                 
                 update();
@@ -929,21 +1196,18 @@
                     countdownInterval = null;
                 }
                 currentExpiry = null;
+                countdown.style.color = '';
             }
 
             // ============ HANDLE EXPIRY ============
             function handleExpiry() {
                 stopCountdown();
                 
-                // Đổi key thành EXPIRED
                 keyDisplay.textContent = 'EXPIRED';
                 keyDisplay.classList.add('expired-key');
                 keyDisplay.style.cursor = 'not-allowed';
-                
-                // Ẩn timer
                 timerContainer.classList.add('hidden');
                 
-                // Đổi giao diện thành trạng thái hết hạn
                 mainCard.classList.add('expired');
                 brandText.classList.add('expired');
                 dividerLine.classList.add('expired');
@@ -952,17 +1216,12 @@
                 keyLabel.classList.add('expired-label');
                 statusMessage.classList.add('expired-message');
                 
-                // Hiện nút GET NEW KEY
                 newKeyBtn.classList.remove('hidden');
-                
-                // Cập nhật message
                 statusMessage.textContent = 'Key has expired. Please get a new key.';
                 
-                // Xóa dữ liệu
                 clearAllData();
             }
 
-            // ============ RESET EXPIRED STATE ============
             function resetExpiredState() {
                 mainCard.classList.remove('expired');
                 brandText.classList.remove('expired');
@@ -977,13 +1236,14 @@
                 newKeyBtn.classList.add('hidden');
             }
 
-            // ============ PAGE MANAGEMENT ============
             function showPage1() {
                 page1.classList.remove('hidden');
                 page2.classList.add('hidden');
                 stopCountdown();
                 resetExpiredState();
-                statusMessage.textContent = 'Click to verify and get your key';
+                statusMessage.textContent = 'Multi-layer verification required';
+                keyDisplay.textContent = '-----';
+                keyDisplay.style.opacity = '0.5';
             }
 
             function showPage2() {
@@ -1005,15 +1265,21 @@
                 sessionStorage.setItem(VERIFICATION_KEY, 'true');
                 sessionStorage.setItem(TOKEN_KEY, 'auto');
                 sessionStorage.setItem(TIMESTAMP_KEY, Date.now().toString());
+                sessionStorage.setItem(SESSION_ID_KEY, generateSessionId());
             }
 
             // ============ COPY FUNCTION ============
-            keyDisplay.addEventListener('click', function() {
+            keyDisplay.addEventListener('click', function(e) {
                 const text = keyDisplay.textContent;
                 if (text && text !== '-----' && text !== 'EXPIRED' && !keyDisplay.classList.contains('expired-key')) {
-                    navigator.clipboard.writeText(text).then(() => {
-                        showCopyNotification('Key copied successfully');
-                    }).catch(() => {});
+                    // Chỉ cho phép copy thông qua click, không phải keyboard
+                    if (e.pointerType === 'mouse' || e.pointerType === 'touch') {
+                        navigator.clipboard.writeText(text).then(() => {
+                            showCopyNotification('Key copied successfully');
+                        }).catch(() => {
+                            showCopyNotification('Failed to copy key');
+                        });
+                    }
                 }
             });
 
@@ -1035,12 +1301,21 @@
 
             // ============ INITIALIZATION ============
             function initialize() {
+                // Khởi tạo session
+                if (!sessionStorage.getItem(SESSION_ID_KEY)) {
+                    sessionStorage.setItem(SESSION_ID_KEY, generateSessionId());
+                }
+                if (!sessionStorage.getItem(CANVAS_FP_KEY)) {
+                    sessionStorage.setItem(CANVAS_FP_KEY, generateCanvasFingerprint());
+                }
+                if (!sessionStorage.getItem(INTEGRITY_KEY)) {
+                    sessionStorage.setItem(INTEGRITY_KEY, calculateIntegrity());
+                }
+                
                 const isVerified = multiLayerVerification();
                 const secureData = getSecureData();
                 
-                // Kiểm tra key còn hạn không
                 if (secureData && secureData.expiry > Date.now() && validateKey(secureData.key)) {
-                    // KEY CÒN HẠN - Hiển thị key với countdown
                     displayKey(secureData);
                     
                     if (window.history && window.history.replaceState) {
@@ -1049,18 +1324,14 @@
                     return;
                 }
                 
-                // KEY HẾT HẠN hoặc không có key
                 if (secureData && secureData.expiry <= Date.now()) {
-                    // Hiển thị trạng thái hết hạn
                     clearAllData();
                     showPage2();
                     handleExpiry();
                     return;
                 }
                 
-                // Người dùng mới hoặc chưa xác minh
                 if (isVerified) {
-                    // Tạo key mới
                     const nonce = generateNonce();
                     const newKey = generateKey(nonce);
                     const keyData = {
@@ -1083,7 +1354,13 @@
             // ============ BUTTON HANDLERS ============
             getKeyBtn.addEventListener('click', function() {
                 if (!checkRateLimit()) {
-                    statusMessage.textContent = 'Too many requests. Please wait.';
+                    statusMessage.textContent = 'Security limit exceeded. Please wait.';
+                    return;
+                }
+                
+                if (!verifyFingerprint() || !verifyCanvasFingerprint()) {
+                    statusMessage.textContent = 'Security verification failed.';
+                    clearAllData();
                     return;
                 }
                 
@@ -1101,12 +1378,14 @@
                 sessionStorage.setItem(TOKEN_KEY, 'auto');
                 sessionStorage.setItem(TIMESTAMP_KEY, Date.now().toString());
                 sessionStorage.setItem(FINGERPRINT_KEY, generateFingerprint());
+                sessionStorage.setItem(CANVAS_FP_KEY, generateCanvasFingerprint());
+                sessionStorage.setItem(SESSION_ID_KEY, generateSessionId());
+                sessionStorage.setItem(INTEGRITY_KEY, calculateIntegrity());
                 
                 window.open(SHORTENER_URL, '_blank');
                 statusMessage.textContent = 'Opening verification page...';
             });
 
-            // NÚT GET NEW KEY - Quay về trang 1
             newKeyBtn.addEventListener('click', function() {
                 clearAllData();
                 stopCountdown();
@@ -1131,37 +1410,55 @@
                 }
             }
 
-            // ============ PERIODIC CHECK ============
-            // Kiểm tra mỗi 5 giây xem key đã hết hạn chưa
+            // ============ PERIODIC SECURITY CHECKS ============
             setInterval(() => {
+                // Check hết hạn
                 const data = getSecureData();
                 if (data && data.expiry <= Date.now() && currentExpiry) {
                     handleExpiry();
                 }
                 
-                if (!verifyFingerprint()) {
+                // Check integrity
+                if (!verifyFingerprint() || !verifyCanvasFingerprint() || !verifyIntegrity()) {
                     clearAllData();
                     handleExpiry();
                 }
-            }, 5000);
+                
+                // Update integrity hash
+                sessionStorage.setItem(INTEGRITY_KEY, calculateIntegrity());
+            }, 3000);
+
+            // ============ ANTI-SCREENSHOT PROTECTION ============
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    // Trang bị ẩn, có thể đang screenshot
+                    keyDisplay.style.filter = 'blur(5px)';
+                } else {
+                    keyDisplay.style.filter = 'none';
+                }
+            });
 
             // ============ START ============
             createParticles();
             antiDebug();
             initialize();
             
-            // Production mode - vô hiệu hóa console
+            // Production mode - vô hiệu hóa console nâng cao
             if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-                const noop = function() {};
-                console.log = noop;
-                console.warn = noop;
-                console.error = noop;
-                console.info = noop;
-                console.debug = noop;
-                console.clear = noop;
+                const methods = ['log', 'warn', 'error', 'info', 'debug', 'clear', 'table', 'trace', 'dir', 'group', 'groupEnd'];
+                methods.forEach(method => {
+                    console[method] = function() {};
+                });
+                
+                // Vô hiệu hóa console.time/timeEnd
+                console.time = function() {};
+                console.timeEnd = function() {};
+                
+                // Ghi đè toString của console
+                console.toString = function() { return 'function console() { [native code] }'; };
             }
 
         })();
     </script>
 </body>
-</html> 
+</html>
