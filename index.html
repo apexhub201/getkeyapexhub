@@ -20,6 +20,10 @@
             justify-content: center;
             overflow: hidden;
             position: relative;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
 
         .bg-aurora {
@@ -344,7 +348,6 @@
             border: 1px solid rgba(160, 140, 220, 0.3);
             word-break: break-all;
             letter-spacing: 0.5px;
-            user-select: all;
             cursor: pointer;
             transition: all 0.5s ease;
             position: relative;
@@ -356,7 +359,6 @@
             background: rgba(25, 0, 0, 0.4);
             animation: expiredKeyGlow 1.5s ease-in-out infinite;
             cursor: not-allowed;
-            user-select: none;
         }
 
         @keyframes expiredKeyGlow {
@@ -368,25 +370,6 @@
                 border-color: rgba(255, 100, 100, 0.6);
                 box-shadow: 0 0 30px rgba(255, 50, 50, 0.3);
             }
-        }
-
-        .key-value::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, 
-                transparent 30%, 
-                rgba(160, 140, 255, 0.05) 50%, 
-                transparent 70%);
-            animation: keyHighlight 3s ease-in-out infinite;
-        }
-
-        @keyframes keyHighlight {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 1; }
         }
 
         .key-value:hover {
@@ -594,7 +577,6 @@
                     <div class="subtitle" id="subtitleText">Secure Key System</div>
                 </div>
 
-                <!-- TRANG 1: GET KEY -->
                 <div id="page1">
                     <div class="key-area">
                         <div class="key-label">YOUR LICENSE KEY</div>
@@ -604,7 +586,6 @@
                     <div class="status-message">Click to verify and get your key</div>
                 </div>
 
-                <!-- TRANG 2: HIỂN THỊ KEY + ĐẾM NGƯỢC -->
                 <div id="page2" class="hidden">
                     <div class="key-area" id="keyArea">
                         <div class="key-label" id="keyLabel">YOUR LICENSE KEY</div>
@@ -614,7 +595,6 @@
                             <span class="timer" id="countdown">24:00:00</span>
                         </div>
                     </div>
-                    <!-- Nút GET NEW KEY (chỉ hiện khi hết hạn) -->
                     <button class="btn btn-new-key hidden" id="newKeyBtn">GET NEW KEY</button>
                     <div class="status-message" id="statusMessage"></div>
                 </div>
@@ -624,263 +604,545 @@
 
     <script>
         (function() {
-            // ============ CONFIGURATION ============
-            const SHORTENER_URL = 'https://link4m.org/hXPIjdW';
-            const SHORTENER_DOMAINS = ['link4m.org', 'link4m.net', 'link4m.com', 'link4m'];
-            const KEY_PREFIX = 'Free_';
-            const REQUIRED_WORD = 'apex';
-            const SPECIAL_CHARS = 'qptoeugjwmxnalkjf¡¿\'-:;₫&@9275023#%*^+€¥$_|\\[]{}bcz';
-            const KEY_DURATION = 24 * 60 * 60 * 1000;
-            
-            const STORAGE_PREFIX = btoa(unescape(encodeURIComponent('apex_hub_'))).substring(0, 8);
-            const KEY_DATA_KEY = STORAGE_PREFIX + '_kd';
-            const VERIFICATION_KEY = STORAGE_PREFIX + '_vf';
-            const TIMESTAMP_KEY = STORAGE_PREFIX + '_ts';
-            const TOKEN_KEY = STORAGE_PREFIX + '_tk';
-            const HASH_KEY = STORAGE_PREFIX + '_hs';
-            const COUNTER_KEY = STORAGE_PREFIX + '_ct';
-            const FINGERPRINT_KEY = STORAGE_PREFIX + '_fp';
+            // ============ ENHANCED SECURITY: Anti-tampering IIFE wrapper ============
+            const SECURITY = {
+                _integrityToken: null,
+                _initialized: false,
+                _blocked: false
+            };
 
-            // ============ SECURITY FUNCTIONS ============
-            function generateFingerprint() {
-                const components = [
-                    navigator.userAgent,
-                    navigator.language,
-                    screen.colorDepth,
-                    screen.width + 'x' + screen.height,
-                    new Date().getTimezoneOffset(),
-                    !!window.sessionStorage,
-                    !!window.localStorage,
-                    navigator.hardwareConcurrency || 'unknown',
-                    navigator.deviceMemory || 'unknown'
-                ];
-                return btoa(components.join('||')).substring(0, 32);
-            }
+            // ============ CONFIGURATION (Obfuscated) ============
+            const CONFIG = (() => {
+                const _0x = ['link4m.org', 'hXPIjdW', 'Free_', 'apex', '24h'];
+                return {
+                    SHORTENER_URL: 'https://' + _0x[0] + '/' + _0x[1],
+                    SHORTENER_DOMAINS: [_0x[0], 'link4m.net', 'link4m.com'],
+                    KEY_PREFIX: _0x[2],
+                    REQUIRED_WORD: _0x[3],
+                    SPECIAL_CHARS: 'qptoeugjwmxnalkjf¡¿\'-:;₫&@9275023#%*^+€¥$_|\\[]{}bcz',
+                    KEY_DURATION: 24 * 60 * 60 * 1000,
+                    MAX_FAILED_ATTEMPTS: 3,
+                    RATE_LIMIT_WINDOW: 60000,
+                    MAX_REQUESTS_PER_WINDOW: 5,
+                    VERIFICATION_TIMEOUT: 30000 // 30 seconds (reduced from 5 min)
+                };
+            })();
 
-            function verifyFingerprint() {
-                const stored = sessionStorage.getItem(FINGERPRINT_KEY);
-                const current = generateFingerprint();
-                if (!stored) {
-                    sessionStorage.setItem(FINGERPRINT_KEY, current);
-                    return true;
-                }
-                return stored === current;
-            }
-
-            function checkRateLimit() {
-                const counter = parseInt(sessionStorage.getItem(COUNTER_KEY) || '0');
-                if (counter > 10) return false;
-                sessionStorage.setItem(COUNTER_KEY, (counter + 1).toString());
-                return true;
-            }
-
-            function advancedEncode(str) {
-                let encoded = btoa(unescape(encodeURIComponent(str)));
-                const salt = Date.now().toString(36);
-                return salt + '.' + encoded.split('').reverse().join('');
-            }
-
-            function advancedDecode(str) {
-                try {
-                    const parts = str.split('.');
-                    if (parts.length !== 2) return null;
-                    const reversed = parts[1].split('').reverse().join('');
-                    return decodeURIComponent(escape(atob(reversed)));
-                } catch(e) {
-                    return null;
-                }
-            }
-
-            function generateMultiHash(data) {
-                let hash1 = 0;
-                let hash2 = 0;
-                const str = JSON.stringify(data);
-                for (let i = 0; i < str.length; i++) {
-                    const char = str.charCodeAt(i);
-                    hash1 = ((hash1 << 5) - hash1) + char;
-                    hash1 = hash1 & hash1;
-                    hash2 = ((hash2 << 7) - hash2) + char;
-                    hash2 = hash2 & hash2;
-                }
-                return Math.abs(hash1).toString(36) + '_' + Math.abs(hash2).toString(36);
-            }
-
-            function antiDebug() {
-                let devtoolsOpen = false;
-                const threshold = 160;
+            // ============ ENHANCED STORAGE WITH ENCRYPTION ============
+            const StorageManager = {
+                _secretKey: null,
                 
-                setInterval(() => {
-                    const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-                    const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-                    if (widthThreshold || heightThreshold) {
-                        if (!devtoolsOpen) {
-                            devtoolsOpen = true;
-                            clearAllData();
-                            console.clear();
-                        }
-                    } else {
-                        devtoolsOpen = false;
+                init() {
+                    this._secretKey = this._generateStorageKey();
+                    return this;
+                },
+                
+                _generateStorageKey() {
+                    const entropy = new Uint8Array(32);
+                    crypto.getRandomValues(entropy);
+                    return Array.from(entropy, b => b.toString(16).padStart(2, '0')).join('');
+                },
+                
+                _getNamespacedKey(key) {
+                    return 'ah_' + this._secretKey.substring(0, 12) + '_' + key;
+                },
+                
+                _encrypt(data) {
+                    try {
+                        const jsonStr = JSON.stringify(data);
+                        const timestamp = Date.now().toString(36);
+                        const salt = crypto.getRandomValues(new Uint8Array(4)).join('');
+                        const combined = timestamp + '|' + salt + '|' + jsonStr;
+                        return btoa(unescape(encodeURIComponent(combined)));
+                    } catch(e) {
+                        return null;
                     }
-                }, 1000);
+                },
                 
-                document.addEventListener('keydown', function(e) {
-                    if (
-                        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
-                        (e.ctrlKey && e.key === 'U') ||
-                        e.key === 'F12'
-                    ) {
-                        e.preventDefault();
+                _decrypt(encrypted) {
+                    try {
+                        const decoded = decodeURIComponent(escape(atob(encrypted)));
+                        const parts = decoded.split('|');
+                        if (parts.length < 3) return null;
+                        
+                        const timestamp = parseInt(parts[0], 36);
+                        if (Date.now() - timestamp > CONFIG.KEY_DURATION + 3600000) {
+                            return null;
+                        }
+                        
+                        return JSON.parse(parts.slice(2).join('|'));
+                    } catch(e) {
+                        return null;
+                    }
+                },
+                
+                set(key, value) {
+                    const namespacedKey = this._getNamespacedKey(key);
+                    const encrypted = this._encrypt(value);
+                    if (!encrypted) return false;
+                    
+                    const secureData = {
+                        data: encrypted,
+                        timestamp: Date.now(),
+                        checksum: this._generateChecksum(encrypted)
+                    };
+                    
+                    try {
+                        sessionStorage.setItem(namespacedKey, JSON.stringify(secureData));
+                        return true;
+                    } catch(e) {
                         return false;
                     }
-                });
+                },
                 
-                document.addEventListener('contextmenu', function(e) {
-                    e.preventDefault();
-                    return false;
-                });
-            }
-
-            function multiLayerVerification() {
-                const checks = [];
-                
-                const referrer = document.referrer.toLowerCase();
-                const fromShortener = SHORTENER_DOMAINS.some(domain => referrer.includes(domain));
-                checks.push(fromShortener);
-                
-                const urlParams = new URLSearchParams(window.location.search);
-                const hasToken = urlParams.get('token') === 'auto';
-                const isKeyPage = urlParams.get('page') === 'key';
-                checks.push(hasToken && isKeyPage);
-                
-                const storedToken = sessionStorage.getItem(TOKEN_KEY);
-                const storedTimestamp = sessionStorage.getItem(TIMESTAMP_KEY);
-                if (storedToken && storedTimestamp) {
-                    const timeDiff = Date.now() - parseInt(storedTimestamp);
-                    checks.push(storedToken === 'auto' && timeDiff < 300000);
-                }
-                
-                checks.push(sessionStorage.getItem(VERIFICATION_KEY) === 'true');
-                checks.push(verifyFingerprint());
-                checks.push(checkRateLimit());
-                
-                return checks.filter(c => c).length >= 3;
-            }
-
-            const usedNonces = new Set();
-            
-            function generateNonce() {
-                const nonce = crypto.randomUUID ? crypto.randomUUID() : 
-                    Math.random().toString(36) + Date.now().toString(36);
-                usedNonces.add(nonce);
-                return nonce;
-            }
-
-            function generateKey(nonce) {
-                let key = KEY_PREFIX;
-                const randomBytes = new Uint8Array(16);
-                crypto.getRandomValues(randomBytes);
-                const randomStr = Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
-                
-                const specialPart = SPECIAL_CHARS.substring(0, Math.floor(Math.random() * 20) + 10);
-                const position = Math.floor(Math.random() * 3);
-                
-                switch(position) {
-                    case 0:
-                        key += REQUIRED_WORD + specialPart + randomStr;
-                        break;
-                    case 1:
-                        const mid = Math.floor(specialPart.length / 2);
-                        key += specialPart.substring(0, mid) + REQUIRED_WORD + specialPart.substring(mid) + randomStr;
-                        break;
-                    case 2:
-                        key += specialPart + randomStr + REQUIRED_WORD;
-                        break;
-                }
-                
-                if (!/[¡¿'\-:;₫&@#%*^+€¥$_|\\\[\]{}]/.test(key)) {
-                    key += SPECIAL_CHARS.substring(0, 8);
-                }
-                
-                const nonceHash = btoa(nonce).substring(0, 4);
-                key += nonceHash;
-                
-                return key;
-            }
-
-            function validateKey(key) {
-                if (!key || typeof key !== 'string') return false;
-                if (!key.startsWith(KEY_PREFIX)) return false;
-                if (!key.includes(REQUIRED_WORD)) return false;
-                if (!/[¡¿'\-:;₫&@#%*^+€¥$_|\\\[\]{}]/.test(key)) return false;
-                if (key.length < 35) return false;
-                return true;
-            }
-
-            // ============ STORAGE ============
-            function saveSecureData(keyData) {
-                const nonce = generateNonce();
-                const hash = generateMultiHash(keyData);
-                const encoded = advancedEncode(JSON.stringify(keyData));
-                
-                const secureData = {
-                    data: encoded,
-                    hash: hash,
-                    nonce: nonce,
-                    timestamp: Date.now(),
-                    fingerprint: generateFingerprint()
-                };
-                
-                sessionStorage.setItem(KEY_DATA_KEY, JSON.stringify(secureData));
-                sessionStorage.setItem(HASH_KEY, hash);
-            }
-
-            function getSecureData() {
-                try {
-                    const raw = sessionStorage.getItem(KEY_DATA_KEY);
-                    if (!raw) return null;
-                    
-                    const secureData = JSON.parse(raw);
-                    const storedHash = sessionStorage.getItem(HASH_KEY);
-                    
-                    if (secureData.hash !== storedHash) {
-                        clearAllData();
+                get(key) {
+                    const namespacedKey = this._getNamespacedKey(key);
+                    try {
+                        const raw = sessionStorage.getItem(namespacedKey);
+                        if (!raw) return null;
+                        
+                        const secureData = JSON.parse(raw);
+                        if (!secureData.data || !secureData.checksum) return null;
+                        
+                        if (secureData.checksum !== this._generateChecksum(secureData.data)) {
+                            this.remove(key);
+                            return null;
+                        }
+                        
+                        return this._decrypt(secureData.data);
+                    } catch(e) {
+                        this.remove(key);
                         return null;
                     }
-                    
-                    if (secureData.fingerprint !== generateFingerprint()) {
-                        clearAllData();
-                        return null;
+                },
+                
+                remove(key) {
+                    const namespacedKey = this._getNamespacedKey(key);
+                    sessionStorage.removeItem(namespacedKey);
+                },
+                
+                clear() {
+                    const prefix = this._getNamespacedKey('');
+                    const keys = Object.keys(sessionStorage);
+                    keys.forEach(key => {
+                        if (key.startsWith(prefix)) {
+                            sessionStorage.removeItem(key);
+                        }
+                    });
+                },
+                
+                _generateChecksum(data) {
+                    let hash = 5381;
+                    for (let i = 0; i < data.length; i++) {
+                        hash = ((hash << 5) + hash) + data.charCodeAt(i);
+                        hash = hash & hash;
                     }
-                    
-                    const decoded = advancedDecode(secureData.data);
-                    if (!decoded) {
-                        clearAllData();
-                        return null;
-                    }
-                    
-                    const keyData = JSON.parse(decoded);
-                    
-                    // QUAN TRỌNG: Kiểm tra hết hạn
-                    if (Date.now() - secureData.timestamp > KEY_DURATION) {
-                        clearAllData();
-                        return null;
-                    }
-                    
-                    return keyData;
-                } catch(e) {
-                    clearAllData();
-                    return null;
+                    return Math.abs(hash).toString(36);
                 }
-            }
+            };
 
-            function clearAllData() {
-                const keys = Object.keys(sessionStorage);
-                keys.forEach(key => {
-                    if (key.includes(STORAGE_PREFIX)) {
-                        sessionStorage.removeItem(key);
+            // ============ ENHANCED FINGERPRINT ============
+            const FingerprintManager = {
+                generate() {
+                    const components = [
+                        navigator.userAgent,
+                        navigator.language,
+                        screen.colorDepth,
+                        screen.width + 'x' + screen.height,
+                        new Date().getTimezoneOffset(),
+                        navigator.hardwareConcurrency || 'unknown',
+                        navigator.deviceMemory || 'unknown',
+                        this._getCanvasFingerprint(),
+                        this._getWebGLFingerprint(),
+                        this._getAudioFingerprint(),
+                        this._getFontFingerprint()
+                    ];
+                    
+                    return this._hash(components.join('|||'));
+                },
+                
+                _getCanvasFingerprint() {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 200;
+                        canvas.height = 50;
+                        const ctx = canvas.getContext('2d');
+                        ctx.textBaseline = 'top';
+                        ctx.font = '14px Arial';
+                        ctx.fillStyle = '#f60';
+                        ctx.fillRect(125, 1, 62, 20);
+                        ctx.fillStyle = '#069';
+                        ctx.fillText('APEX HUB Security', 2, 15);
+                        ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
+                        ctx.fillText('Canvas FP', 4, 17);
+                        return canvas.toDataURL();
+                    } catch(e) {
+                        return 'canvas-error';
                     }
-                });
-            }
+                },
+                
+                _getWebGLFingerprint() {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                        if (!gl) return 'no-webgl';
+                        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                        return debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : 'webgl-no-debug';
+                    } catch(e) {
+                        return 'webgl-error';
+                    }
+                },
+                
+                _getAudioFingerprint() {
+                    try {
+                        const audioCtx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100);
+                        const oscillator = audioCtx.createOscillator();
+                        const compressor = audioCtx.createDynamicsCompressor();
+                        oscillator.type = 'triangle';
+                        compressor.threshold.setValueAtTime(-50, audioCtx.currentTime);
+                        compressor.knee.setValueAtTime(40, audioCtx.currentTime);
+                        compressor.ratio.setValueAtTime(12, audioCtx.currentTime);
+                        compressor.attack.setValueAtTime(0, audioCtx.currentTime);
+                        compressor.release.setValueAtTime(0.25, audioCtx.currentTime);
+                        oscillator.connect(compressor);
+                        compressor.connect(audioCtx.destination);
+                        oscillator.start(0);
+                        return 'audio-supported';
+                    } catch(e) {
+                        return 'audio-error';
+                    }
+                },
+                
+                _getFontFingerprint() {
+                    const fonts = ['monospace', 'sans-serif', 'serif'];
+                    const testString = 'mmmmmmmmmmlli';
+                    const results = [];
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    fonts.forEach(font => {
+                        ctx.font = '72px ' + font;
+                        const width = ctx.measureText(testString).width;
+                        results.push(width);
+                    });
+                    
+                    return results.join(',');
+                },
+                
+                _hash(str) {
+                    let hash = 0;
+                    for (let i = 0; i < str.length; i++) {
+                        const char = str.charCodeAt(i);
+                        hash = ((hash << 5) - hash) + char;
+                        hash = hash & hash;
+                    }
+                    return Math.abs(hash).toString(36);
+                },
+                
+                verify(storedFingerprint) {
+                    const current = this.generate();
+                    return storedFingerprint === current;
+                }
+            };
+
+            // ============ ENHANCED RATE LIMITER ============
+            const RateLimiter = {
+                _requests: [],
+                
+                checkLimit() {
+                    const now = Date.now();
+                    this._requests = this._requests.filter(time => now - time < CONFIG.RATE_LIMIT_WINDOW);
+                    
+                    if (this._requests.length >= CONFIG.MAX_REQUESTS_PER_WINDOW) {
+                        return false;
+                    }
+                    
+                    this._requests.push(now);
+                    return true;
+                },
+                
+                getRemainingRequests() {
+                    const now = Date.now();
+                    this._requests = this._requests.filter(time => now - time < CONFIG.RATE_LIMIT_WINDOW);
+                    return CONFIG.MAX_REQUESTS_PER_WINDOW - this._requests.length;
+                }
+            };
+
+            // ============ ENHANCED KEY GENERATOR ============
+            const KeyGenerator = {
+                generate() {
+                    const nonce = this._generateNonce();
+                    let key = CONFIG.KEY_PREFIX;
+                    
+                    const randomBytes = new Uint8Array(24);
+                    crypto.getRandomValues(randomBytes);
+                    const randomStr = Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
+                    
+                    const specialPart = this._generateSpecialPart();
+                    const position = Math.floor(crypto.getRandomValues(new Uint8Array(1))[0] % 3);
+                    
+                    switch(position) {
+                        case 0:
+                            key += CONFIG.REQUIRED_WORD + specialPart + randomStr;
+                            break;
+                        case 1:
+                            const mid = Math.floor(specialPart.length / 2);
+                            key += specialPart.substring(0, mid) + CONFIG.REQUIRED_WORD + specialPart.substring(mid) + randomStr;
+                            break;
+                        case 2:
+                            key += specialPart + randomStr + CONFIG.REQUIRED_WORD;
+                            break;
+                    }
+                    
+                    const nonceHash = btoa(nonce).substring(0, 6);
+                    key += nonceHash;
+                    
+                    if (!this._validateKey(key)) {
+                        key += CONFIG.SPECIAL_CHARS.substring(0, 12);
+                    }
+                    
+                    return { key, nonce };
+                },
+                
+                _generateNonce() {
+                    const nonce = new Uint8Array(16);
+                    crypto.getRandomValues(nonce);
+                    return Array.from(nonce, b => b.toString(16).padStart(2, '0')).join('');
+                },
+                
+                _generateSpecialPart() {
+                    const chars = CONFIG.SPECIAL_CHARS;
+                    const length = Math.floor(crypto.getRandomValues(new Uint8Array(1))[0] % 20) + 15;
+                    let result = '';
+                    const randomBytes = new Uint8Array(length);
+                    crypto.getRandomValues(randomBytes);
+                    
+                    for (let i = 0; i < length; i++) {
+                        result += chars[randomBytes[i] % chars.length];
+                    }
+                    
+                    return result;
+                },
+                
+                _validateKey(key) {
+                    if (!key || typeof key !== 'string') return false;
+                    if (!key.startsWith(CONFIG.KEY_PREFIX)) return false;
+                    if (!key.includes(CONFIG.REQUIRED_WORD)) return false;
+                    if (!/[¡¿'\-:;₫&@#%*^+€¥$_|\\\[\]{}]/.test(key)) return false;
+                    if (key.length < 40) return false;
+                    return true;
+                }
+            };
+
+            // ============ ENHANCED ANTI-DEBUG ============
+            const AntiDebug = {
+                _devtoolsOpen: false,
+                _debuggerAttempts: 0,
+                _lastDetectionTime: 0,
+                
+                init() {
+                    this._detectDevTools();
+                    this._blockShortcuts();
+                    this._detectDebugger();
+                    this._protectConsole();
+                    this._detectTampering();
+                },
+                
+                _detectDevTools() {
+                    const threshold = 160;
+                    
+                    setInterval(() => {
+                        const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+                        const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+                        
+                        if (widthThreshold || heightThreshold) {
+                            if (!this._devtoolsOpen) {
+                                this._devtoolsOpen = true;
+                                this._handleDetection('DevTools opened');
+                            }
+                        } else {
+                            this._devtoolsOpen = false;
+                        }
+                    }, 500);
+                    
+                    // Performance timing detection
+                    const start = performance.now();
+                    debugger;
+                    const end = performance.now();
+                    if (end - start > 100) {
+                        this._handleDetection('Debugger timing detected');
+                    }
+                },
+                
+                _blockShortcuts() {
+                    const blockedKeys = ['F12', 'F3'];
+                    const blockedCombos = [
+                        { ctrl: true, shift: true, key: 'I' },
+                        { ctrl: true, shift: true, key: 'J' },
+                        { ctrl: true, shift: true, key: 'C' },
+                        { ctrl: true, key: 'U' },
+                        { ctrl: true, key: 'S' }
+                    ];
+                    
+                    document.addEventListener('keydown', (e) => {
+                        if (blockedKeys.includes(e.key) || 
+                            blockedCombos.some(combo => 
+                                e.ctrlKey === !!combo.ctrl && 
+                                e.shiftKey === !!combo.shift && 
+                                e.key.toUpperCase() === combo.key
+                            )) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            return false;
+                        }
+                    }, true);
+                    
+                    document.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        return false;
+                    });
+                },
+                
+                _detectDebugger() {
+                    const self = this;
+                    setInterval(function() {
+                        const startTime = performance.now();
+                        debugger;
+                        const endTime = performance.now();
+                        if (endTime - startTime > 100) {
+                            self._debuggerAttempts++;
+                            if (self._debuggerAttempts > 3) {
+                                self._handleDetection('Debugger statement detected');
+                            }
+                        }
+                    }, 2000);
+                },
+                
+                _protectConsole() {
+                    const methods = ['log', 'warn', 'error', 'info', 'debug', 'clear', 'table', 'trace'];
+                    const self = this;
+                    
+                    methods.forEach(method => {
+                        const original = console[method];
+                        Object.defineProperty(console, method, {
+                            get: function() {
+                                return function() {};
+                            },
+                            set: function() {
+                                self._handleDetection('Console tampered');
+                            },
+                            configurable: false
+                        });
+                    });
+                },
+                
+                _detectTampering() {
+                    const observer = new MutationObserver((mutations) => {
+                        mutations.forEach((mutation) => {
+                            if (mutation.type === 'childList' || mutation.type === 'attributes') {
+                                const target = mutation.target;
+                                if (target.id && ['mainCard', 'keyDisplay', 'getKeyBtn'].includes(target.id)) {
+                                    this._handleDetection('DOM tampered');
+                                }
+                            }
+                        });
+                    });
+                    
+                    observer.observe(document.body, {
+                        childList: true,
+                        subtree: true,
+                        attributes: true,
+                        attributeFilter: ['style', 'class', 'id']
+                    });
+                },
+                
+                _handleDetection(reason) {
+                    const now = Date.now();
+                    if (now - this._lastDetectionTime < 5000) return; // Prevent spam
+                    this._lastDetectionTime = now;
+                    
+                    console.clear();
+                    StorageManager.clear();
+                    
+                    if (window.location.href.includes('localhost')) {
+                        console.warn('Security detection:', reason);
+                    } else {
+                        // Force clean reload
+                        document.body.innerHTML = '';
+                        setTimeout(() => {
+                            window.location.href = 'about:blank';
+                        }, 100);
+                    }
+                }
+            };
+
+            // ============ ENHANCED VERIFICATION ============
+            const VerificationSystem = {
+                verify() {
+                    const checks = [];
+                    
+                    // Check 1: Referrer verification
+                    const referrer = document.referrer.toLowerCase();
+                    const fromShortener = CONFIG.SHORTENER_DOMAINS.some(domain => referrer.includes(domain));
+                    checks.push(fromShortener);
+                    
+                    // Check 2: URL token verification with strict timeout
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const hasToken = urlParams.get('token') === 'auto';
+                    const isKeyPage = urlParams.get('page') === 'key';
+                    const storedToken = StorageManager.get('verification_token');
+                    const storedTimestamp = StorageManager.get('verification_timestamp');
+                    
+                    let tokenValid = false;
+                    if (hasToken && isKeyPage && storedToken && storedTimestamp) {
+                        const timeDiff = Date.now() - storedTimestamp;
+                        tokenValid = storedToken === 'auto' && timeDiff < CONFIG.VERIFICATION_TIMEOUT;
+                    }
+                    checks.push(tokenValid);
+                    
+                    // Check 3: Stored verification
+                    checks.push(StorageManager.get('verified') === true);
+                    
+                    // Check 4: Fingerprint verification
+                    const storedFingerprint = StorageManager.get('fingerprint');
+                    checks.push(storedFingerprint && FingerprintManager.verify(storedFingerprint));
+                    
+                    // Check 5: Rate limit
+                    checks.push(RateLimiter.checkLimit());
+                    
+                    // Check 6: Human behavior verification
+                    checks.push(this._verifyHumanBehavior());
+                    
+                    // ALL checks must pass (changed from >= 3)
+                    return checks.every(c => c === true);
+                },
+                
+                _verifyHumanBehavior() {
+                    // Check for basic browser automation indicators
+                    const indicators = [
+                        navigator.webdriver === false || navigator.webdriver === undefined,
+                        !window.chrome || window.chrome.runtime !== undefined,
+                        navigator.plugins.length > 0,
+                        !window._phantom,
+                        !window.__nightmare,
+                        !window.callPhantom
+                    ];
+                    
+                    return indicators.filter(i => i).length >= 4;
+                },
+                
+                markAsVerified() {
+                    StorageManager.set('verified', true);
+                    StorageManager.set('verification_token', 'auto');
+                    StorageManager.set('verification_timestamp', Date.now());
+                    StorageManager.set('fingerprint', FingerprintManager.generate());
+                    
+                    // Clean URL
+                    if (window.history && window.history.replaceState) {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                }
+            };
 
             // ============ UI ELEMENTS ============
             const mainCard = document.getElementById('mainCard');
@@ -935,15 +1197,12 @@
             function handleExpiry() {
                 stopCountdown();
                 
-                // Đổi key thành EXPIRED
                 keyDisplay.textContent = 'EXPIRED';
                 keyDisplay.classList.add('expired-key');
                 keyDisplay.style.cursor = 'not-allowed';
                 
-                // Ẩn timer
                 timerContainer.classList.add('hidden');
                 
-                // Đổi giao diện thành trạng thái hết hạn
                 mainCard.classList.add('expired');
                 brandText.classList.add('expired');
                 dividerLine.classList.add('expired');
@@ -952,17 +1211,12 @@
                 keyLabel.classList.add('expired-label');
                 statusMessage.classList.add('expired-message');
                 
-                // Hiện nút GET NEW KEY
                 newKeyBtn.classList.remove('hidden');
-                
-                // Cập nhật message
                 statusMessage.textContent = 'Key has expired. Please get a new key.';
                 
-                // Xóa dữ liệu
-                clearAllData();
+                StorageManager.clear();
             }
 
-            // ============ RESET EXPIRED STATE ============
             function resetExpiredState() {
                 mainCard.classList.remove('expired');
                 brandText.classList.remove('expired');
@@ -1001,19 +1255,33 @@
                 statusMessage.textContent = 'Click on key to copy';
                 showPage2();
                 startCountdown(keyData.expiry);
-                
-                sessionStorage.setItem(VERIFICATION_KEY, 'true');
-                sessionStorage.setItem(TOKEN_KEY, 'auto');
-                sessionStorage.setItem(TIMESTAMP_KEY, Date.now().toString());
             }
 
-            // ============ COPY FUNCTION ============
+            // ============ COPY WITH TIMING PROTECTION ============
             keyDisplay.addEventListener('click', function() {
                 const text = keyDisplay.textContent;
                 if (text && text !== '-----' && text !== 'EXPIRED' && !keyDisplay.classList.contains('expired-key')) {
+                    // Timing check to prevent automated copying
+                    const clickTime = Date.now();
+                    if (window._lastClickTime && clickTime - window._lastClickTime < 200) {
+                        return; // Too fast, likely automated
+                    }
+                    window._lastClickTime = clickTime;
+                    
                     navigator.clipboard.writeText(text).then(() => {
                         showCopyNotification('Key copied successfully');
-                    }).catch(() => {});
+                    }).catch(() => {
+                        // Clipboard API might be blocked, try fallback
+                        const textarea = document.createElement('textarea');
+                        textarea.value = text;
+                        textarea.style.position = 'fixed';
+                        textarea.style.opacity = '0';
+                        document.body.appendChild(textarea);
+                        textarea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textarea);
+                        showCopyNotification('Key copied successfully');
+                    });
                 }
             });
 
@@ -1035,46 +1303,32 @@
 
             // ============ INITIALIZATION ============
             function initialize() {
-                const isVerified = multiLayerVerification();
-                const secureData = getSecureData();
+                const isVerified = VerificationSystem.verify();
+                const secureData = StorageManager.get('key_data');
                 
-                // Kiểm tra key còn hạn không
-                if (secureData && secureData.expiry > Date.now() && validateKey(secureData.key)) {
-                    // KEY CÒN HẠN - Hiển thị key với countdown
+                if (secureData && secureData.expiry > Date.now() && KeyGenerator._validateKey(secureData.key)) {
                     displayKey(secureData);
-                    
-                    if (window.history && window.history.replaceState) {
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    }
                     return;
                 }
                 
-                // KEY HẾT HẠN hoặc không có key
                 if (secureData && secureData.expiry <= Date.now()) {
-                    // Hiển thị trạng thái hết hạn
-                    clearAllData();
+                    StorageManager.clear();
                     showPage2();
                     handleExpiry();
                     return;
                 }
                 
-                // Người dùng mới hoặc chưa xác minh
                 if (isVerified) {
-                    // Tạo key mới
-                    const nonce = generateNonce();
-                    const newKey = generateKey(nonce);
+                    const { key, nonce } = KeyGenerator.generate();
                     const keyData = {
-                        key: newKey,
-                        expiry: Date.now() + KEY_DURATION,
+                        key: key,
+                        expiry: Date.now() + CONFIG.KEY_DURATION,
                         created: Date.now(),
                         nonce: nonce
                     };
-                    saveSecureData(keyData);
+                    StorageManager.set('key_data', keyData);
                     displayKey(keyData);
-                    
-                    if (window.history && window.history.replaceState) {
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    }
+                    VerificationSystem.markAsVerified();
                 } else {
                     showPage1();
                 }
@@ -1082,33 +1336,27 @@
 
             // ============ BUTTON HANDLERS ============
             getKeyBtn.addEventListener('click', function() {
-                if (!checkRateLimit()) {
+                if (!RateLimiter.checkLimit()) {
                     statusMessage.textContent = 'Too many requests. Please wait.';
                     return;
                 }
                 
-                const nonce = generateNonce();
-                const newKey = generateKey(nonce);
+                const { key, nonce } = KeyGenerator.generate();
                 const keyData = {
-                    key: newKey,
-                    expiry: Date.now() + KEY_DURATION,
+                    key: key,
+                    expiry: Date.now() + CONFIG.KEY_DURATION,
                     created: Date.now(),
                     nonce: nonce
                 };
-                saveSecureData(keyData);
+                StorageManager.set('key_data', keyData);
+                VerificationSystem.markAsVerified();
                 
-                sessionStorage.setItem(VERIFICATION_KEY, 'true');
-                sessionStorage.setItem(TOKEN_KEY, 'auto');
-                sessionStorage.setItem(TIMESTAMP_KEY, Date.now().toString());
-                sessionStorage.setItem(FINGERPRINT_KEY, generateFingerprint());
-                
-                window.open(SHORTENER_URL, '_blank');
+                window.open(CONFIG.SHORTENER_URL, '_blank');
                 statusMessage.textContent = 'Opening verification page...';
             });
 
-            // NÚT GET NEW KEY - Quay về trang 1
             newKeyBtn.addEventListener('click', function() {
-                clearAllData();
+                StorageManager.clear();
                 stopCountdown();
                 resetExpiredState();
                 showPage1();
@@ -1131,34 +1379,46 @@
                 }
             }
 
-            // ============ PERIODIC CHECK ============
-            // Kiểm tra mỗi 5 giây xem key đã hết hạn chưa
+            // ============ PERIODIC SECURITY CHECKS ============
             setInterval(() => {
-                const data = getSecureData();
+                // Check key expiry
+                const data = StorageManager.get('key_data');
                 if (data && data.expiry <= Date.now() && currentExpiry) {
                     handleExpiry();
                 }
                 
-                if (!verifyFingerprint()) {
-                    clearAllData();
+                // Verify fingerprint hasn't changed
+                const storedFingerprint = StorageManager.get('fingerprint');
+                if (storedFingerprint && !FingerprintManager.verify(storedFingerprint)) {
+                    StorageManager.clear();
                     handleExpiry();
                 }
-            }, 5000);
+                
+                // Check if devtools is open
+                const performanceCheck = performance.now();
+                debugger;
+                if (performance.now() - performanceCheck > 50) {
+                    AntiDebug._handleDetection('Performance debugger detection');
+                }
+            }, 3000);
 
             // ============ START ============
+            StorageManager.init();
             createParticles();
-            antiDebug();
+            AntiDebug.init();
+            
+            // Initialize security token
+            SECURITY._integrityToken = btoa(Date.now().toString(36) + Math.random().toString(36));
+            SECURITY._initialized = true;
+            
             initialize();
             
-            // Production mode - vô hiệu hóa console
+            // Disable console in production
             if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-                const noop = function() {};
-                console.log = noop;
-                console.warn = noop;
-                console.error = noop;
-                console.info = noop;
-                console.debug = noop;
-                console.clear = noop;
+                const methods = ['log', 'warn', 'error', 'info', 'debug', 'clear', 'table', 'trace', 'dir', 'group', 'groupCollapsed', 'groupEnd', 'time', 'timeEnd', 'profile', 'profileEnd'];
+                methods.forEach(method => {
+                    console[method] = function() {};
+                });
             }
 
         })();
