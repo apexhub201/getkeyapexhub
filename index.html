@@ -22,113 +22,181 @@
             position: relative;
         }
 
+        /* Background Animations */
+        .bg-aurora {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(76, 0, 255, 0.1) 0%, transparent 40%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 180, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 80%, rgba(180, 100, 255, 0.06) 0%, transparent 40%),
+                radial-gradient(ellipse at 70% 60%, rgba(255, 100, 200, 0.04) 0%, transparent 40%);
+            animation: auroraMove 15s ease-in-out infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes auroraMove {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(2%, -1%) rotate(1deg); }
+            50% { transform: translate(-1%, 1%) rotate(-1deg); }
+            75% { transform: translate(-2%, -0.5%) rotate(0.5deg); }
+        }
+
         .particles {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 0;
+            z-index: 1;
             pointer-events: none;
         }
 
         .particle {
             position: absolute;
-            background: linear-gradient(135deg, rgba(120, 80, 255, 0.3), rgba(0, 180, 255, 0.2));
+            background: linear-gradient(135deg, rgba(120, 80, 255, 0.4), rgba(0, 180, 255, 0.3));
             border-radius: 50%;
-            animation: float 15s infinite;
-            filter: blur(1px);
+            animation: floatParticle 20s infinite;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.3; }
-            25% { transform: translateY(-100px) translateX(50px) scale(1.5); opacity: 0.6; }
-            50% { transform: translateY(-50px) translateX(-30px) scale(0.8); opacity: 0.2; }
-            75% { transform: translateY(-150px) translateX(-60px) scale(1.2); opacity: 0.5; }
+        @keyframes floatParticle {
+            0%, 100% { 
+                transform: translateY(0) translateX(0) scale(1); 
+                opacity: 0.2; 
+            }
+            10% { 
+                transform: translateY(-100px) translateX(30px) scale(1.8); 
+                opacity: 0.6; 
+            }
+            25% { 
+                transform: translateY(-200px) translateX(-50px) scale(0.8); 
+                opacity: 0.1; 
+            }
+            40% { 
+                transform: translateY(-150px) translateX(70px) scale(1.5); 
+                opacity: 0.5; 
+            }
+            60% { 
+                transform: translateY(-300px) translateX(-80px) scale(0.6); 
+                opacity: 0.3; 
+            }
+            80% { 
+                transform: translateY(-100px) translateX(20px) scale(1.3); 
+                opacity: 0.7; 
+            }
         }
 
-        .gradient-overlay {
+        .grid-lines {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
-                radial-gradient(ellipse at 20% 50%, rgba(76, 0, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 20%, rgba(0, 180, 255, 0.06) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 80%, rgba(180, 100, 255, 0.04) 0%, transparent 50%);
-            animation: gradientShift 20s ease-in-out infinite;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 30s linear infinite;
             z-index: 0;
             pointer-events: none;
         }
 
-        @keyframes gradientShift {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1; }
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
         }
 
+        /* Card Animations */
         .container {
             position: relative;
             z-index: 10;
             width: 90%;
             max-width: 550px;
-            animation: cardAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        @keyframes cardAppear {
-            from { opacity: 0; transform: translateY(40px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+        .card-wrapper {
+            animation: cardFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes cardFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
 
         .card {
-            background: rgba(15, 15, 30, 0.75);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(15, 15, 30, 0.8);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 32px;
             padding: 50px 40px;
             box-shadow: 
-                0 30px 60px rgba(0, 0, 0, 0.8),
-                0 0 0 1px rgba(255, 255, 255, 0.03) inset,
-                0 1px 0 rgba(255, 255, 255, 0.05) inset;
+                0 30px 60px rgba(0, 0, 0, 0.9),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+                0 1px 0 rgba(255, 255, 255, 0.08) inset,
+                0 0 100px rgba(100, 50, 255, 0.1);
             position: relative;
             overflow: hidden;
+            animation: cardGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes cardGlow {
+            0%, 100% { 
+                box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.05) inset, 0 0 100px rgba(100, 50, 255, 0.1);
+            }
+            50% { 
+                box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.05) inset, 0 0 150px rgba(100, 50, 255, 0.2);
+            }
         }
 
         .card::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(
-                from 0deg,
-                transparent,
-                rgba(120, 80, 255, 0.05),
-                transparent,
-                rgba(0, 180, 255, 0.05),
-                transparent
-            );
-            animation: rotate 20s linear infinite;
-            z-index: -1;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, 
+                transparent 0%, 
+                rgba(120, 80, 255, 0.1) 25%, 
+                rgba(0, 180, 255, 0.1) 50%, 
+                rgba(180, 100, 255, 0.1) 75%, 
+                transparent 100%);
+            border-radius: 33px;
+            z-index: -2;
+            animation: borderRotate 8s linear infinite;
         }
 
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        @keyframes borderRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .card::after {
             content: '';
             position: absolute;
             top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.03), 
+                transparent);
+            animation: shimmerEffect 3s infinite;
         }
 
+        @keyframes shimmerEffect {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        /* Brand Animations */
         .brand-container {
             text-align: center;
             margin-bottom: 40px;
@@ -137,48 +205,92 @@
         .brand {
             font-size: 3rem;
             font-weight: 700;
-            letter-spacing: 3px;
-            background: linear-gradient(135deg, #b894f7 0%, #7eb8ff 40%, #c4a6ff 100%);
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, 
+                #b894f7 0%, 
+                #7eb8ff 25%, 
+                #c4a6ff 50%, 
+                #9d7bff 75%, 
+                #b894f7 100%);
+            background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            filter: drop-shadow(0 0 30px rgba(140, 100, 255, 0.5));
-            animation: shimmer 3s ease-in-out infinite;
+            animation: brandShine 4s linear infinite;
+            filter: drop-shadow(0 0 40px rgba(140, 100, 255, 0.6));
         }
 
-        @keyframes shimmer {
-            0%, 100% { filter: drop-shadow(0 0 30px rgba(140, 100, 255, 0.5)); }
-            50% { filter: drop-shadow(0 0 50px rgba(140, 100, 255, 0.8)); }
+        @keyframes brandShine {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
         }
 
         .divider {
-            width: 60px;
+            width: 80px;
             height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(180, 150, 255, 0.6), transparent);
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(180, 150, 255, 0.8), 
+                transparent);
             margin: 15px auto;
+            animation: dividerPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes dividerPulse {
+            0%, 100% { opacity: 0.5; width: 60px; }
+            50% { opacity: 1; width: 100px; }
         }
 
         .subtitle {
             color: rgba(200, 200, 230, 0.6);
             font-size: 0.9rem;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             text-transform: uppercase;
+            animation: subtitleFade 3s ease-in-out infinite;
         }
 
+        @keyframes subtitleFade {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Key Area Animations */
         .key-area {
-            background: rgba(10, 10, 25, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(10, 10, 25, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 20px;
             padding: 30px 25px;
             margin: 30px 0;
             text-align: center;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .key-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(160, 140, 255, 0.5), 
+                transparent);
+            animation: scanLine 4s ease-in-out infinite;
+        }
+
+        @keyframes scanLine {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
         }
 
         .key-label {
             color: rgba(180, 170, 210, 0.7);
             font-size: 0.85rem;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             margin-bottom: 15px;
         }
 
@@ -186,91 +298,125 @@
             font-family: 'Fira Code', 'Courier New', monospace;
             font-size: 1.1rem;
             color: #e8dfff;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 18px 20px;
             border-radius: 12px;
-            border: 1px dashed rgba(160, 140, 220, 0.3);
+            border: 1px solid rgba(160, 140, 220, 0.3);
             word-break: break-all;
             letter-spacing: 0.5px;
-            animation: keyGlow 2s ease-in-out infinite;
             user-select: all;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .key-value::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                transparent 30%, 
+                rgba(160, 140, 255, 0.05) 50%, 
+                transparent 70%);
+            animation: keyHighlight 3s ease-in-out infinite;
+        }
+
+        @keyframes keyHighlight {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
         }
 
         .key-value:hover {
-            background: rgba(20, 15, 40, 0.5);
-            border-color: rgba(180, 160, 240, 0.5);
-        }
-
-        @keyframes keyGlow {
-            0%, 100% { border-color: rgba(160, 140, 220, 0.3); }
-            50% { border-color: rgba(160, 140, 220, 0.6); }
+            border-color: rgba(180, 160, 240, 0.6);
+            box-shadow: 0 0 30px rgba(120, 80, 255, 0.2);
+            transform: scale(1.02);
         }
 
         .timer-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            margin-top: 15px;
+            gap: 10px;
+            margin-top: 18px;
             color: #b8a9e0;
             font-size: 0.9rem;
         }
 
         .timer {
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             background: linear-gradient(135deg, #f0c27b, #f8a55a);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: timerPulse 1s ease-in-out infinite;
         }
 
+        @keyframes timerPulse {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        /* Button Animations */
         .btn {
             width: 100%;
-            padding: 16px 30px;
+            padding: 18px 30px;
             border: none;
             border-radius: 50px;
             font-size: 1.1rem;
             font-weight: 600;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             cursor: pointer;
             text-transform: uppercase;
             position: relative;
             overflow: hidden;
             transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1.2);
-            background: linear-gradient(135deg, rgba(40, 20, 60, 0.8), rgba(25, 15, 45, 0.9));
+            background: linear-gradient(135deg, 
+                rgba(50, 25, 80, 0.9), 
+                rgba(30, 20, 60, 0.9));
             color: #e0d0ff;
-            border: 1px solid rgba(200, 170, 255, 0.2);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(200, 170, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            animation: btnFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes btnFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
         }
 
         .btn::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.7s;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, 
+                rgba(255, 255, 255, 0.1) 0%, 
+                transparent 60%);
+            animation: btnRipple 3s infinite;
         }
 
-        .btn:hover::before {
-            left: 100%;
+        @keyframes btnRipple {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
         }
 
         .btn:hover {
-            transform: translateY(-3px);
-            border-color: rgba(200, 170, 255, 0.5);
+            transform: translateY(-5px) scale(1.02);
+            border-color: rgba(200, 170, 255, 0.6);
             box-shadow: 
-                0 15px 35px rgba(100, 50, 200, 0.3),
-                0 0 60px rgba(120, 80, 255, 0.2);
+                0 20px 40px rgba(100, 50, 200, 0.4),
+                0 0 80px rgba(120, 80, 255, 0.3);
+            animation: none;
         }
 
         .btn:active {
-            transform: translateY(0);
+            transform: translateY(0) scale(0.98);
             transition: all 0.1s;
         }
 
@@ -284,32 +430,33 @@
             text-align: center;
             margin-top: 20px;
             opacity: 0.8;
+            animation: messageFade 2s ease-in-out infinite;
+        }
+
+        @keyframes messageFade {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
         }
 
         .copy-notification {
             position: fixed;
             top: 20px;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%) translateY(-100px);
             background: rgba(40, 20, 60, 0.95);
             color: #e0d0ff;
-            padding: 12px 24px;
+            padding: 14px 28px;
             border-radius: 30px;
             font-size: 0.9rem;
             z-index: 100;
-            animation: slideDown 0.3s ease, fadeOut 0.3s ease 1.7s forwards;
-            border: 1px solid rgba(200, 170, 255, 0.3);
+            border: 1px solid rgba(200, 170, 255, 0.4);
             backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        @keyframes slideDown {
-            from { transform: translateX(-50%) translateY(-100px); opacity: 0; }
-            to { transform: translateX(-50%) translateY(0); opacity: 1; }
-        }
-
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
+        .copy-notification.show {
+            transform: translateX(-50%) translateY(0);
         }
 
         @media (max-width: 600px) {
@@ -322,43 +469,46 @@
             }
             .key-value {
                 font-size: 0.9rem;
-                padding: 12px;
+                padding: 14px;
             }
         }
     </style>
 </head>
 <body>
+    <div class="bg-aurora"></div>
+    <div class="grid-lines"></div>
     <div class="particles" id="particles"></div>
-    <div class="gradient-overlay"></div>
 
     <div class="container">
-        <div class="card" id="mainCard">
-            <div class="brand-container">
-                <div class="brand">APEX HUB</div>
-                <div class="divider"></div>
-                <div class="subtitle">Secure Key System</div>
-            </div>
-
-            <div id="page1">
-                <div class="key-area" style="opacity: 0.7;">
-                    <div class="key-label">YOUR LICENSE KEY</div>
-                    <div class="key-value" style="opacity: 0.5;">-----</div>
+        <div class="card-wrapper">
+            <div class="card" id="mainCard">
+                <div class="brand-container">
+                    <div class="brand">APEX HUB</div>
+                    <div class="divider"></div>
+                    <div class="subtitle">Secure Key System</div>
                 </div>
-                <button class="btn" id="getKeyBtn">GET KEY</button>
-                <div class="status-message">Click to verify and get your key</div>
-            </div>
 
-            <div id="page2" class="hidden">
-                <div class="key-area">
-                    <div class="key-label">YOUR LICENSE KEY</div>
-                    <div class="key-value" id="keyDisplay" title="Click to copy">-----</div>
-                    <div class="timer-container" id="timerContainer">
-                        <span>Time remaining</span>
-                        <span class="timer" id="countdown">24:00:00</span>
+                <div id="page1">
+                    <div class="key-area">
+                        <div class="key-label">YOUR LICENSE KEY</div>
+                        <div class="key-value" style="opacity: 0.5;">-----</div>
                     </div>
+                    <button class="btn" id="getKeyBtn">GET KEY</button>
+                    <div class="status-message">Click to verify and get your key</div>
                 </div>
-                <button class="btn hidden" id="newKeyBtn">GET NEW KEY</button>
-                <div class="status-message" id="statusMessage"></div>
+
+                <div id="page2" class="hidden">
+                    <div class="key-area">
+                        <div class="key-label">YOUR LICENSE KEY</div>
+                        <div class="key-value" id="keyDisplay" title="Click to copy">-----</div>
+                        <div class="timer-container" id="timerContainer">
+                            <span>Time remaining</span>
+                            <span class="timer" id="countdown">24:00:00</span>
+                        </div>
+                    </div>
+                    <button class="btn hidden" id="newKeyBtn">GET NEW KEY</button>
+                    <div class="status-message" id="statusMessage"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -367,127 +517,229 @@
         (function() {
             // ============ CONFIGURATION ============
             const SHORTENER_URL = 'https://link4m.org/hXPIjdW';
-            const SHORTENER_DOMAINS = ['link4m.org', 'link4m.net', 'link4m.com', 'link4m'];
+            const SHORTENER_DOMAINS = ['link4m.org', 'link4m.net', 'link4m.com', 'link4m', 'link4m.org/hXPIjdW'];
             const KEY_PREFIX = 'Free_';
             const REQUIRED_WORD = 'apex';
             const SPECIAL_CHARS = 'qptoeugjwmxnalkjf¡¿\'-:;₫&@9275023#%*^+€¥$_|\\[]{}bcz';
             const KEY_DURATION = 24 * 60 * 60 * 1000;
             
-            // Mã hóa tên storage keys để tránh bị phát hiện dễ dàng
-            const STORAGE_PREFIX = '_ahs_' + btoa('apex').substring(0, 4);
-            const KEY_DATA_KEY = STORAGE_PREFIX + '_kd';
-            const VERIFICATION_KEY = STORAGE_PREFIX + '_vf';
-            const TIMESTAMP_KEY = STORAGE_PREFIX + '_ts';
-            const TOKEN_KEY = STORAGE_PREFIX + '_tk';
-            const HASH_KEY = STORAGE_PREFIX + '_hs';
+            // Mã hóa tên storage keys
+            const STORAGE_PREFIX = btoa(unescape(encodeURIComponent('apex_hub_'))).substring(0, 8);
+            const KEY_DATA_KEY = STORAGE_PREFIX + '_kd_' + Date.now().toString(36);
+            const VERIFICATION_KEY = STORAGE_PREFIX + '_vf_' + Math.random().toString(36).substring(2, 6);
+            const TIMESTAMP_KEY = STORAGE_PREFIX + '_ts_' + Math.random().toString(36).substring(2, 6);
+            const TOKEN_KEY = STORAGE_PREFIX + '_tk_' + Math.random().toString(36).substring(2, 6);
+            const HASH_KEY = STORAGE_PREFIX + '_hs_' + Math.random().toString(36).substring(2, 6);
+            const COUNTER_KEY = STORAGE_PREFIX + '_ct_' + Math.random().toString(36).substring(2, 6);
+            const FINGERPRINT_KEY = STORAGE_PREFIX + '_fp_' + Math.random().toString(36).substring(2, 6);
 
-            // ============ LỚP BẢO VỆ 1: MÃ HÓA DỮ LIỆU ============
-            function simpleEncode(str) {
-                return btoa(unescape(encodeURIComponent(str)));
+            // ============ LỚP 1: CHỐNG AUTOMATION/BOT ============
+            function generateFingerprint() {
+                const components = [
+                    navigator.userAgent,
+                    navigator.language,
+                    screen.colorDepth,
+                    screen.width + 'x' + screen.height,
+                    new Date().getTimezoneOffset(),
+                    !!window.sessionStorage,
+                    !!window.localStorage,
+                    navigator.hardwareConcurrency || 'unknown',
+                    navigator.deviceMemory || 'unknown'
+                ];
+                return btoa(components.join('||')).substring(0, 32);
             }
 
-            function simpleDecode(str) {
+            function verifyFingerprint() {
+                const stored = sessionStorage.getItem(FINGERPRINT_KEY);
+                const current = generateFingerprint();
+                if (!stored) {
+                    sessionStorage.setItem(FINGERPRINT_KEY, current);
+                    return true;
+                }
+                return stored === current;
+            }
+
+            // ============ LỚP 2: RATE LIMITING ============
+            function checkRateLimit() {
+                const counter = parseInt(sessionStorage.getItem(COUNTER_KEY) || '0');
+                const now = Date.now();
+                const windowStart = now - 60000; // 1 phút
+                
+                if (counter > 10) { // Tối đa 10 requests/phút
+                    return false;
+                }
+                
+                sessionStorage.setItem(COUNTER_KEY, (counter + 1).toString());
+                return true;
+            }
+
+            // ============ LỚP 3: MÃ HÓA NÂNG CAO ============
+            function advancedEncode(str) {
+                let encoded = btoa(unescape(encodeURIComponent(str)));
+                // Thêm salt
+                const salt = Date.now().toString(36);
+                return salt + '.' + encoded.split('').reverse().join('');
+            }
+
+            function advancedDecode(str) {
                 try {
-                    return decodeURIComponent(escape(atob(str)));
+                    const parts = str.split('.');
+                    if (parts.length !== 2) return null;
+                    const reversed = parts[1].split('').reverse().join('');
+                    return decodeURIComponent(escape(atob(reversed)));
                 } catch(e) {
                     return null;
                 }
             }
 
-            function generateHash(data) {
+            // ============ LỚP 4: HASH ĐA LỚP ============
+            function generateMultiHash(data) {
+                let hash1 = 0;
+                let hash2 = 0;
                 const str = JSON.stringify(data);
-                let hash = 0;
+                
                 for (let i = 0; i < str.length; i++) {
                     const char = str.charCodeAt(i);
-                    hash = ((hash << 5) - hash) + char;
-                    hash = hash & hash;
+                    hash1 = ((hash1 << 5) - hash1) + char;
+                    hash1 = hash1 & hash1;
+                    hash2 = ((hash2 << 7) - hash2) + char;
+                    hash2 = hash2 & hash2;
                 }
-                return Math.abs(hash).toString(36);
+                
+                return Math.abs(hash1).toString(36) + '_' + Math.abs(hash2).toString(36);
             }
 
-            // ============ LỚP BẢO VỆ 2: CHỐNG DEBUG ============
-            function antiDebug() {
-                // Phát hiện DevTools
-                let devtoolsOpen = false;
-                const threshold = 160;
+            // ============ LỚP 5: CHỐNG DEBUG NÂNG CAO ============
+            function advancedAntiDebug() {
+                // Phát hiện DevTools qua timing
+                let startTime = performance.now();
+                debugger;
+                let endTime = performance.now();
                 
-                const detectDevTools = () => {
-                    const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-                    const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-                    
-                    if (widthThreshold || heightThreshold) {
-                        if (!devtoolsOpen) {
-                            devtoolsOpen = true;
-                            // Xóa dữ liệu nếu phát hiện DevTools
-                            clearAllData();
-                            console.clear();
+                if (endTime - startTime > 100) {
+                    clearAllData();
+                    document.body.innerHTML = '';
+                    window.location.reload();
+                }
+                
+                // Phát hiện qua console
+                const consoleDetection = new Function('debugger');
+                const originalConsole = { ...console };
+                
+                // Ghi đè console methods
+                const methods = ['log', 'warn', 'error', 'info', 'debug', 'clear'];
+                methods.forEach(method => {
+                    console[method] = function() {
+                        if (arguments.length > 0 && typeof arguments[0] === 'string') {
+                            if (arguments[0].includes('key') || arguments[0].includes('token')) {
+                                clearAllData();
+                            }
                         }
-                    } else {
-                        devtoolsOpen = false;
-                    }
-                };
-                
-                setInterval(detectDevTools, 1000);
-                
-                // Vô hiệu hóa một số phím tắt
-                document.addEventListener('keydown', function(e) {
-                    if (
-                        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
-                        (e.ctrlKey && e.key === 'U') ||
-                        e.key === 'F12'
-                    ) {
-                        e.preventDefault();
-                        return false;
-                    }
+                    };
                 });
                 
-                // Vô hiệu hóa right-click
-                document.addEventListener('contextmenu', function(e) {
-                    e.preventDefault();
-                    return false;
+                // Phát hiện sửa đổi DOM qua MutationObserver
+                const observer = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                            mutation.addedNodes.forEach(node => {
+                                if (node.nodeType === 1 && node.tagName === 'SCRIPT') {
+                                    clearAllData();
+                                    node.remove();
+                                }
+                            });
+                        }
+                    });
+                });
+                
+                observer.observe(document.documentElement, {
+                    childList: true,
+                    subtree: true
                 });
             }
 
-            // ============ LỚP BẢO VỆ 3: CHỐNG GIẢ MẠO REFERRER ============
-            function verifyReferrer() {
+            // ============ LỚP 6: CHỐNG SỬA ĐỔI CLIENT-SIDE ============
+            function protectDOM() {
+                // Bảo vệ các element quan trọng
+                const keyDisplay = document.getElementById('keyDisplay');
+                if (keyDisplay) {
+                    Object.defineProperty(keyDisplay, 'textContent', {
+                        get: function() { return this.innerText; },
+                        set: function(value) {
+                            if (value !== this._textContent) {
+                                this._textContent = value;
+                                this.innerText = value;
+                            }
+                        },
+                        configurable: false
+                    });
+                }
+            }
+
+            // ============ LỚP 7: VERIFICATION ĐA TẦNG ============
+            function multiLayerVerification() {
+                const checks = [];
+                
+                // Check 1: Referrer
                 const referrer = document.referrer.toLowerCase();
-                
-                // Kiểm tra referrer có từ link rút gọn không
                 const fromShortener = SHORTENER_DOMAINS.some(domain => 
-                    referrer.includes(domain.replace('.', '\\.'))
+                    referrer.includes(domain)
                 );
+                checks.push(fromShortener);
                 
-                // Kiểm tra URL parameters
+                // Check 2: URL Parameters
                 const urlParams = new URLSearchParams(window.location.search);
-                const hasValidToken = urlParams.get('token') === 'auto';
+                const hasToken = urlParams.get('token') === 'auto';
                 const isKeyPage = urlParams.get('page') === 'key';
+                checks.push(hasToken && isKeyPage);
                 
-                // Kiểm tra session
-                const storedVerification = sessionStorage.getItem(VERIFICATION_KEY);
+                // Check 3: Session Token
                 const storedToken = sessionStorage.getItem(TOKEN_KEY);
                 const storedTimestamp = sessionStorage.getItem(TIMESTAMP_KEY);
-                
-                // Xác minh token và thời gian
                 if (storedToken && storedTimestamp) {
                     const timeDiff = Date.now() - parseInt(storedTimestamp);
-                    const tokenMatch = hasValidToken && storedToken === 'auto';
-                    
-                    if (timeDiff < 300000 && tokenMatch && storedVerification === 'true') {
-                        return true;
-                    }
+                    checks.push(storedToken === 'auto' && timeDiff < 300000);
                 }
                 
-                return fromShortener || (isKeyPage && hasValidToken);
+                // Check 4: Verification Flag
+                checks.push(sessionStorage.getItem(VERIFICATION_KEY) === 'true');
+                
+                // Check 5: Fingerprint
+                checks.push(verifyFingerprint());
+                
+                // Check 6: Rate Limit
+                checks.push(checkRateLimit());
+                
+                // Phải có ít nhất 3 checks pass
+                return checks.filter(c => c).length >= 3;
             }
 
-            // ============ LỚP BẢO VỆ 4: CHỐNG TẠO KEY GIẢ ============
-            function generateKey() {
+            // ============ LỚP 8: CHỐNG REPLAY ATTACK ============
+            const usedNonces = new Set();
+            
+            function generateNonce() {
+                const nonce = crypto.randomUUID ? crypto.randomUUID() : 
+                    Math.random().toString(36) + Date.now().toString(36);
+                usedNonces.add(nonce);
+                return nonce;
+            }
+
+            function validateNonce(nonce) {
+                if (usedNonces.has(nonce)) {
+                    return false;
+                }
+                usedNonces.add(nonce);
+                return true;
+            }
+
+            // ============ KEY GENERATION ============
+            function generateKey(nonce) {
                 let key = KEY_PREFIX;
-                const randomBytes = new Uint8Array(12);
+                const randomBytes = new Uint8Array(16);
                 crypto.getRandomValues(randomBytes);
                 const randomStr = Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
                 
-                const specialPart = SPECIAL_CHARS.substring(0, Math.floor(Math.random() * 15) + 10);
+                const specialPart = SPECIAL_CHARS.substring(0, Math.floor(Math.random() * 20) + 10);
                 const position = Math.floor(Math.random() * 3);
                 
                 switch(position) {
@@ -503,10 +755,13 @@
                         break;
                 }
                 
-                // Đảm bảo có ký tự đặc biệt
                 if (!/[¡¿'\-:;₫&@#%*^+€¥$_|\\\[\]{}]/.test(key)) {
-                    key += SPECIAL_CHARS.substring(0, 5);
+                    key += SPECIAL_CHARS.substring(0, 8);
                 }
+                
+                // Thêm nonce vào key
+                const nonceHash = btoa(nonce).substring(0, 4);
+                key += nonceHash;
                 
                 return key;
             }
@@ -516,17 +771,22 @@
                 if (!key.startsWith(KEY_PREFIX)) return false;
                 if (!key.includes(REQUIRED_WORD)) return false;
                 if (!/[¡¿'\-:;₫&@#%*^+€¥$_|\\\[\]{}]/.test(key)) return false;
-                if (key.length < 30) return false;
+                if (key.length < 35) return false;
                 return true;
             }
 
-            // ============ LỚP BẢO VỆ 5: CHỐNG SỬA ĐỔI STORAGE ============
+            // ============ STORAGE MANAGEMENT ============
             function saveSecureData(keyData) {
-                const hash = generateHash(keyData);
+                const nonce = generateNonce();
+                const hash = generateMultiHash(keyData);
+                const encoded = advancedEncode(JSON.stringify(keyData));
+                
                 const secureData = {
-                    data: simpleEncode(JSON.stringify(keyData)),
+                    data: encoded,
                     hash: hash,
-                    timestamp: Date.now()
+                    nonce: nonce,
+                    timestamp: Date.now(),
+                    fingerprint: generateFingerprint()
                 };
                 
                 sessionStorage.setItem(KEY_DATA_KEY, JSON.stringify(secureData));
@@ -541,15 +801,26 @@
                     const secureData = JSON.parse(raw);
                     const storedHash = sessionStorage.getItem(HASH_KEY);
                     
-                    // Kiểm tra hash
+                    // Verify hash
                     if (secureData.hash !== storedHash) {
-                        console.warn('Data integrity check failed');
                         clearAllData();
                         return null;
                     }
                     
-                    // Giải mã dữ liệu
-                    const decoded = simpleDecode(secureData.data);
+                    // Verify fingerprint
+                    if (secureData.fingerprint !== generateFingerprint()) {
+                        clearAllData();
+                        return null;
+                    }
+                    
+                    // Verify nonce
+                    if (!validateNonce(secureData.nonce)) {
+                        clearAllData();
+                        return null;
+                    }
+                    
+                    // Decode data
+                    const decoded = advancedDecode(secureData.data);
                     if (!decoded) {
                         clearAllData();
                         return null;
@@ -557,7 +828,7 @@
                     
                     const keyData = JSON.parse(decoded);
                     
-                    // Kiểm tra thời gian sống của dữ liệu
+                    // Check expiry
                     if (Date.now() - secureData.timestamp > KEY_DURATION) {
                         clearAllData();
                         return null;
@@ -571,22 +842,15 @@
             }
 
             function clearAllData() {
-                sessionStorage.removeItem(KEY_DATA_KEY);
-                sessionStorage.removeItem(VERIFICATION_KEY);
-                sessionStorage.removeItem(TIMESTAMP_KEY);
-                sessionStorage.removeItem(TOKEN_KEY);
-                sessionStorage.removeItem(HASH_KEY);
-            }
-
-            // ============ LỚP BẢO VỆ 6: CHỐNG TẤN CÔNG TIMING ============
-            function randomDelay() {
-                return new Promise(resolve => {
-                    const delay = Math.floor(Math.random() * 200) + 100;
-                    setTimeout(resolve, delay);
+                const keys = Object.keys(sessionStorage);
+                keys.forEach(key => {
+                    if (key.includes(STORAGE_PREFIX)) {
+                        sessionStorage.removeItem(key);
+                    }
                 });
             }
 
-            // ============ UI ELEMENTS ============
+            // ============ UI MANAGEMENT ============
             const page1 = document.getElementById('page1');
             const page2 = document.getElementById('page2');
             const getKeyBtn = document.getElementById('getKeyBtn');
@@ -639,12 +903,10 @@
                 clearAllData();
             }
 
-            // ============ PAGE MANAGEMENT ============
             function showPage1() {
                 page1.classList.remove('hidden');
                 page2.classList.add('hidden');
                 stopCountdown();
-                statusMessage.textContent = 'Click to verify and get your key';
             }
 
             function showPage2() {
@@ -652,8 +914,12 @@
                 page2.classList.remove('hidden');
             }
 
-            async function displayKey(keyData) {
-                await randomDelay(); // Chống timing attack
+            function displayKey(keyData) {
+                if (!multiLayerVerification()) {
+                    clearAllData();
+                    showPage1();
+                    return;
+                }
                 
                 keyDisplay.textContent = keyData.key;
                 keyDisplay.style.opacity = '1';
@@ -663,7 +929,6 @@
                 showPage2();
                 startCountdown(keyData.expiry);
                 
-                // Lưu trạng thái xác minh
                 sessionStorage.setItem(VERIFICATION_KEY, 'true');
                 sessionStorage.setItem(TOKEN_KEY, 'auto');
                 sessionStorage.setItem(TIMESTAMP_KEY, Date.now().toString());
@@ -672,12 +937,10 @@
             // ============ COPY FUNCTION ============
             keyDisplay.addEventListener('click', function() {
                 const text = keyDisplay.textContent;
-                if (text && text !== '-----' && text !== 'EXPIRED' && text !== 'LOADING...') {
+                if (text && text !== '-----' && text !== 'EXPIRED') {
                     navigator.clipboard.writeText(text).then(() => {
                         showCopyNotification('Key copied successfully');
-                    }).catch(() => {
-                        showCopyNotification('Please select and copy manually');
-                    });
+                    }).catch(() => {});
                 }
             });
 
@@ -690,18 +953,16 @@
                 notification.textContent = message;
                 document.body.appendChild(notification);
                 
+                setTimeout(() => notification.classList.add('show'), 10);
                 setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.remove();
-                    }
+                    notification.classList.remove('show');
+                    setTimeout(() => notification.remove(), 400);
                 }, 2000);
             }
 
             // ============ INITIALIZATION ============
-            async function initialize() {
-                await randomDelay(); // Chống timing attack
-                
-                const isVerified = verifyReferrer();
+            function initialize() {
+                const isVerified = multiLayerVerification();
                 
                 if (isVerified) {
                     const existingData = getSecureData();
@@ -709,17 +970,18 @@
                     if (existingData && existingData.expiry > Date.now() && validateKey(existingData.key)) {
                         displayKey(existingData);
                     } else {
-                        const newKey = generateKey();
+                        const nonce = generateNonce();
+                        const newKey = generateKey(nonce);
                         const keyData = {
                             key: newKey,
                             expiry: Date.now() + KEY_DURATION,
-                            created: Date.now()
+                            created: Date.now(),
+                            nonce: nonce
                         };
                         saveSecureData(keyData);
                         displayKey(keyData);
                     }
                     
-                    // Xóa tham số URL
                     if (window.history && window.history.replaceState) {
                         window.history.replaceState({}, document.title, window.location.pathname);
                     }
@@ -736,25 +998,29 @@
                 }
             }
 
-            // ============ BUTTON HANDLERS ============
-            getKeyBtn.addEventListener('click', async function() {
-                await randomDelay();
+            // ============ EVENT HANDLERS ============
+            getKeyBtn.addEventListener('click', function() {
+                if (!checkRateLimit()) {
+                    statusMessage.textContent = 'Too many requests. Please wait.';
+                    return;
+                }
                 
-                const newKey = generateKey();
+                const nonce = generateNonce();
+                const newKey = generateKey(nonce);
                 const keyData = {
                     key: newKey,
                     expiry: Date.now() + KEY_DURATION,
-                    created: Date.now()
+                    created: Date.now(),
+                    nonce: nonce
                 };
                 saveSecureData(keyData);
                 
-                // Lưu token xác minh
                 sessionStorage.setItem(VERIFICATION_KEY, 'true');
                 sessionStorage.setItem(TOKEN_KEY, 'auto');
                 sessionStorage.setItem(TIMESTAMP_KEY, Date.now().toString());
+                sessionStorage.setItem(FINGERPRINT_KEY, generateFingerprint());
                 
                 window.open(SHORTENER_URL, '_blank');
-                
                 statusMessage.textContent = 'Opening verification page...';
             });
 
@@ -767,44 +1033,52 @@
             // ============ PARTICLES ============
             function createParticles() {
                 const container = document.getElementById('particles');
-                for (let i = 0; i < 30; i++) {
+                for (let i = 0; i < 40; i++) {
                     const particle = document.createElement('div');
                     particle.className = 'particle';
-                    const size = Math.random() * 4 + 2;
+                    const size = Math.random() * 5 + 2;
                     particle.style.width = size + 'px';
                     particle.style.height = size + 'px';
                     particle.style.left = Math.random() * 100 + '%';
                     particle.style.top = Math.random() * 100 + '%';
-                    particle.style.animationDelay = Math.random() * 15 + 's';
-                    particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                    particle.style.animationDelay = Math.random() * 20 + 's';
+                    particle.style.animationDuration = (Math.random() * 15 + 15) + 's';
                     container.appendChild(particle);
                 }
             }
 
-            // ============ PERIODIC SECURITY CHECK ============
+            // ============ SECURITY LOOPS ============
             setInterval(() => {
+                // Kiểm tra key expiry
                 const data = getSecureData();
                 if (data && data.expiry <= Date.now() && currentExpiry) {
                     handleExpiry();
                 }
                 
-                // Kiểm tra toàn vẹn dữ liệu
-                if (currentExpiry && !getSecureData()) {
+                // Kiểm tra fingerprint
+                if (!verifyFingerprint()) {
+                    clearAllData();
                     handleExpiry();
                 }
-            }, 5000);
+            }, 3000);
 
-            // ============ START ============
+            // ============ INIT ============
             createParticles();
-            antiDebug();
+            advancedAntiDebug();
+            protectDOM();
             initialize();
             
-            // Vô hiệu hóa console.log trong production
-            if (window.location.hostname !== 'localhost') {
-                console.log = function() {};
-                console.warn = function() {};
-                console.error = function() {};
-                console.clear = function() {};
+            // Production mode
+            if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+                const noop = function() {};
+                console.log = noop;
+                console.warn = noop;
+                console.error = noop;
+                console.info = noop;
+                console.debug = noop;
+                console.clear = noop;
+                console.table = noop;
+                console.trace = noop;
             }
 
         })();
