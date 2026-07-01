@@ -24,7 +24,6 @@
             -webkit-user-select: none;
         }
 
-        /* Lớp bảo vệ 1: Watermark ẩn */
         .watermark-layer {
             position: fixed;
             top: 0;
@@ -192,7 +191,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Lớp bảo vệ 2: Canvas fingerprint */
         .fingerprint-canvas {
             position: absolute;
             left: -9999px;
@@ -561,7 +559,6 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* Lớp bảo vệ 3: Anti-screenshot overlay */
         .anti-screenshot {
             position: fixed;
             top: 0;
@@ -589,13 +586,8 @@
     </style>
 </head>
 <body>
-    <!-- Lớp bảo vệ 1: Watermark ẩn -->
     <div class="watermark-layer" id="watermarkLayer"></div>
-    
-    <!-- Lớp bảo vệ 2: Canvas fingerprint -->
     <canvas class="fingerprint-canvas" id="fpCanvas" width="200" height="50"></canvas>
-    
-    <!-- Lớp bảo vệ 3: Anti-screenshot -->
     <div class="anti-screenshot" id="antiScreenshot"></div>
 
     <div class="bg-aurora"></div>
@@ -611,7 +603,6 @@
                     <div class="subtitle" id="subtitleText">Advanced Security Layer</div>
                 </div>
 
-                <!-- TRANG 1: GET KEY -->
                 <div id="page1">
                     <div class="key-area">
                         <div class="key-label">YOUR LICENSE KEY</div>
@@ -621,14 +612,13 @@
                     <div class="status-message">Multi-layer verification required</div>
                 </div>
 
-                <!-- TRANG 2: HIỂN THỊ KEY + ĐẾM NGƯỢC -->
                 <div id="page2" class="hidden">
                     <div class="key-area" id="keyArea">
                         <div class="key-label" id="keyLabel">YOUR LICENSE KEY</div>
                         <div class="key-value" id="keyDisplay" title="Click to copy">-----</div>
                         <div class="timer-container" id="timerContainer">
                             <span>Time remaining</span>
-                            <span class="timer" id="countdown">24:00:00</span>
+                            <span class="timer" id="countdown">03:00</span>
                         </div>
                     </div>
                     <button class="btn btn-new-key hidden" id="newKeyBtn">GET NEW KEY</button>
@@ -646,7 +636,8 @@
             const KEY_PREFIX = 'Free_';
             const REQUIRED_WORD = 'apex';
             const SPECIAL_CHARS = 'qptoeugjwmxnalkjf¡¿\'-:;₫&@9275023#%*^+€¥$_|\\[]{}bcz';
-            const KEY_DURATION = 24 * 60 * 60 * 1000;
+            // 🔧 THAY ĐỔI: 3 phút = 180000ms
+            const KEY_DURATION = 3 * 60 * 1000; // 3 phút để test
             
             const STORAGE_PREFIX = btoa(unescape(encodeURIComponent('apex_hub_v2_'))).substring(0, 10);
             const KEY_DATA_KEY = STORAGE_PREFIX + '_kd';
@@ -660,34 +651,26 @@
             const SESSION_ID_KEY = STORAGE_PREFIX + '_sid';
             const INTEGRITY_KEY = STORAGE_PREFIX + '_int';
 
-            // ============ LỚP BẢO VỆ 2: Canvas Fingerprint ============
             function generateCanvasFingerprint() {
                 try {
                     const canvas = document.getElementById('fpCanvas');
                     const ctx = canvas.getContext('2d');
-                    
-                    // Vẽ text với font đặc biệt
                     ctx.textBaseline = 'top';
                     ctx.font = '14px "Segoe UI"';
                     ctx.textBaseline = 'alphabetic';
                     ctx.fillStyle = '#f60';
                     ctx.fillRect(125, 1, 62, 20);
-                    
-                    // Vẽ nhiều thành phần phức tạp
                     ctx.fillStyle = '#069';
                     ctx.font = '12px "Arial"';
                     ctx.fillText('APEX🔒HUB', 2, 15);
                     ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
                     ctx.font = '10px "Times New Roman"';
                     ctx.fillText('Security', 4, 35);
-                    
-                    // Thêm hiệu ứng
                     ctx.globalCompositeOperation = 'multiply';
                     ctx.fillStyle = 'rgb(255,0,255)';
                     ctx.beginPath();
                     ctx.arc(50, 25, 10, 0, Math.PI * 2);
                     ctx.fill();
-                    
                     return canvas.toDataURL();
                 } catch(e) {
                     return 'fp_error_' + Date.now();
@@ -704,7 +687,6 @@
                 return stored === current;
             }
 
-            // ============ LỚP BẢO VỆ 3: Session ID ============
             function generateSessionId() {
                 const components = [
                     Date.now().toString(36),
@@ -716,7 +698,6 @@
                 return components.join('-');
             }
 
-            // ============ LỚP BẢO VỆ 4: Integrity Check ============
             function calculateIntegrity() {
                 const elements = [
                     document.getElementById('mainCard').innerHTML.length,
@@ -738,7 +719,6 @@
                 return stored === current;
             }
 
-            // ============ SECURITY FUNCTIONS ============
             function generateFingerprint() {
                 const components = [
                     navigator.userAgent,
@@ -773,7 +753,6 @@
             function checkRateLimit() {
                 const counter = parseInt(sessionStorage.getItem(COUNTER_KEY) || '0');
                 if (counter > 8) {
-                    // Tự động xóa nếu vượt quá
                     clearAllData();
                     return false;
                 }
@@ -781,22 +760,14 @@
                 return true;
             }
 
-            // ============ LỚP BẢO VỆ 5: Mã hóa nâng cao ============
             function advancedEncode(str) {
-                // Mã hóa nhiều lớp
                 let result = str;
-                
-                // Lớp 1: Base64
                 result = btoa(unescape(encodeURIComponent(result)));
-                
-                // Lớp 2: XOR với salt
                 const salt = Date.now().toString(36);
                 let xored = '';
                 for (let i = 0; i < result.length; i++) {
                     xored += String.fromCharCode(result.charCodeAt(i) ^ salt.charCodeAt(i % salt.length));
                 }
-                
-                // Lớp 3: Đảo ngược và thêm salt
                 return salt + '.' + btoa(xored).split('').reverse().join('');
             }
 
@@ -804,16 +775,13 @@
                 try {
                     const parts = str.split('.');
                     if (parts.length !== 2) return null;
-                    
                     const salt = parts[0];
                     const reversed = parts[1].split('').reverse().join('');
                     const xored = atob(reversed);
-                    
                     let result = '';
                     for (let i = 0; i < xored.length; i++) {
                         result += String.fromCharCode(xored.charCodeAt(i) ^ salt.charCodeAt(i % salt.length));
                     }
-                    
                     return decodeURIComponent(escape(atob(result)));
                 } catch(e) {
                     return null;
@@ -821,12 +789,10 @@
             }
 
             function generateMultiHash(data) {
-                // SHA-like hash đơn giản
                 let hash1 = 0;
                 let hash2 = 0;
                 let hash3 = 0;
                 const str = JSON.stringify(data);
-                
                 for (let i = 0; i < str.length; i++) {
                     const char = str.charCodeAt(i);
                     hash1 = ((hash1 << 5) - hash1) + char;
@@ -836,24 +802,19 @@
                     hash3 = ((hash3 << 3) - hash3) + char;
                     hash3 = hash3 & hash3;
                 }
-                
                 return Math.abs(hash1).toString(36) + '_' + 
                        Math.abs(hash2).toString(36) + '_' + 
                        Math.abs(hash3).toString(36);
             }
 
-            // ============ LỚP BẢO VỆ 6: Anti-Debug nâng cao ============
             function antiDebug() {
                 let devtoolsOpen = false;
                 let warningCount = 0;
                 
-                // Phát hiện DevTools
                 const detectDevTools = () => {
                     const threshold = 160;
                     const widthThreshold = window.outerWidth - window.innerWidth > threshold;
                     const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-                    
-                    // Kiểm tra console.time
                     const startTime = Date.now();
                     debugger;
                     const endTime = Date.now();
@@ -864,7 +825,6 @@
                             devtoolsOpen = true;
                             warningCount++;
                             console.clear();
-                            
                             if (warningCount >= 2) {
                                 clearAllData();
                                 location.reload();
@@ -877,7 +837,6 @@
                 
                 setInterval(detectDevTools, 500);
                 
-                // Chặn phím tắt
                 document.addEventListener('keydown', function(e) {
                     const blockedKeys = [
                         { ctrl: true, shift: true, key: 'I' },
@@ -902,13 +861,11 @@
                     }
                 }, true);
                 
-                // Chặn chuột phải
                 document.addEventListener('contextmenu', function(e) {
                     e.preventDefault();
                     return false;
                 }, true);
                 
-                // Chặn copy/paste
                 document.addEventListener('copy', function(e) {
                     if (!e.target.classList.contains('key-value') || 
                         e.target.classList.contains('expired-key')) {
@@ -916,7 +873,6 @@
                     }
                 });
                 
-                // Phát hiện sửa đổi DOM
                 const observer = new MutationObserver(function(mutations) {
                     mutations.forEach(function(mutation) {
                         if (mutation.type === 'attributes' && 
@@ -937,23 +893,19 @@
                 }
             }
 
-            // ============ LỚP BẢO VỆ 7: Multi-layer Verification ============
             function multiLayerVerification() {
                 const checks = [];
                 let score = 0;
                 
-                // Check 1: Referrer từ shortener
                 const referrer = document.referrer.toLowerCase();
                 const fromShortener = SHORTENER_DOMAINS.some(domain => referrer.includes(domain));
                 checks.push({ passed: fromShortener, weight: 3 });
                 
-                // Check 2: URL parameters
                 const urlParams = new URLSearchParams(window.location.search);
                 const hasToken = urlParams.get('token') === 'auto';
                 const isKeyPage = urlParams.get('page') === 'key';
                 checks.push({ passed: hasToken && isKeyPage, weight: 3 });
                 
-                // Check 3: Token hợp lệ trong session
                 const storedToken = sessionStorage.getItem(TOKEN_KEY);
                 const storedTimestamp = sessionStorage.getItem(TIMESTAMP_KEY);
                 if (storedToken && storedTimestamp) {
@@ -961,31 +913,19 @@
                     checks.push({ passed: storedToken === 'auto' && timeDiff < 60000, weight: 2 });
                 }
                 
-                // Check 4: Verification flag
                 checks.push({ passed: sessionStorage.getItem(VERIFICATION_KEY) === 'true', weight: 2 });
-                
-                // Check 5: Fingerprint
                 checks.push({ passed: verifyFingerprint(), weight: 2 });
-                
-                // Check 6: Canvas fingerprint
                 checks.push({ passed: verifyCanvasFingerprint(), weight: 1 });
-                
-                // Check 7: Rate limit
                 checks.push({ passed: checkRateLimit(), weight: 1 });
-                
-                // Check 8: Integrity
                 checks.push({ passed: verifyIntegrity(), weight: 1 });
                 
-                // Check 9: Session ID
                 const sessionId = sessionStorage.getItem(SESSION_ID_KEY);
                 checks.push({ passed: !!sessionId, weight: 1 });
                 
-                // Tính điểm
                 checks.forEach(check => {
                     if (check.passed) score += check.weight;
                 });
                 
-                // Cần ít nhất 8 điểm để pass
                 return score >= 8;
             }
 
@@ -996,28 +936,20 @@
                     Math.random().toString(36) + Date.now().toString(36) + 
                     Math.random().toString(36);
                 usedNonces.add(nonce);
-                
-                // Giới hạn số lượng nonce
                 if (usedNonces.size > 100) {
                     const iterator = usedNonces.values();
                     usedNonces.delete(iterator.next().value);
                 }
-                
                 return nonce;
             }
 
             function generateKey(nonce) {
                 let key = KEY_PREFIX;
-                
-                // Tăng cường random
                 const randomBytes = new Uint8Array(24);
                 crypto.getRandomValues(randomBytes);
                 const randomStr = Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
-                
-                // Thêm ký tự đặc biệt ngẫu nhiên
                 const specialPart = SPECIAL_CHARS.substring(0, Math.floor(Math.random() * 25) + 15);
                 const shuffledSpecial = specialPart.split('').sort(() => Math.random() - 0.5).join('');
-                
                 const position = Math.floor(Math.random() * 4);
                 
                 switch(position) {
@@ -1039,12 +971,10 @@
                         break;
                 }
                 
-                // Đảm bảo có ký tự đặc biệt
                 if (!/[¡¿'\-:;₫&@#%*^+€¥$_|\\\[\]{}]/.test(key)) {
                     key += SPECIAL_CHARS.substring(0, 10);
                 }
                 
-                // Thêm hash của nonce
                 const nonceHash = btoa(nonce).substring(0, 6);
                 key += nonceHash;
                 
@@ -1057,15 +987,11 @@
                 if (!key.includes(REQUIRED_WORD)) return false;
                 if (!/[¡¿'\-:;₫&@#%*^+€¥$_|\\\[\]{}]/.test(key)) return false;
                 if (key.length < 40) return false;
-                
-                // Kiểm tra không chứa pattern đáng ngờ
                 const suspiciousPatterns = ['script', 'alert', 'eval', 'http', 'www.'];
                 if (suspiciousPatterns.some(p => key.toLowerCase().includes(p))) return false;
-                
                 return true;
             }
 
-            // ============ STORAGE với Integrity Check ============
             function saveSecureData(keyData) {
                 const nonce = generateNonce();
                 const hash = generateMultiHash(keyData);
@@ -1095,7 +1021,6 @@
                     
                     const secureData = JSON.parse(raw);
                     
-                    // Multiple integrity checks
                     const checks = [
                         secureData.hash === sessionStorage.getItem(HASH_KEY),
                         secureData.fingerprint === generateFingerprint(),
@@ -1107,7 +1032,6 @@
                         verifyIntegrity()
                     ];
                     
-                    // Nếu bất kỳ check nào fail
                     if (checks.some(check => !check)) {
                         clearAllData();
                         return null;
@@ -1121,7 +1045,7 @@
                     
                     const keyData = JSON.parse(decoded);
                     
-                    // Kiểm tra hết hạn
+                    // 🔧 KIỂM TRA HẾT HẠN VỚI 3 PHÚT
                     if (Date.now() - secureData.timestamp > KEY_DURATION) {
                         clearAllData();
                         return null;
@@ -1162,6 +1086,7 @@
             
             let countdownInterval = null;
             let currentExpiry = null;
+            let autoRedirectInterval = null; // 🔧 THÊM: Interval cho tự động chuyển trang
 
             // ============ COUNTDOWN ============
             function startCountdown(expiry) {
@@ -1175,14 +1100,14 @@
                         return;
                     }
                     
-                    const h = Math.floor(remaining / 3600000);
-                    const m = Math.floor((remaining % 3600000) / 60000);
+                    const m = Math.floor(remaining / 60000);
                     const s = Math.floor((remaining % 60000) / 1000);
-                    countdown.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                    countdown.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
                     
-                    // Cảnh báo khi còn 1 giờ
-                    if (remaining < 3600000) {
+                    // 🔧 Cảnh báo khi còn 30 giây
+                    if (remaining < 30000) {
                         countdown.style.color = '#ff6b6b';
+                        countdown.style.animation = 'timerPulse 0.5s ease-in-out infinite';
                     }
                 }
                 
@@ -1197,12 +1122,19 @@
                 }
                 currentExpiry = null;
                 countdown.style.color = '';
+                countdown.style.animation = 'timerPulse 1s ease-in-out infinite';
             }
 
-            // ============ HANDLE EXPIRY ============
+            // 🔧 HANDLE EXPIRY - TỰ ĐỘNG CHUYỂN VỀ TRANG 1 SAU 5 GIÂY
             function handleExpiry() {
                 stopCountdown();
                 
+                // Xóa interval tự động cũ nếu có
+                if (autoRedirectInterval) {
+                    clearInterval(autoRedirectInterval);
+                }
+                
+                // Hiển thị trạng thái hết hạn
                 keyDisplay.textContent = 'EXPIRED';
                 keyDisplay.classList.add('expired-key');
                 keyDisplay.style.cursor = 'not-allowed';
@@ -1216,13 +1148,38 @@
                 keyLabel.classList.add('expired-label');
                 statusMessage.classList.add('expired-message');
                 
-                newKeyBtn.classList.remove('hidden');
-                statusMessage.textContent = 'Key has expired. Please get a new key.';
+                // Ẩn nút GET NEW KEY (tự động chuyển)
+                newKeyBtn.classList.add('hidden');
                 
+                // Xóa dữ liệu
                 clearAllData();
+                
+                // 🔧 TỰ ĐỘNG CHUYỂN VỀ TRANG 1 SAU 5 GIÂY
+                let secondsLeft = 5;
+                statusMessage.textContent = `⏰ Key expired! Auto-redirect to page 1 in ${secondsLeft}s...`;
+                
+                autoRedirectInterval = setInterval(() => {
+                    secondsLeft--;
+                    if (secondsLeft <= 0) {
+                        clearInterval(autoRedirectInterval);
+                        autoRedirectInterval = null;
+                        // Chuyển về trang 1
+                        resetExpiredState();
+                        showPage1();
+                        statusMessage.textContent = 'Multi-layer verification required';
+                    } else {
+                        statusMessage.textContent = `⏰ Key expired! Auto-redirect to page 1 in ${secondsLeft}s...`;
+                    }
+                }, 1000);
             }
 
             function resetExpiredState() {
+                // Xóa auto redirect interval nếu đang chạy
+                if (autoRedirectInterval) {
+                    clearInterval(autoRedirectInterval);
+                    autoRedirectInterval = null;
+                }
+                
                 mainCard.classList.remove('expired');
                 brandText.classList.remove('expired');
                 dividerLine.classList.remove('expired');
@@ -1234,6 +1191,9 @@
                 statusMessage.classList.remove('expired-message');
                 timerContainer.classList.remove('hidden');
                 newKeyBtn.classList.add('hidden');
+                countdown.textContent = '03:00';
+                countdown.style.color = '';
+                countdown.style.animation = 'timerPulse 1s ease-in-out infinite';
             }
 
             function showPage1() {
@@ -1241,7 +1201,6 @@
                 page2.classList.add('hidden');
                 stopCountdown();
                 resetExpiredState();
-                statusMessage.textContent = 'Multi-layer verification required';
                 keyDisplay.textContent = '-----';
                 keyDisplay.style.opacity = '0.5';
             }
@@ -1258,7 +1217,7 @@
                 keyDisplay.style.opacity = '1';
                 timerContainer.classList.remove('hidden');
                 newKeyBtn.classList.add('hidden');
-                statusMessage.textContent = 'Click on key to copy';
+                statusMessage.textContent = '✅ Click on key to copy';
                 showPage2();
                 startCountdown(keyData.expiry);
                 
@@ -1272,12 +1231,11 @@
             keyDisplay.addEventListener('click', function(e) {
                 const text = keyDisplay.textContent;
                 if (text && text !== '-----' && text !== 'EXPIRED' && !keyDisplay.classList.contains('expired-key')) {
-                    // Chỉ cho phép copy thông qua click, không phải keyboard
                     if (e.pointerType === 'mouse' || e.pointerType === 'touch') {
                         navigator.clipboard.writeText(text).then(() => {
-                            showCopyNotification('Key copied successfully');
+                            showCopyNotification('✅ Key copied successfully!');
                         }).catch(() => {
-                            showCopyNotification('Failed to copy key');
+                            showCopyNotification('❌ Failed to copy key');
                         });
                     }
                 }
@@ -1301,7 +1259,6 @@
 
             // ============ INITIALIZATION ============
             function initialize() {
-                // Khởi tạo session
                 if (!sessionStorage.getItem(SESSION_ID_KEY)) {
                     sessionStorage.setItem(SESSION_ID_KEY, generateSessionId());
                 }
@@ -1315,6 +1272,7 @@
                 const isVerified = multiLayerVerification();
                 const secureData = getSecureData();
                 
+                // 🔧 KIỂM TRA KEY CÒN HẠN (3 PHÚT)
                 if (secureData && secureData.expiry > Date.now() && validateKey(secureData.key)) {
                     displayKey(secureData);
                     
@@ -1324,6 +1282,7 @@
                     return;
                 }
                 
+                // 🔧 KEY HẾT HẠN
                 if (secureData && secureData.expiry <= Date.now()) {
                     clearAllData();
                     showPage2();
@@ -1331,6 +1290,7 @@
                     return;
                 }
                 
+                // 🔧 TẠO KEY MỚI
                 if (isVerified) {
                     const nonce = generateNonce();
                     const newKey = generateKey(nonce);
@@ -1354,12 +1314,12 @@
             // ============ BUTTON HANDLERS ============
             getKeyBtn.addEventListener('click', function() {
                 if (!checkRateLimit()) {
-                    statusMessage.textContent = 'Security limit exceeded. Please wait.';
+                    statusMessage.textContent = '⚠️ Security limit exceeded. Please wait.';
                     return;
                 }
                 
                 if (!verifyFingerprint() || !verifyCanvasFingerprint()) {
-                    statusMessage.textContent = 'Security verification failed.';
+                    statusMessage.textContent = '❌ Security verification failed.';
                     clearAllData();
                     return;
                 }
@@ -1383,14 +1343,21 @@
                 sessionStorage.setItem(INTEGRITY_KEY, calculateIntegrity());
                 
                 window.open(SHORTENER_URL, '_blank');
-                statusMessage.textContent = 'Opening verification page...';
+                statusMessage.textContent = '🔗 Opening verification page...';
             });
 
+            // 🔧 NÚT GET NEW KEY (thủ công)
             newKeyBtn.addEventListener('click', function() {
+                // Xóa auto redirect nếu đang chạy
+                if (autoRedirectInterval) {
+                    clearInterval(autoRedirectInterval);
+                    autoRedirectInterval = null;
+                }
                 clearAllData();
                 stopCountdown();
                 resetExpiredState();
                 showPage1();
+                statusMessage.textContent = 'Multi-layer verification required';
             });
 
             // ============ PARTICLES ============
@@ -1412,26 +1379,22 @@
 
             // ============ PERIODIC SECURITY CHECKS ============
             setInterval(() => {
-                // Check hết hạn
                 const data = getSecureData();
                 if (data && data.expiry <= Date.now() && currentExpiry) {
                     handleExpiry();
                 }
                 
-                // Check integrity
                 if (!verifyFingerprint() || !verifyCanvasFingerprint() || !verifyIntegrity()) {
                     clearAllData();
                     handleExpiry();
                 }
                 
-                // Update integrity hash
                 sessionStorage.setItem(INTEGRITY_KEY, calculateIntegrity());
             }, 3000);
 
             // ============ ANTI-SCREENSHOT PROTECTION ============
             document.addEventListener('visibilitychange', function() {
                 if (document.hidden) {
-                    // Trang bị ẩn, có thể đang screenshot
                     keyDisplay.style.filter = 'blur(5px)';
                 } else {
                     keyDisplay.style.filter = 'none';
@@ -1443,18 +1406,13 @@
             antiDebug();
             initialize();
             
-            // Production mode - vô hiệu hóa console nâng cao
             if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
                 const methods = ['log', 'warn', 'error', 'info', 'debug', 'clear', 'table', 'trace', 'dir', 'group', 'groupEnd'];
                 methods.forEach(method => {
                     console[method] = function() {};
                 });
-                
-                // Vô hiệu hóa console.time/timeEnd
                 console.time = function() {};
                 console.timeEnd = function() {};
-                
-                // Ghi đè toString của console
                 console.toString = function() { return 'function console() { [native code] }'; };
             }
 
