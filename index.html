@@ -20,9 +20,12 @@
             justify-content: center;
             overflow: hidden;
             position: relative;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
-        /* Background Animations */
         .bg-aurora {
             position: fixed;
             top: -50%;
@@ -64,30 +67,12 @@
         }
 
         @keyframes floatParticle {
-            0%, 100% { 
-                transform: translateY(0) translateX(0) scale(1); 
-                opacity: 0.2; 
-            }
-            10% { 
-                transform: translateY(-100px) translateX(30px) scale(1.8); 
-                opacity: 0.6; 
-            }
-            25% { 
-                transform: translateY(-200px) translateX(-50px) scale(0.8); 
-                opacity: 0.1; 
-            }
-            40% { 
-                transform: translateY(-150px) translateX(70px) scale(1.5); 
-                opacity: 0.5; 
-            }
-            60% { 
-                transform: translateY(-300px) translateX(-80px) scale(0.6); 
-                opacity: 0.3; 
-            }
-            80% { 
-                transform: translateY(-100px) translateX(20px) scale(1.3); 
-                opacity: 0.7; 
-            }
+            0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.2; }
+            10% { transform: translateY(-100px) translateX(30px) scale(1.8); opacity: 0.6; }
+            25% { transform: translateY(-200px) translateX(-50px) scale(0.8); opacity: 0.1; }
+            40% { transform: translateY(-150px) translateX(70px) scale(1.5); opacity: 0.5; }
+            60% { transform: translateY(-300px) translateX(-80px) scale(0.6); opacity: 0.3; }
+            80% { transform: translateY(-100px) translateX(20px) scale(1.3); opacity: 0.7; }
         }
 
         .grid-lines {
@@ -110,7 +95,6 @@
             100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
         }
 
-        /* Card Animations */
         .container {
             position: relative;
             z-index: 10;
@@ -142,15 +126,20 @@
             position: relative;
             overflow: hidden;
             animation: cardGlow 3s ease-in-out infinite;
+            transition: all 0.5s ease;
+        }
+
+        .card.expired {
+            border-color: rgba(255, 100, 100, 0.3);
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.9),
+                0 0 0 1px rgba(255, 100, 100, 0.1) inset,
+                0 0 100px rgba(255, 50, 50, 0.1);
         }
 
         @keyframes cardGlow {
-            0%, 100% { 
-                box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.05) inset, 0 0 100px rgba(100, 50, 255, 0.1);
-            }
-            50% { 
-                box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.05) inset, 0 0 150px rgba(100, 50, 255, 0.2);
-            }
+            0%, 100% { box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.05) inset, 0 0 100px rgba(100, 50, 255, 0.1); }
+            50% { box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.05) inset, 0 0 150px rgba(100, 50, 255, 0.2); }
         }
 
         .card::before {
@@ -160,15 +149,14 @@
             left: -2px;
             right: -2px;
             bottom: -2px;
-            background: linear-gradient(45deg, 
-                transparent 0%, 
-                rgba(120, 80, 255, 0.1) 25%, 
-                rgba(0, 180, 255, 0.1) 50%, 
-                rgba(180, 100, 255, 0.1) 75%, 
-                transparent 100%);
+            background: linear-gradient(45deg, transparent 0%, rgba(120, 80, 255, 0.1) 25%, rgba(0, 180, 255, 0.1) 50%, rgba(180, 100, 255, 0.1) 75%, transparent 100%);
             border-radius: 33px;
             z-index: -2;
             animation: borderRotate 8s linear infinite;
+        }
+
+        .card.expired::before {
+            background: linear-gradient(45deg, transparent 0%, rgba(255, 80, 80, 0.1) 25%, rgba(255, 100, 100, 0.1) 50%, rgba(255, 80, 80, 0.1) 75%, transparent 100%);
         }
 
         @keyframes borderRotate {
@@ -176,27 +164,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        .card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.03), 
-                transparent);
-            animation: shimmerEffect 3s infinite;
-        }
-
-        @keyframes shimmerEffect {
-            0% { left: -100%; }
-            50% { left: 100%; }
-            100% { left: 100%; }
-        }
-
-        /* Brand Animations */
         .brand-container {
             text-align: center;
             margin-bottom: 40px;
@@ -206,18 +173,23 @@
             font-size: 3rem;
             font-weight: 700;
             letter-spacing: 4px;
-            background: linear-gradient(135deg, 
-                #b894f7 0%, 
-                #7eb8ff 25%, 
-                #c4a6ff 50%, 
-                #9d7bff 75%, 
-                #b894f7 100%);
+            background: linear-gradient(135deg, #b894f7 0%, #7eb8ff 25%, #c4a6ff 50%, #9d7bff 75%, #b894f7 100%);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             animation: brandShine 4s linear infinite;
             filter: drop-shadow(0 0 40px rgba(140, 100, 255, 0.6));
+            transition: all 0.5s ease;
+        }
+
+        .brand.expired {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e, #ff6b6b);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 40px rgba(255, 80, 80, 0.6));
         }
 
         @keyframes brandShine {
@@ -228,12 +200,14 @@
         .divider {
             width: 80px;
             height: 2px;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(180, 150, 255, 0.8), 
-                transparent);
+            background: linear-gradient(90deg, transparent, rgba(180, 150, 255, 0.8), transparent);
             margin: 15px auto;
             animation: dividerPulse 2s ease-in-out infinite;
+            transition: all 0.5s ease;
+        }
+
+        .divider.expired {
+            background: linear-gradient(90deg, transparent, rgba(255, 100, 100, 0.8), transparent);
         }
 
         @keyframes dividerPulse {
@@ -247,6 +221,11 @@
             letter-spacing: 3px;
             text-transform: uppercase;
             animation: subtitleFade 3s ease-in-out infinite;
+            transition: all 0.5s ease;
+        }
+
+        .subtitle.expired {
+            color: rgba(255, 150, 150, 0.8);
         }
 
         @keyframes subtitleFade {
@@ -254,7 +233,6 @@
             50% { opacity: 0.8; }
         }
 
-        /* Key Area Animations */
         .key-area {
             background: rgba(10, 10, 25, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -262,9 +240,20 @@
             padding: 30px 25px;
             margin: 30px 0;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: all 0.5s ease;
             position: relative;
             overflow: hidden;
+        }
+
+        .key-area.expired-area {
+            border-color: rgba(255, 100, 100, 0.2);
+            background: rgba(25, 10, 10, 0.7);
+            animation: expiredPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes expiredPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 50, 50, 0.1); }
+            50% { box-shadow: 0 0 40px rgba(255, 50, 50, 0.2); }
         }
 
         .key-area::before {
@@ -274,11 +263,12 @@
             left: -100%;
             width: 100%;
             height: 2px;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(160, 140, 255, 0.5), 
-                transparent);
+            background: linear-gradient(90deg, transparent, rgba(160, 140, 255, 0.5), transparent);
             animation: scanLine 4s ease-in-out infinite;
+        }
+
+        .key-area.expired-area::before {
+            background: linear-gradient(90deg, transparent, rgba(255, 100, 100, 0.5), transparent);
         }
 
         @keyframes scanLine {
@@ -292,6 +282,11 @@
             font-size: 0.85rem;
             letter-spacing: 2px;
             margin-bottom: 15px;
+            transition: all 0.5s ease;
+        }
+
+        .key-label.expired-label {
+            color: rgba(255, 150, 150, 0.8);
         }
 
         .key-value {
@@ -304,10 +299,22 @@
             border: 1px solid rgba(160, 140, 220, 0.3);
             word-break: break-all;
             letter-spacing: 0.5px;
-            user-select: all;
             cursor: pointer;
-            transition: all 0.4s ease;
+            transition: all 0.5s ease;
             position: relative;
+        }
+
+        .key-value.expired-key {
+            color: #ff6b6b;
+            border-color: rgba(255, 100, 100, 0.3);
+            background: rgba(25, 0, 0, 0.4);
+            animation: expiredKeyGlow 1.5s ease-in-out infinite;
+            cursor: not-allowed;
+        }
+
+        @keyframes expiredKeyGlow {
+            0%, 100% { border-color: rgba(255, 100, 100, 0.3); box-shadow: 0 0 10px rgba(255, 50, 50, 0.1); }
+            50% { border-color: rgba(255, 100, 100, 0.6); box-shadow: 0 0 30px rgba(255, 50, 50, 0.3); }
         }
 
         .key-value::after {
@@ -317,10 +324,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(45deg, 
-                transparent 30%, 
-                rgba(160, 140, 255, 0.05) 50%, 
-                transparent 70%);
+            background: linear-gradient(45deg, transparent 30%, rgba(160, 140, 255, 0.05) 50%, transparent 70%);
             animation: keyHighlight 3s ease-in-out infinite;
         }
 
@@ -335,6 +339,12 @@
             transform: scale(1.02);
         }
 
+        .key-value.expired-key:hover {
+            transform: none;
+            box-shadow: none;
+            border-color: rgba(255, 100, 100, 0.3);
+        }
+
         .timer-container {
             display: flex;
             align-items: center;
@@ -343,6 +353,11 @@
             margin-top: 18px;
             color: #b8a9e0;
             font-size: 0.9rem;
+            transition: all 0.5s ease;
+        }
+
+        .timer-container.hidden {
+            display: none;
         }
 
         .timer {
@@ -360,7 +375,6 @@
             50% { filter: brightness(1.3); }
         }
 
-        /* Button Animations */
         .btn {
             width: 100%;
             padding: 18px 30px;
@@ -374,9 +388,7 @@
             position: relative;
             overflow: hidden;
             transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1.2);
-            background: linear-gradient(135deg, 
-                rgba(50, 25, 80, 0.9), 
-                rgba(30, 20, 60, 0.9));
+            background: linear-gradient(135deg, rgba(50, 25, 80, 0.9), rgba(30, 20, 60, 0.9));
             color: #e0d0ff;
             border: 1px solid rgba(200, 170, 255, 0.3);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
@@ -395,9 +407,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, 
-                rgba(255, 255, 255, 0.1) 0%, 
-                transparent 60%);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
             animation: btnRipple 3s infinite;
         }
 
@@ -409,15 +419,30 @@
         .btn:hover {
             transform: translateY(-5px) scale(1.02);
             border-color: rgba(200, 170, 255, 0.6);
-            box-shadow: 
-                0 20px 40px rgba(100, 50, 200, 0.4),
-                0 0 80px rgba(120, 80, 255, 0.3);
+            box-shadow: 0 20px 40px rgba(100, 50, 200, 0.4), 0 0 80px rgba(120, 80, 255, 0.3);
             animation: none;
         }
 
         .btn:active {
             transform: translateY(0) scale(0.98);
             transition: all 0.1s;
+        }
+
+        .btn-new-key {
+            background: linear-gradient(135deg, rgba(80, 25, 25, 0.9), rgba(60, 20, 20, 0.9));
+            border-color: rgba(255, 100, 100, 0.3);
+            color: #ffcccc;
+            animation: newKeyBtnPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes newKeyBtnPulse {
+            0%, 100% { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 50, 50, 0.2); }
+            50% { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 40px rgba(255, 50, 50, 0.4); }
+        }
+
+        .btn-new-key:hover {
+            border-color: rgba(255, 150, 150, 0.6);
+            box-shadow: 0 20px 40px rgba(255, 50, 50, 0.4), 0 0 80px rgba(255, 80, 80, 0.3);
         }
 
         .hidden {
@@ -431,6 +456,17 @@
             margin-top: 20px;
             opacity: 0.8;
             animation: messageFade 2s ease-in-out infinite;
+            transition: all 0.5s ease;
+        }
+
+        .status-message.expired-message {
+            color: #ff9999;
+            animation: expiredMessagePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes expiredMessagePulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
         }
 
         @keyframes messageFade {
@@ -483,9 +519,9 @@
         <div class="card-wrapper">
             <div class="card" id="mainCard">
                 <div class="brand-container">
-                    <div class="brand">APEX HUB</div>
-                    <div class="divider"></div>
-                    <div class="subtitle">Secure Key System</div>
+                    <div class="brand" id="brandText">APEX HUB</div>
+                    <div class="divider" id="dividerLine"></div>
+                    <div class="subtitle" id="subtitleText">Secure Key System</div>
                 </div>
 
                 <div id="page1">
@@ -498,15 +534,15 @@
                 </div>
 
                 <div id="page2" class="hidden">
-                    <div class="key-area">
-                        <div class="key-label">YOUR LICENSE KEY</div>
+                    <div class="key-area" id="keyArea">
+                        <div class="key-label" id="keyLabel">YOUR LICENSE KEY</div>
                         <div class="key-value" id="keyDisplay" title="Click to copy">-----</div>
                         <div class="timer-container" id="timerContainer">
                             <span>Time remaining</span>
                             <span class="timer" id="countdown">24:00:00</span>
                         </div>
                     </div>
-                    <button class="btn hidden" id="newKeyBtn">GET NEW KEY</button>
+                    <button class="btn btn-new-key hidden" id="newKeyBtn">GET NEW KEY</button>
                     <div class="status-message" id="statusMessage"></div>
                 </div>
             </div>
@@ -517,229 +553,411 @@
         (function() {
             // ============ CONFIGURATION ============
             const SHORTENER_URL = 'https://link4m.org/hXPIjdW';
-            const SHORTENER_DOMAINS = ['link4m.org', 'link4m.net', 'link4m.com', 'link4m', 'link4m.org/hXPIjdW'];
+            const SHORTENER_DOMAINS = ['link4m.org', 'link4m.net', 'link4m.com', 'link4m'];
             const KEY_PREFIX = 'Free_';
             const REQUIRED_WORD = 'apex';
             const SPECIAL_CHARS = 'qptoeugjwmxnalkjf¡¿\'-:;₫&@9275023#%*^+€¥$_|\\[]{}bcz';
             const KEY_DURATION = 24 * 60 * 60 * 1000;
             
-            // Mã hóa tên storage keys
-            const STORAGE_PREFIX = btoa(unescape(encodeURIComponent('apex_hub_'))).substring(0, 8);
-            const KEY_DATA_KEY = STORAGE_PREFIX + '_kd_' + Date.now().toString(36);
-            const VERIFICATION_KEY = STORAGE_PREFIX + '_vf_' + Math.random().toString(36).substring(2, 6);
-            const TIMESTAMP_KEY = STORAGE_PREFIX + '_ts_' + Math.random().toString(36).substring(2, 6);
-            const TOKEN_KEY = STORAGE_PREFIX + '_tk_' + Math.random().toString(36).substring(2, 6);
-            const HASH_KEY = STORAGE_PREFIX + '_hs_' + Math.random().toString(36).substring(2, 6);
-            const COUNTER_KEY = STORAGE_PREFIX + '_ct_' + Math.random().toString(36).substring(2, 6);
-            const FINGERPRINT_KEY = STORAGE_PREFIX + '_fp_' + Math.random().toString(36).substring(2, 6);
+            const STORAGE_PREFIX = btoa(unescape(encodeURIComponent('apex_hub_'))).substring(0, 8) + '_' + Date.now().toString(36);
+            const KEY_DATA_KEY = STORAGE_PREFIX + '_kd_' + Math.random().toString(36).substring(2, 8);
+            const VERIFICATION_KEY = STORAGE_PREFIX + '_vf_' + Math.random().toString(36).substring(2, 8);
+            const TIMESTAMP_KEY = STORAGE_PREFIX + '_ts_' + Math.random().toString(36).substring(2, 8);
+            const TOKEN_KEY = STORAGE_PREFIX + '_tk_' + Math.random().toString(36).substring(2, 8);
+            const HASH_KEY = STORAGE_PREFIX + '_hs_' + Math.random().toString(36).substring(2, 8);
+            const COUNTER_KEY = STORAGE_PREFIX + '_ct_' + Math.random().toString(36).substring(2, 8);
+            const FINGERPRINT_KEY = STORAGE_PREFIX + '_fp_' + Math.random().toString(36).substring(2, 8);
+            const NONCE_KEY = STORAGE_PREFIX + '_nc_' + Math.random().toString(36).substring(2, 8);
+            const SIGNATURE_KEY = STORAGE_PREFIX + '_sg_' + Math.random().toString(36).substring(2, 8);
+            const CHALLENGE_KEY = STORAGE_PREFIX + '_ch_' + Math.random().toString(36).substring(2, 8);
 
-            // ============ LỚP 1: CHỐNG AUTOMATION/BOT ============
-            function generateFingerprint() {
+            // ============ LỚP 1: FINGERPRINT NÂNG CAO ============
+            function generateAdvancedFingerprint() {
                 const components = [
                     navigator.userAgent,
                     navigator.language,
+                    navigator.languages ? navigator.languages.join(',') : '',
                     screen.colorDepth,
                     screen.width + 'x' + screen.height,
+                    screen.availWidth + 'x' + screen.availHeight,
                     new Date().getTimezoneOffset(),
+                    Intl.DateTimeFormat().resolvedOptions().timeZone,
                     !!window.sessionStorage,
                     !!window.localStorage,
+                    !!window.indexedDB,
                     navigator.hardwareConcurrency || 'unknown',
-                    navigator.deviceMemory || 'unknown'
+                    navigator.deviceMemory || 'unknown',
+                    navigator.platform,
+                    navigator.vendor,
+                    navigator.productSub,
+                    window.devicePixelRatio,
+                    performance.memory ? performance.memory.jsHeapSizeLimit : 'unknown'
                 ];
-                return btoa(components.join('||')).substring(0, 32);
+                return btoa(components.join('|||')).substring(0, 48);
             }
 
-            function verifyFingerprint() {
-                const stored = sessionStorage.getItem(FINGERPRINT_KEY);
-                const current = generateFingerprint();
-                if (!stored) {
-                    sessionStorage.setItem(FINGERPRINT_KEY, current);
-                    return true;
+            // ============ LỚP 2: CANVAS FINGERPRINT ============
+            function generateCanvasFingerprint() {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 200;
+                    canvas.height = 50;
+                    const ctx = canvas.getContext('2d');
+                    ctx.textBaseline = 'top';
+                    ctx.font = '14px Arial';
+                    ctx.fillStyle = '#f60';
+                    ctx.fillRect(0, 0, 200, 50);
+                    ctx.fillStyle = '#069';
+                    ctx.fillText('APEX HUB SECURE', 10, 15);
+                    return canvas.toDataURL().substring(0, 100);
+                } catch(e) {
+                    return 'canvas_error';
                 }
-                return stored === current;
             }
 
-            // ============ LỚP 2: RATE LIMITING ============
-            function checkRateLimit() {
-                const counter = parseInt(sessionStorage.getItem(COUNTER_KEY) || '0');
-                const now = Date.now();
-                const windowStart = now - 60000; // 1 phút
-                
-                if (counter > 10) { // Tối đa 10 requests/phút
+            // ============ LỚP 3: WEBGL FINGERPRINT ============
+            function generateWebGLFingerprint() {
+                try {
+                    const canvas = document.createElement('canvas');
+                    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                    if (!gl) return 'no_webgl';
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    if (debugInfo) {
+                        return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) + '|' + 
+                               gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+                    }
+                    return 'webgl_no_debug';
+                } catch(e) {
+                    return 'webgl_error';
+                }
+            }
+
+            // ============ LỚP 4: AUDIO FINGERPRINT ============
+            function generateAudioFingerprint() {
+                try {
+                    const audioCtx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100);
+                    const oscillator = audioCtx.createOscillator();
+                    const analyser = audioCtx.createAnalyser();
+                    oscillator.connect(analyser);
+                    analyser.connect(audioCtx.destination);
+                    oscillator.start(0);
+                    return audioCtx.sampleRate.toString() + '|' + analyser.fftSize.toString();
+                } catch(e) {
+                    return 'audio_error';
+                }
+            }
+
+            function combineFingerprints() {
+                const fp1 = generateAdvancedFingerprint();
+                const fp2 = generateCanvasFingerprint();
+                const fp3 = generateWebGLFingerprint();
+                const fp4 = generateAudioFingerprint();
+                return btoa(fp1 + '||' + fp2 + '||' + fp3 + '||' + fp4).substring(0, 64);
+            }
+
+            // ============ LỚP 5: CHALLENGE-RESPONSE ============
+            function generateChallenge() {
+                const challenge = crypto.randomUUID ? crypto.randomUUID() : 
+                    Math.random().toString(36) + Date.now().toString(36) + performance.now().toString(36);
+                const response = btoa(challenge.split('').reverse().join(''));
+                sessionStorage.setItem(CHALLENGE_KEY, JSON.stringify({challenge, response, timestamp: Date.now()}));
+                return {challenge, response};
+            }
+
+            function verifyChallenge(userResponse) {
+                try {
+                    const data = JSON.parse(sessionStorage.getItem(CHALLENGE_KEY));
+                    if (!data) return false;
+                    if (Date.now() - data.timestamp > 60000) return false; // 1 phút
+                    return data.response === userResponse;
+                } catch(e) {
                     return false;
                 }
-                
-                sessionStorage.setItem(COUNTER_KEY, (counter + 1).toString());
+            }
+
+            // ============ LỚP 6: BEHAVIOR ANALYSIS ============
+            let mouseMovements = [];
+            let keyPresses = [];
+            let scrollEvents = [];
+            
+            document.addEventListener('mousemove', function(e) {
+                mouseMovements.push({x: e.clientX, y: e.clientY, t: Date.now()});
+                if (mouseMovements.length > 100) mouseMovements.shift();
+            });
+
+            document.addEventListener('keydown', function(e) {
+                keyPresses.push({key: e.key, t: Date.now()});
+                if (keyPresses.length > 50) keyPresses.shift();
+            });
+
+            document.addEventListener('scroll', function() {
+                scrollEvents.push({y: window.scrollY, t: Date.now()});
+                if (scrollEvents.length > 50) scrollEvents.shift();
+            });
+
+            function isHumanBehavior() {
+                if (mouseMovements.length < 5) return false;
+                const timeSpan = mouseMovements[mouseMovements.length - 1].t - mouseMovements[0].t;
+                if (timeSpan < 100) return false;
+                let uniquePositions = new Set(mouseMovements.map(m => m.x + ',' + m.y));
+                if (uniquePositions.size < 3) return false;
                 return true;
             }
 
-            // ============ LỚP 3: MÃ HÓA NÂNG CAO ============
-            function advancedEncode(str) {
-                let encoded = btoa(unescape(encodeURIComponent(str)));
-                // Thêm salt
-                const salt = Date.now().toString(36);
-                return salt + '.' + encoded.split('').reverse().join('');
+            // ============ LỚP 7: TIME-BASED TOKEN ============
+            function generateTimeToken() {
+                const now = Date.now();
+                const roundedTime = Math.floor(now / 30000) * 30000; // 30 giây window
+                const token = btoa(roundedTime.toString() + '|' + STORAGE_PREFIX).substring(0, 20);
+                return token;
             }
 
-            function advancedDecode(str) {
+            function verifyTimeToken(token) {
+                const now = Date.now();
+                const roundedTime = Math.floor(now / 30000) * 30000;
+                const expectedToken = btoa(roundedTime.toString() + '|' + STORAGE_PREFIX).substring(0, 20);
+                return token === expectedToken;
+            }
+
+            // ============ LỚP 8: ENCRYPTED SIGNATURE ============
+            function generateSignature(data) {
+                const str = JSON.stringify(data);
+                const fp = combineFingerprints();
+                let sig = '';
+                for (let i = 0; i < Math.min(str.length, fp.length); i++) {
+                    sig += String.fromCharCode(str.charCodeAt(i) ^ fp.charCodeAt(i));
+                }
+                return btoa(sig).substring(0, 32);
+            }
+
+            function verifySignature(data, signature) {
+                const expectedSig = generateSignature(data);
+                return signature === expectedSig;
+            }
+
+            // ============ LỚP 9: ADVANCED ENCRYPTION ============
+            function tripleEncode(str) {
+                let encoded = str;
+                for (let i = 0; i < 3; i++) {
+                    encoded = btoa(unescape(encodeURIComponent(encoded)));
+                    if (i < 2) encoded = encoded.split('').reverse().join('');
+                }
+                return encoded;
+            }
+
+            function tripleDecode(str) {
                 try {
-                    const parts = str.split('.');
-                    if (parts.length !== 2) return null;
-                    const reversed = parts[1].split('').reverse().join('');
-                    return decodeURIComponent(escape(atob(reversed)));
+                    let decoded = str;
+                    for (let i = 0; i < 3; i++) {
+                        if (i > 0) decoded = decoded.split('').reverse().join('');
+                        decoded = decodeURIComponent(escape(atob(decoded)));
+                    }
+                    return decoded;
                 } catch(e) {
                     return null;
                 }
             }
 
-            // ============ LỚP 4: HASH ĐA LỚP ============
-            function generateMultiHash(data) {
-                let hash1 = 0;
-                let hash2 = 0;
-                const str = JSON.stringify(data);
-                
-                for (let i = 0; i < str.length; i++) {
-                    const char = str.charCodeAt(i);
-                    hash1 = ((hash1 << 5) - hash1) + char;
-                    hash1 = hash1 & hash1;
-                    hash2 = ((hash2 << 7) - hash2) + char;
-                    hash2 = hash2 & hash2;
-                }
-                
-                return Math.abs(hash1).toString(36) + '_' + Math.abs(hash2).toString(36);
-            }
-
-            // ============ LỚP 5: CHỐNG DEBUG NÂNG CAO ============
-            function advancedAntiDebug() {
-                // Phát hiện DevTools qua timing
-                let startTime = performance.now();
-                debugger;
-                let endTime = performance.now();
-                
-                if (endTime - startTime > 100) {
-                    clearAllData();
-                    document.body.innerHTML = '';
-                    window.location.reload();
-                }
-                
-                // Phát hiện qua console
-                const consoleDetection = new Function('debugger');
-                const originalConsole = { ...console };
-                
-                // Ghi đè console methods
-                const methods = ['log', 'warn', 'error', 'info', 'debug', 'clear'];
-                methods.forEach(method => {
-                    console[method] = function() {
-                        if (arguments.length > 0 && typeof arguments[0] === 'string') {
-                            if (arguments[0].includes('key') || arguments[0].includes('token')) {
-                                clearAllData();
-                            }
-                        }
-                    };
-                });
-                
-                // Phát hiện sửa đổi DOM qua MutationObserver
-                const observer = new MutationObserver((mutations) => {
-                    mutations.forEach((mutation) => {
-                        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                            mutation.addedNodes.forEach(node => {
-                                if (node.nodeType === 1 && node.tagName === 'SCRIPT') {
-                                    clearAllData();
-                                    node.remove();
-                                }
-                            });
-                        }
-                    });
-                });
-                
-                observer.observe(document.documentElement, {
-                    childList: true,
-                    subtree: true
-                });
-            }
-
-            // ============ LỚP 6: CHỐNG SỬA ĐỔI CLIENT-SIDE ============
-            function protectDOM() {
-                // Bảo vệ các element quan trọng
-                const keyDisplay = document.getElementById('keyDisplay');
-                if (keyDisplay) {
-                    Object.defineProperty(keyDisplay, 'textContent', {
-                        get: function() { return this.innerText; },
-                        set: function(value) {
-                            if (value !== this._textContent) {
-                                this._textContent = value;
-                                this.innerText = value;
-                            }
-                        },
-                        configurable: false
-                    });
-                }
-            }
-
-            // ============ LỚP 7: VERIFICATION ĐA TẦNG ============
-            function multiLayerVerification() {
-                const checks = [];
-                
-                // Check 1: Referrer
-                const referrer = document.referrer.toLowerCase();
-                const fromShortener = SHORTENER_DOMAINS.some(domain => 
-                    referrer.includes(domain)
-                );
-                checks.push(fromShortener);
-                
-                // Check 2: URL Parameters
-                const urlParams = new URLSearchParams(window.location.search);
-                const hasToken = urlParams.get('token') === 'auto';
-                const isKeyPage = urlParams.get('page') === 'key';
-                checks.push(hasToken && isKeyPage);
-                
-                // Check 3: Session Token
-                const storedToken = sessionStorage.getItem(TOKEN_KEY);
-                const storedTimestamp = sessionStorage.getItem(TIMESTAMP_KEY);
-                if (storedToken && storedTimestamp) {
-                    const timeDiff = Date.now() - parseInt(storedTimestamp);
-                    checks.push(storedToken === 'auto' && timeDiff < 300000);
-                }
-                
-                // Check 4: Verification Flag
-                checks.push(sessionStorage.getItem(VERIFICATION_KEY) === 'true');
-                
-                // Check 5: Fingerprint
-                checks.push(verifyFingerprint());
-                
-                // Check 6: Rate Limit
-                checks.push(checkRateLimit());
-                
-                // Phải có ít nhất 3 checks pass
-                return checks.filter(c => c).length >= 3;
-            }
-
-            // ============ LỚP 8: CHỐNG REPLAY ATTACK ============
-            const usedNonces = new Set();
+            // ============ LỚP 10: MEMORY PROTECTION ============
+            const sensitiveData = new WeakMap();
+            const protectedObjects = new Set();
             
-            function generateNonce() {
-                const nonce = crypto.randomUUID ? crypto.randomUUID() : 
-                    Math.random().toString(36) + Date.now().toString(36);
-                usedNonces.add(nonce);
-                return nonce;
+            function protectObject(obj) {
+                protectedObjects.add(obj);
+                return new Proxy(obj, {
+                    get(target, prop) {
+                        if (typeof prop === 'string' && prop.includes('key')) {
+                            console.warn('Unauthorized access attempt detected');
+                        }
+                        return target[prop];
+                    },
+                    set(target, prop, value) {
+                        if (typeof prop === 'string' && prop.includes('key')) {
+                            console.warn('Unauthorized modification attempt detected');
+                            return false;
+                        }
+                        target[prop] = value;
+                        return true;
+                    }
+                });
             }
 
-            function validateNonce(nonce) {
-                if (usedNonces.has(nonce)) {
-                    return false;
+            // ============ LỚP 11: ANTI-TAMPERING ============
+            function checkDOMIntegrity() {
+                const elements = ['mainCard', 'keyDisplay', 'getKeyBtn', 'newKeyBtn'];
+                for (const id of elements) {
+                    const el = document.getElementById(id);
+                    if (!el || el.tagName === 'SCRIPT' || el.hasAttribute('data-tampered')) {
+                        clearAllData();
+                        return false;
+                    }
                 }
-                usedNonces.add(nonce);
                 return true;
             }
 
+            // ============ LỚP 12: FUNCTION INTEGRITY ============
+            const originalFunctions = new Map();
+            
+            function protectFunction(name, fn) {
+                originalFunctions.set(name, fn.toString());
+                return fn;
+            }
+
+            function verifyFunctionIntegrity() {
+                for (const [name, original] of originalFunctions) {
+                    const current = window[name]?.toString();
+                    if (current && current !== original) {
+                        clearAllData();
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            // ============ LỚP 13: ADVANCED RATE LIMITING ============
+            const requestLog = [];
+            
+            function advancedRateLimit() {
+                const now = Date.now();
+                requestLog.push(now);
+                
+                // Xóa requests cũ hơn 1 phút
+                while (requestLog.length > 0 && requestLog[0] < now - 60000) {
+                    requestLog.shift();
+                }
+                
+                // Giới hạn: 5 requests/10s, 10 requests/30s, 20 requests/60s
+                const last10s = requestLog.filter(t => t > now - 10000).length;
+                const last30s = requestLog.filter(t => t > now - 30000).length;
+                const last60s = requestLog.filter(t => t > now - 60000).length;
+                
+                if (last10s > 5 || last30s > 10 || last60s > 20) {
+                    return false;
+                }
+                return true;
+            }
+
+            // ============ LỚP 14: IP-BASED PROTECTION ============
+            let ipHash = null;
+            
+            async function getIPHash() {
+                if (ipHash) return ipHash;
+                try {
+                    const response = await fetch('https://api.ipify.org?format=json', { 
+                        mode: 'cors',
+                        cache: 'no-store'
+                    });
+                    const data = await response.json();
+                    ipHash = btoa(data.ip).substring(0, 16);
+                    return ipHash;
+                } catch(e) {
+                    ipHash = 'unknown_ip';
+                    return ipHash;
+                }
+            }
+
+            // ============ LỚP 15: TIMING ATTACK PROTECTION ============
+            function constantTimeCompare(a, b) {
+                if (a.length !== b.length) return false;
+                let result = 0;
+                for (let i = 0; i < a.length; i++) {
+                    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+                }
+                return result === 0;
+            }
+
+            // ============ LỚP 16: ANTI-AUTOMATION ============
+            function detectAutomation() {
+                const checks = [];
+                checks.push(navigator.webdriver === true);
+                checks.push(window._phantom || window.callPhantom);
+                checks.push(navigator.userAgent.includes('Headless'));
+                checks.push(navigator.userAgent.includes('PhantomJS'));
+                checks.push(navigator.userAgent.includes('Puppeteer'));
+                checks.push(!navigator.languages || navigator.languages.length === 0);
+                checks.push(navigator.plugins && navigator.plugins.length === 0);
+                checks.push(!window.chrome || !window.chrome.runtime);
+                return checks.some(c => c === true);
+            }
+
+            // ============ LỚP 17: SESSION BINDING ============
+            function bindSession() {
+                const sessionId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36);
+                const fp = combineFingerprints();
+                const bound = btoa(sessionId + '|' + fp).substring(0, 32);
+                sessionStorage.setItem(FINGERPRINT_KEY, bound);
+                return bound;
+            }
+
+            function verifySessionBinding() {
+                const stored = sessionStorage.getItem(FINGERPRINT_KEY);
+                if (!stored) return false;
+                const fp = combineFingerprints();
+                const expected = btoa(stored.split('|')[0] + '|' + fp).substring(0, 32);
+                return constantTimeCompare(stored, expected);
+            }
+
+            // ============ LỚP 18: KEY ROTATION ============
+            function rotateKey(key) {
+                const chars = key.split('');
+                for (let i = chars.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [chars[i], chars[j]] = [chars[j], chars[i]];
+                }
+                return chars.join('');
+            }
+
+            // ============ LỚP 19: MULTI-FACTOR VERIFICATION ============
+            function multiFactorVerify() {
+                const factors = [];
+                
+                // Factor 1: Referrer check
+                const referrer = document.referrer.toLowerCase();
+                factors.push(SHORTENER_DOMAINS.some(d => referrer.includes(d)));
+                
+                // Factor 2: URL parameters
+                const params = new URLSearchParams(window.location.search);
+                factors.push(params.get('token') === 'auto' && params.get('page') === 'key');
+                
+                // Factor 3: Session token
+                const token = sessionStorage.getItem(TOKEN_KEY);
+                const ts = sessionStorage.getItem(TIMESTAMP_KEY);
+                factors.push(token === 'auto' && ts && Date.now() - parseInt(ts) < 300000);
+                
+                // Factor 4: Verification flag
+                factors.push(sessionStorage.getItem(VERIFICATION_KEY) === 'true');
+                
+                // Factor 5: Fingerprint match
+                factors.push(verifySessionBinding());
+                
+                // Factor 6: Rate limit
+                factors.push(advancedRateLimit());
+                
+                // Factor 7: Human behavior
+                factors.push(isHumanBehavior());
+                
+                // Factor 8: Anti-automation
+                factors.push(!detectAutomation());
+                
+                // Factor 9: DOM integrity
+                factors.push(checkDOMIntegrity());
+                
+                // Factor 10: Time token
+                const timeToken = sessionStorage.getItem(TOKEN_KEY + '_tt');
+                factors.push(timeToken && verifyTimeToken(timeToken));
+                
+                // Cần ít nhất 6/10 factors
+                return factors.filter(f => f).length >= 6;
+            }
+
             // ============ KEY GENERATION ============
-            function generateKey(nonce) {
+            function generateKey() {
                 let key = KEY_PREFIX;
-                const randomBytes = new Uint8Array(16);
+                const randomBytes = new Uint8Array(32);
                 crypto.getRandomValues(randomBytes);
                 const randomStr = Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
                 
-                const specialPart = SPECIAL_CHARS.substring(0, Math.floor(Math.random() * 20) + 10);
+                const specialPart = SPECIAL_CHARS.substring(0, Math.floor(Math.random() * 30) + 15);
                 const position = Math.floor(Math.random() * 3);
                 
                 switch(position) {
@@ -756,12 +974,8 @@
                 }
                 
                 if (!/[¡¿'\-:;₫&@#%*^+€¥$_|\\\[\]{}]/.test(key)) {
-                    key += SPECIAL_CHARS.substring(0, 8);
+                    key += SPECIAL_CHARS.substring(0, 10);
                 }
-                
-                // Thêm nonce vào key
-                const nonceHash = btoa(nonce).substring(0, 4);
-                key += nonceHash;
                 
                 return key;
             }
@@ -771,26 +985,30 @@
                 if (!key.startsWith(KEY_PREFIX)) return false;
                 if (!key.includes(REQUIRED_WORD)) return false;
                 if (!/[¡¿'\-:;₫&@#%*^+€¥$_|\\\[\]{}]/.test(key)) return false;
-                if (key.length < 35) return false;
+                if (key.length < 40) return false;
                 return true;
             }
 
             // ============ STORAGE MANAGEMENT ============
             function saveSecureData(keyData) {
-                const nonce = generateNonce();
-                const hash = generateMultiHash(keyData);
-                const encoded = advancedEncode(JSON.stringify(keyData));
+                const nonce = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36);
+                const hash = generateSignature(keyData);
+                const encoded = tripleEncode(JSON.stringify(keyData));
+                const signature = generateSignature(keyData);
                 
                 const secureData = {
                     data: encoded,
                     hash: hash,
                     nonce: nonce,
                     timestamp: Date.now(),
-                    fingerprint: generateFingerprint()
+                    fingerprint: combineFingerprints(),
+                    signature: signature
                 };
                 
                 sessionStorage.setItem(KEY_DATA_KEY, JSON.stringify(secureData));
                 sessionStorage.setItem(HASH_KEY, hash);
+                sessionStorage.setItem(SIGNATURE_KEY, signature);
+                sessionStorage.setItem(NONCE_KEY, nonce);
             }
 
             function getSecureData() {
@@ -800,27 +1018,35 @@
                     
                     const secureData = JSON.parse(raw);
                     const storedHash = sessionStorage.getItem(HASH_KEY);
+                    const storedSignature = sessionStorage.getItem(SIGNATURE_KEY);
+                    const storedNonce = sessionStorage.getItem(NONCE_KEY);
                     
                     // Verify hash
-                    if (secureData.hash !== storedHash) {
+                    if (!constantTimeCompare(secureData.hash, storedHash)) {
                         clearAllData();
                         return null;
                     }
                     
-                    // Verify fingerprint
-                    if (secureData.fingerprint !== generateFingerprint()) {
+                    // Verify signature
+                    if (!constantTimeCompare(secureData.signature, storedSignature)) {
                         clearAllData();
                         return null;
                     }
                     
                     // Verify nonce
-                    if (!validateNonce(secureData.nonce)) {
+                    if (secureData.nonce !== storedNonce) {
                         clearAllData();
                         return null;
                     }
                     
-                    // Decode data
-                    const decoded = advancedDecode(secureData.data);
+                    // Verify fingerprint
+                    if (secureData.fingerprint !== combineFingerprints()) {
+                        clearAllData();
+                        return null;
+                    }
+                    
+                    // Decode
+                    const decoded = tripleDecode(secureData.data);
                     if (!decoded) {
                         clearAllData();
                         return null;
@@ -848,11 +1074,19 @@
                         sessionStorage.removeItem(key);
                     }
                 });
+                usedNonces.clear();
+                requestLog.length = 0;
             }
 
-            // ============ UI MANAGEMENT ============
+            // ============ UI ELEMENTS ============
+            const mainCard = document.getElementById('mainCard');
+            const brandText = document.getElementById('brandText');
+            const dividerLine = document.getElementById('dividerLine');
+            const subtitleText = document.getElementById('subtitleText');
             const page1 = document.getElementById('page1');
             const page2 = document.getElementById('page2');
+            const keyArea = document.getElementById('keyArea');
+            const keyLabel = document.getElementById('keyLabel');
             const getKeyBtn = document.getElementById('getKeyBtn');
             const newKeyBtn = document.getElementById('newKeyBtn');
             const keyDisplay = document.getElementById('keyDisplay');
@@ -896,17 +1130,41 @@
             function handleExpiry() {
                 stopCountdown();
                 keyDisplay.textContent = 'EXPIRED';
-                keyDisplay.style.opacity = '0.5';
+                keyDisplay.classList.add('expired-key');
+                keyDisplay.style.cursor = 'not-allowed';
                 timerContainer.classList.add('hidden');
+                mainCard.classList.add('expired');
+                brandText.classList.add('expired');
+                dividerLine.classList.add('expired');
+                subtitleText.classList.add('expired');
+                keyArea.classList.add('expired-area');
+                keyLabel.classList.add('expired-label');
+                statusMessage.classList.add('expired-message');
                 newKeyBtn.classList.remove('hidden');
                 statusMessage.textContent = 'Key has expired. Please get a new key.';
                 clearAllData();
+            }
+
+            function resetExpiredState() {
+                mainCard.classList.remove('expired');
+                brandText.classList.remove('expired');
+                dividerLine.classList.remove('expired');
+                subtitleText.classList.remove('expired');
+                keyArea.classList.remove('expired-area');
+                keyLabel.classList.remove('expired-label');
+                keyDisplay.classList.remove('expired-key');
+                keyDisplay.style.cursor = 'pointer';
+                statusMessage.classList.remove('expired-message');
+                timerContainer.classList.remove('hidden');
+                newKeyBtn.classList.add('hidden');
             }
 
             function showPage1() {
                 page1.classList.remove('hidden');
                 page2.classList.add('hidden');
                 stopCountdown();
+                resetExpiredState();
+                statusMessage.textContent = 'Click to verify and get your key';
             }
 
             function showPage2() {
@@ -915,12 +1173,7 @@
             }
 
             function displayKey(keyData) {
-                if (!multiLayerVerification()) {
-                    clearAllData();
-                    showPage1();
-                    return;
-                }
-                
+                resetExpiredState();
                 keyDisplay.textContent = keyData.key;
                 keyDisplay.style.opacity = '1';
                 timerContainer.classList.remove('hidden');
@@ -932,12 +1185,14 @@
                 sessionStorage.setItem(VERIFICATION_KEY, 'true');
                 sessionStorage.setItem(TOKEN_KEY, 'auto');
                 sessionStorage.setItem(TIMESTAMP_KEY, Date.now().toString());
+                sessionStorage.setItem(TOKEN_KEY + '_tt', generateTimeToken());
+                bindSession();
             }
 
             // ============ COPY FUNCTION ============
             keyDisplay.addEventListener('click', function() {
                 const text = keyDisplay.textContent;
-                if (text && text !== '-----' && text !== 'EXPIRED') {
+                if (text && text !== '-----' && text !== 'EXPIRED' && !keyDisplay.classList.contains('expired-key')) {
                     navigator.clipboard.writeText(text).then(() => {
                         showCopyNotification('Key copied successfully');
                     }).catch(() => {});
@@ -962,63 +1217,74 @@
 
             // ============ INITIALIZATION ============
             function initialize() {
-                const isVerified = multiLayerVerification();
+                if (detectAutomation()) {
+                    clearAllData();
+                    showPage1();
+                    statusMessage.textContent = 'Automated access detected. Access denied.';
+                    return;
+                }
+                
+                const isVerified = multiFactorVerify();
+                const secureData = getSecureData();
+                
+                if (secureData && secureData.expiry > Date.now() && validateKey(secureData.key)) {
+                    displayKey(secureData);
+                    if (window.history && window.history.replaceState) {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                    return;
+                }
+                
+                if (secureData && secureData.expiry <= Date.now()) {
+                    clearAllData();
+                    showPage2();
+                    handleExpiry();
+                    return;
+                }
                 
                 if (isVerified) {
-                    const existingData = getSecureData();
-                    
-                    if (existingData && existingData.expiry > Date.now() && validateKey(existingData.key)) {
-                        displayKey(existingData);
-                    } else {
-                        const nonce = generateNonce();
-                        const newKey = generateKey(nonce);
-                        const keyData = {
-                            key: newKey,
-                            expiry: Date.now() + KEY_DURATION,
-                            created: Date.now(),
-                            nonce: nonce
-                        };
-                        saveSecureData(keyData);
-                        displayKey(keyData);
-                    }
+                    const newKey = generateKey();
+                    const keyData = {
+                        key: newKey,
+                        expiry: Date.now() + KEY_DURATION,
+                        created: Date.now()
+                    };
+                    saveSecureData(keyData);
+                    displayKey(keyData);
                     
                     if (window.history && window.history.replaceState) {
                         window.history.replaceState({}, document.title, window.location.pathname);
                     }
                 } else {
-                    const existingData = getSecureData();
-                    if (existingData && existingData.expiry > Date.now() && validateKey(existingData.key)) {
-                        const storedVerification = sessionStorage.getItem(VERIFICATION_KEY);
-                        if (storedVerification === 'true') {
-                            displayKey(existingData);
-                            return;
-                        }
-                    }
                     showPage1();
                 }
             }
 
-            // ============ EVENT HANDLERS ============
+            // ============ BUTTON HANDLERS ============
             getKeyBtn.addEventListener('click', function() {
-                if (!checkRateLimit()) {
+                if (!advancedRateLimit()) {
                     statusMessage.textContent = 'Too many requests. Please wait.';
                     return;
                 }
                 
-                const nonce = generateNonce();
-                const newKey = generateKey(nonce);
+                if (detectAutomation()) {
+                    statusMessage.textContent = 'Automated access detected.';
+                    return;
+                }
+                
+                const newKey = generateKey();
                 const keyData = {
                     key: newKey,
                     expiry: Date.now() + KEY_DURATION,
-                    created: Date.now(),
-                    nonce: nonce
+                    created: Date.now()
                 };
                 saveSecureData(keyData);
                 
                 sessionStorage.setItem(VERIFICATION_KEY, 'true');
                 sessionStorage.setItem(TOKEN_KEY, 'auto');
                 sessionStorage.setItem(TIMESTAMP_KEY, Date.now().toString());
-                sessionStorage.setItem(FINGERPRINT_KEY, generateFingerprint());
+                sessionStorage.setItem(TOKEN_KEY + '_tt', generateTimeToken());
+                bindSession();
                 
                 window.open(SHORTENER_URL, '_blank');
                 statusMessage.textContent = 'Opening verification page...';
@@ -1027,13 +1293,14 @@
             newKeyBtn.addEventListener('click', function() {
                 clearAllData();
                 stopCountdown();
-                window.location.href = window.location.origin + window.location.pathname;
+                resetExpiredState();
+                showPage1();
             });
 
             // ============ PARTICLES ============
             function createParticles() {
                 const container = document.getElementById('particles');
-                for (let i = 0; i < 40; i++) {
+                for (let i = 0; i < 50; i++) {
                     const particle = document.createElement('div');
                     particle.className = 'particle';
                     const size = Math.random() * 5 + 2;
@@ -1049,23 +1316,76 @@
 
             // ============ SECURITY LOOPS ============
             setInterval(() => {
-                // Kiểm tra key expiry
+                if (!verifySessionBinding() || detectAutomation()) {
+                    clearAllData();
+                    handleExpiry();
+                }
+                
                 const data = getSecureData();
                 if (data && data.expiry <= Date.now() && currentExpiry) {
                     handleExpiry();
                 }
                 
-                // Kiểm tra fingerprint
-                if (!verifyFingerprint()) {
+                if (!checkDOMIntegrity()) {
                     clearAllData();
-                    handleExpiry();
                 }
             }, 3000);
 
-            // ============ INIT ============
+            // ============ ANTI-DEBUG ============
+            function advancedAntiDebug() {
+                // Phát hiện DevTools qua timing
+                const start = performance.now();
+                debugger;
+                const end = performance.now();
+                if (end - start > 100) {
+                    clearAllData();
+                    document.body.innerHTML = '';
+                }
+                
+                // Phát hiện qua kích thước
+                setInterval(() => {
+                    const threshold = 160;
+                    if (window.outerWidth - window.innerWidth > threshold || 
+                        window.outerHeight - window.innerHeight > threshold) {
+                        clearAllData();
+                        console.clear();
+                    }
+                }, 1000);
+                
+                // Chặn phím tắt
+                document.addEventListener('keydown', function(e) {
+                    if ((e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key)) ||
+                        (e.ctrlKey && e.key === 'U') || e.key === 'F12') {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+                
+                // Chặn chuột phải
+                document.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    return false;
+                });
+                
+                // Chặn kéo thả
+                document.addEventListener('dragstart', function(e) {
+                    e.preventDefault();
+                    return false;
+                });
+                
+                // Chặn select
+                document.addEventListener('selectstart', function(e) {
+                    if (e.target.closest('.key-value') && !e.target.closest('.expired-key')) {
+                        return true;
+                    }
+                    e.preventDefault();
+                    return false;
+                });
+            }
+
+            // ============ START ============
             createParticles();
             advancedAntiDebug();
-            protectDOM();
             initialize();
             
             // Production mode
@@ -1079,6 +1399,16 @@
                 console.clear = noop;
                 console.table = noop;
                 console.trace = noop;
+                console.dir = noop;
+                console.dirxml = noop;
+                console.group = noop;
+                console.groupCollapsed = noop;
+                console.groupEnd = noop;
+                console.time = noop;
+                console.timeEnd = noop;
+                console.timeLog = noop;
+                console.count = noop;
+                console.countReset = noop;
             }
 
         })();
