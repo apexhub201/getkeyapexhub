@@ -3,119 +3,811 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APEX HUB | Get Key</title>
+    <title>APEX HUB | Key System</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{
-            font-family:'Montserrat',sans-serif;background:#050505;
-            min-height:100vh;display:flex;justify-content:center;align-items:center;
-            overflow:hidden;position:relative;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .bg{
-            position:fixed;top:0;left:0;width:100%;height:100%;
-            background:radial-gradient(ellipse at 20% 50%,rgba(180,0,0,.15) 0%,transparent 50%),
-                      radial-gradient(ellipse at 80% 50%,rgba(0,0,0,.3) 0%,transparent 50%),
-                      radial-gradient(ellipse at 50% 0%,rgba(255,50,50,.08) 0%,transparent 50%),
-                      radial-gradient(ellipse at 50% 100%,rgba(180,0,0,.1) 0%,transparent 50%);
-            z-index:0;
+
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            background: #0a0a0f;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
         }
-        .grid{
-            position:fixed;top:0;left:0;width:100%;height:100%;
-            background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),
-                           linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
-            background-size:60px 60px;z-index:0;animation:gm 20s linear infinite;
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
         }
-        @keyframes gm{0%{transform:translate(0,0)}100%{transform:translate(60px,60px)}}
-        .parts{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1}
-        .part{
-            position:absolute;border-radius:50%;animation:fu 8s infinite ease-in;opacity:0;
+
+        .particle {
+            position: absolute;
+            background: linear-gradient(135deg, rgba(120, 80, 255, 0.3), rgba(0, 180, 255, 0.2));
+            border-radius: 50%;
+            animation: float 15s infinite;
+            filter: blur(1px);
         }
-        @keyframes fu{
-            0%{transform:translateY(100vh) scale(0);opacity:0}
-            10%{opacity:1}90%{opacity:1}
-            100%{transform:translateY(-100px) scale(1);opacity:0}
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.3; }
+            25% { transform: translateY(-100px) translateX(50px) scale(1.5); opacity: 0.6; }
+            50% { transform: translateY(-50px) translateX(-30px) scale(0.8); opacity: 0.2; }
+            75% { transform: translateY(-150px) translateX(-60px) scale(1.2); opacity: 0.5; }
         }
-        .ctn{position:relative;z-index:2;width:100%;max-width:520px;padding:20px}
-        .card{
-            background:rgba(10,10,10,.9);backdrop-filter:blur(30px);
-            border:1px solid rgba(230,57,70,.2);border-radius:24px;
-            padding:50px 40px;text-align:center;
-            box-shadow:0 0 80px rgba(220,20,20,.08),0 30px 60px rgba(0,0,0,.6);
-            position:relative;overflow:hidden;transition:all .4s;
+
+        .gradient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(76, 0, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 180, 255, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(180, 100, 255, 0.04) 0%, transparent 50%);
+            animation: gradientShift 20s ease-in-out infinite;
+            z-index: 0;
+            pointer-events: none;
         }
-        .card:hover{transform:translateY(-5px);border-color:rgba(230,57,70,.6);box-shadow:0 0 60px rgba(230,57,70,.2),0 30px 60px rgba(0,0,0,.6)}
-        .card::before{
-            content:'';position:absolute;top:-100%;left:-100%;width:300%;height:300%;
-            background:conic-gradient(from 0deg,transparent,rgba(220,20,20,.05),transparent,rgba(255,80,80,.08),transparent);
-            animation:rg 15s linear infinite;z-index:0;
+
+        @keyframes gradientShift {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
         }
-        @keyframes rg{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-        .in{position:relative;z-index:1}
-        .logo{font-size:48px;font-weight:700;letter-spacing:6px;color:#fff;text-shadow:0 0 40px rgba(255,50,50,.3);margin-bottom:5px;animation:fi .8s}
-        .logo span{color:#e63946;text-shadow:0 0 60px rgba(230,57,70,.6)}
-        .sub{font-size:13px;color:rgba(255,255,255,.5);letter-spacing:8px;text-transform:uppercase;margin-bottom:40px;animation:fi .8s .15s both}
-        .line{width:80px;height:2px;background:linear-gradient(90deg,transparent,#e63946,transparent);margin:0 auto 35px;animation:fi .8s .3s both}
-        .ttl{font-size:22px;color:#ccc;letter-spacing:4px;text-transform:uppercase;margin-bottom:8px;animation:fi .8s .35s both}
-        .stl{font-size:11px;color:rgba(255,255,255,.35);letter-spacing:3px;margin-bottom:40px;animation:fi .8s .4s both}
-        @keyframes fi{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
-        .btn{
-            display:inline-block;padding:16px 55px;font-size:15px;font-weight:500;
-            letter-spacing:4px;text-transform:uppercase;color:#fff;
-            background:linear-gradient(135deg,#1a0000,#2d0000,#1a0000);
-            border:1px solid rgba(230,57,70,.5);border-radius:50px;cursor:pointer;
-            transition:all .5s;position:relative;overflow:hidden;animation:fi .8s .5s both;
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 550px;
+            animation: cardAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .btn::before{
-            content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;
-            background:rgba(230,57,70,.25);transform:translate(-50%,-50%);transition:width .7s,height .7s;
+
+        @keyframes cardAppear {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
-        .btn:hover::before{width:400px;height:400px}
-        .btn:hover{border-color:#e63946;box-shadow:0 0 30px rgba(230,57,70,.3);transform:translateY(-3px);letter-spacing:6px}
-        .btn span{position:relative;z-index:1}
-        .glow{
-            position:absolute;top:-2px;left:-2px;right:-2px;bottom:-2px;border-radius:26px;
-            background:linear-gradient(45deg,transparent 40%,rgba(230,57,70,.15) 50%,transparent 60%);
-            z-index:-1;animation:bg 4s infinite;pointer-events:none;
+
+        .card {
+            background: rgba(15, 15, 30, 0.75);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 32px;
+            padding: 50px 40px;
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.8),
+                0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+                0 1px 0 rgba(255, 255, 255, 0.05) inset;
+            position: relative;
+            overflow: hidden;
         }
-        @keyframes bg{0%,100%{opacity:.3}50%{opacity:.8}}
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg,
+                transparent,
+                rgba(120, 80, 255, 0.05),
+                transparent,
+                rgba(0, 180, 255, 0.05),
+                transparent
+            );
+            animation: rotate 20s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        }
+
+        .brand-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .brand {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, #b894f7 0%, #7eb8ff 40%, #c4a6ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 30px rgba(140, 100, 255, 0.5));
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { filter: drop-shadow(0 0 30px rgba(140, 100, 255, 0.5)); }
+            50% { filter: drop-shadow(0 0 50px rgba(140, 100, 255, 0.8)); }
+        }
+
+        .divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(180, 150, 255, 0.6), transparent);
+            margin: 15px auto;
+        }
+
+        .subtitle {
+            color: rgba(200, 200, 230, 0.6);
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .key-area {
+            background: rgba(10, 10, 25, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 30px 25px;
+            margin: 30px 0;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .key-label {
+            color: rgba(180, 170, 210, 0.7);
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .key-value {
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 1.1rem;
+            color: #e8dfff;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px dashed rgba(160, 140, 220, 0.3);
+            word-break: break-all;
+            letter-spacing: 0.5px;
+            animation: keyGlow 2s ease-in-out infinite;
+            user-select: all;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .key-value:hover {
+            background: rgba(20, 15, 40, 0.5);
+            border-color: rgba(180, 160, 240, 0.5);
+        }
+
+        @keyframes keyGlow {
+            0%, 100% { border-color: rgba(160, 140, 220, 0.3); }
+            50% { border-color: rgba(160, 140, 220, 0.6); }
+        }
+
+        .timer-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+            color: #b8a9e0;
+            font-size: 0.9rem;
+        }
+
+        .timer {
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: linear-gradient(135deg, #f0c27b, #f8a55a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            cursor: pointer;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1.2);
+            background: linear-gradient(135deg, rgba(40, 20, 60, 0.8), rgba(25, 15, 45, 0.9));
+            color: #e0d0ff;
+            border: 1px solid rgba(200, 170, 255, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.7s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            border-color: rgba(200, 170, 255, 0.5);
+            box-shadow: 
+                0 15px 35px rgba(100, 50, 200, 0.3),
+                0 0 60px rgba(120, 80, 255, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            transition: all 0.1s;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .status-message {
+            color: #b8a0e0;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 20px;
+            opacity: 0.8;
+        }
+
+        .copy-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(40, 20, 60, 0.95);
+            color: #e0d0ff;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            z-index: 100;
+            animation: slideDown 0.3s ease, fadeOut 0.3s ease 1.7s forwards;
+            border: 1px solid rgba(200, 170, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateX(-50%) translateY(-100px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 35px 25px;
+                border-radius: 24px;
+            }
+            .brand {
+                font-size: 2.2rem;
+            }
+            .key-value {
+                font-size: 0.9rem;
+                padding: 12px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="bg"></div>
-    <div class="grid"></div>
-    <div class="parts" id="parts"></div>
+    <div class="particles" id="particles"></div>
+    <div class="gradient-overlay"></div>
 
-    <div class="ctn">
-        <div class="card">
-            <div class="glow"></div>
-            <div class="in">
-                <div class="logo">APEX <span>HUB</span></div>
-                <div class="sub">Premium Access</div>
-                <div class="line"></div>
-                <div class="ttl">Get Key</div>
-                <div class="stl">Xác minh để tiếp tục</div>
-                <button class="btn" onclick="openLink()">
-                    <span>Get Key</span>
-                </button>
+    <div class="container">
+        <div class="card" id="mainCard">
+            <div class="brand-container">
+                <div class="brand">APEX HUB</div>
+                <div class="divider"></div>
+                <div class="subtitle">Secure Key System</div>
+            </div>
+
+            <div id="page1">
+                <div class="key-area" style="opacity: 0.7;">
+                    <div class="key-label">YOUR LICENSE KEY</div>
+                    <div class="key-value" style="opacity: 0.5;">-----</div>
+                </div>
+                <button class="btn" id="getKeyBtn">GET KEY</button>
+                <div class="status-message">Click to verify and get your key</div>
+            </div>
+
+            <div id="page2" class="hidden">
+                <div class="key-area">
+                    <div class="key-label">YOUR LICENSE KEY</div>
+                    <div class="key-value" id="keyDisplay" title="Click to copy">-----</div>
+                    <div class="timer-container" id="timerContainer">
+                        <span>Time remaining</span>
+                        <span class="timer" id="countdown">24:00:00</span>
+                    </div>
+                </div>
+                <button class="btn hidden" id="newKeyBtn">GET NEW KEY</button>
+                <div class="status-message" id="statusMessage"></div>
             </div>
         </div>
     </div>
 
     <script>
-        function particles(){
-            var c=document.getElementById('parts');
-            var cl=['#e63946','#ff4d4d','#cc2936','#ff6666'];
-            for(var i=0;i<25;i++){
-                var p=document.createElement('div');
-                p.className='part';
-                var s=Math.random()*3+1;
-                p.style.cssText='width:'+s+'px;height:'+s+'px;left:'+Math.random()*100+'%;background:'+cl[Math.floor(Math.random()*4)]+';animation-delay:'+Math.random()*8+'s;animation-duration:'+(Math.random()*6+5)+'s';
-                c.appendChild(p);
+        (function() {
+            // ============ CONFIGURATION ============
+            const SHORTENER_URL = 'https://link4m.org/hXPIjdW';
+            const SHORTENER_DOMAINS = ['link4m.org', 'link4m.net', 'link4m.com', 'link4m'];
+            const KEY_PREFIX = 'Free_';
+            const REQUIRED_WORD = 'apex';
+            const SPECIAL_CHARS = 'qptoeugjwmxnalkjf¡¿\'-:;₫&@9275023#%*^+€¥$_|\\[]{}bcz';
+            const KEY_DURATION = 24 * 60 * 60 * 1000;
+            
+            // Mã hóa tên storage keys để tránh bị phát hiện dễ dàng
+            const STORAGE_PREFIX = '_ahs_' + btoa('apex').substring(0, 4);
+            const KEY_DATA_KEY = STORAGE_PREFIX + '_kd';
+            const VERIFICATION_KEY = STORAGE_PREFIX + '_vf';
+            const TIMESTAMP_KEY = STORAGE_PREFIX + '_ts';
+            const TOKEN_KEY = STORAGE_PREFIX + '_tk';
+            const HASH_KEY = STORAGE_PREFIX + '_hs';
+
+            // ============ LỚP BẢO VỆ 1: MÃ HÓA DỮ LIỆU ============
+            function simpleEncode(str) {
+                return btoa(unescape(encodeURIComponent(str)));
             }
-        }
-        function openLink(){window.open('https://link4m.net/9cHwc','_blank');}
-        particles();
+
+            function simpleDecode(str) {
+                try {
+                    return decodeURIComponent(escape(atob(str)));
+                } catch(e) {
+                    return null;
+                }
+            }
+
+            function generateHash(data) {
+                const str = JSON.stringify(data);
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    const char = str.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash;
+                }
+                return Math.abs(hash).toString(36);
+            }
+
+            // ============ LỚP BẢO VỆ 2: CHỐNG DEBUG ============
+            function antiDebug() {
+                // Phát hiện DevTools
+                let devtoolsOpen = false;
+                const threshold = 160;
+                
+                const detectDevTools = () => {
+                    const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+                    const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+                    
+                    if (widthThreshold || heightThreshold) {
+                        if (!devtoolsOpen) {
+                            devtoolsOpen = true;
+                            // Xóa dữ liệu nếu phát hiện DevTools
+                            clearAllData();
+                            console.clear();
+                        }
+                    } else {
+                        devtoolsOpen = false;
+                    }
+                };
+                
+                setInterval(detectDevTools, 1000);
+                
+                // Vô hiệu hóa một số phím tắt
+                document.addEventListener('keydown', function(e) {
+                    if (
+                        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+                        (e.ctrlKey && e.key === 'U') ||
+                        e.key === 'F12'
+                    ) {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+                
+                // Vô hiệu hóa right-click
+                document.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    return false;
+                });
+            }
+
+            // ============ LỚP BẢO VỆ 3: CHỐNG GIẢ MẠO REFERRER ============
+            function verifyReferrer() {
+                const referrer = document.referrer.toLowerCase();
+                
+                // Kiểm tra referrer có từ link rút gọn không
+                const fromShortener = SHORTENER_DOMAINS.some(domain => 
+                    referrer.includes(domain.replace('.', '\\.'))
+                );
+                
+                // Kiểm tra URL parameters
+                const urlParams = new URLSearchParams(window.location.search);
+                const hasValidToken = urlParams.get('token') === 'auto';
+                const isKeyPage = urlParams.get('page') === 'key';
+                
+                // Kiểm tra session
+                const storedVerification = sessionStorage.getItem(VERIFICATION_KEY);
+                const storedToken = sessionStorage.getItem(TOKEN_KEY);
+                const storedTimestamp = sessionStorage.getItem(TIMESTAMP_KEY);
+                
+                // Xác minh token và thời gian
+                if (storedToken && storedTimestamp) {
+                    const timeDiff = Date.now() - parseInt(storedTimestamp);
+                    const tokenMatch = hasValidToken && storedToken === 'auto';
+                    
+                    if (timeDiff < 300000 && tokenMatch && storedVerification === 'true') {
+                        return true;
+                    }
+                }
+                
+                return fromShortener || (isKeyPage && hasValidToken);
+            }
+
+            // ============ LỚP BẢO VỆ 4: CHỐNG TẠO KEY GIẢ ============
+            function generateKey() {
+                let key = KEY_PREFIX;
+                const randomBytes = new Uint8Array(12);
+                crypto.getRandomValues(randomBytes);
+                const randomStr = Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
+                
+                const specialPart = SPECIAL_CHARS.substring(0, Math.floor(Math.random() * 15) + 10);
+                const position = Math.floor(Math.random() * 3);
+                
+                switch(position) {
+                    case 0:
+                        key += REQUIRED_WORD + specialPart + randomStr;
+                        break;
+                    case 1:
+                        const mid = Math.floor(specialPart.length / 2);
+                        key += specialPart.substring(0, mid) + REQUIRED_WORD + specialPart.substring(mid) + randomStr;
+                        break;
+                    case 2:
+                        key += specialPart + randomStr + REQUIRED_WORD;
+                        break;
+                }
+                
+                // Đảm bảo có ký tự đặc biệt
+                if (!/[¡¿'\-:;₫&@#%*^+€¥$_|\\\[\]{}]/.test(key)) {
+                    key += SPECIAL_CHARS.substring(0, 5);
+                }
+                
+                return key;
+            }
+
+            function validateKey(key) {
+                if (!key || typeof key !== 'string') return false;
+                if (!key.startsWith(KEY_PREFIX)) return false;
+                if (!key.includes(REQUIRED_WORD)) return false;
+                if (!/[¡¿'\-:;₫&@#%*^+€¥$_|\\\[\]{}]/.test(key)) return false;
+                if (key.length < 30) return false;
+                return true;
+            }
+
+            // ============ LỚP BẢO VỆ 5: CHỐNG SỬA ĐỔI STORAGE ============
+            function saveSecureData(keyData) {
+                const hash = generateHash(keyData);
+                const secureData = {
+                    data: simpleEncode(JSON.stringify(keyData)),
+                    hash: hash,
+                    timestamp: Date.now()
+                };
+                
+                sessionStorage.setItem(KEY_DATA_KEY, JSON.stringify(secureData));
+                sessionStorage.setItem(HASH_KEY, hash);
+            }
+
+            function getSecureData() {
+                try {
+                    const raw = sessionStorage.getItem(KEY_DATA_KEY);
+                    if (!raw) return null;
+                    
+                    const secureData = JSON.parse(raw);
+                    const storedHash = sessionStorage.getItem(HASH_KEY);
+                    
+                    // Kiểm tra hash
+                    if (secureData.hash !== storedHash) {
+                        console.warn('Data integrity check failed');
+                        clearAllData();
+                        return null;
+                    }
+                    
+                    // Giải mã dữ liệu
+                    const decoded = simpleDecode(secureData.data);
+                    if (!decoded) {
+                        clearAllData();
+                        return null;
+                    }
+                    
+                    const keyData = JSON.parse(decoded);
+                    
+                    // Kiểm tra thời gian sống của dữ liệu
+                    if (Date.now() - secureData.timestamp > KEY_DURATION) {
+                        clearAllData();
+                        return null;
+                    }
+                    
+                    return keyData;
+                } catch(e) {
+                    clearAllData();
+                    return null;
+                }
+            }
+
+            function clearAllData() {
+                sessionStorage.removeItem(KEY_DATA_KEY);
+                sessionStorage.removeItem(VERIFICATION_KEY);
+                sessionStorage.removeItem(TIMESTAMP_KEY);
+                sessionStorage.removeItem(TOKEN_KEY);
+                sessionStorage.removeItem(HASH_KEY);
+            }
+
+            // ============ LỚP BẢO VỆ 6: CHỐNG TẤN CÔNG TIMING ============
+            function randomDelay() {
+                return new Promise(resolve => {
+                    const delay = Math.floor(Math.random() * 200) + 100;
+                    setTimeout(resolve, delay);
+                });
+            }
+
+            // ============ UI ELEMENTS ============
+            const page1 = document.getElementById('page1');
+            const page2 = document.getElementById('page2');
+            const getKeyBtn = document.getElementById('getKeyBtn');
+            const newKeyBtn = document.getElementById('newKeyBtn');
+            const keyDisplay = document.getElementById('keyDisplay');
+            const countdown = document.getElementById('countdown');
+            const timerContainer = document.getElementById('timerContainer');
+            const statusMessage = document.getElementById('statusMessage');
+            
+            let countdownInterval = null;
+            let currentExpiry = null;
+
+            // ============ COUNTDOWN ============
+            function startCountdown(expiry) {
+                stopCountdown();
+                currentExpiry = expiry;
+                
+                function update() {
+                    const remaining = currentExpiry - Date.now();
+                    if (remaining <= 0) {
+                        handleExpiry();
+                        return;
+                    }
+                    
+                    const h = Math.floor(remaining / 3600000);
+                    const m = Math.floor((remaining % 3600000) / 60000);
+                    const s = Math.floor((remaining % 60000) / 1000);
+                    countdown.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                }
+                
+                update();
+                countdownInterval = setInterval(update, 1000);
+            }
+
+            function stopCountdown() {
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                }
+                currentExpiry = null;
+            }
+
+            function handleExpiry() {
+                stopCountdown();
+                keyDisplay.textContent = 'EXPIRED';
+                keyDisplay.style.opacity = '0.5';
+                timerContainer.classList.add('hidden');
+                newKeyBtn.classList.remove('hidden');
+                statusMessage.textContent = 'Key has expired. Please get a new key.';
+                clearAllData();
+            }
+
+            // ============ PAGE MANAGEMENT ============
+            function showPage1() {
+                page1.classList.remove('hidden');
+                page2.classList.add('hidden');
+                stopCountdown();
+                statusMessage.textContent = 'Click to verify and get your key';
+            }
+
+            function showPage2() {
+                page1.classList.add('hidden');
+                page2.classList.remove('hidden');
+            }
+
+            async function displayKey(keyData) {
+                await randomDelay(); // Chống timing attack
+                
+                keyDisplay.textContent = keyData.key;
+                keyDisplay.style.opacity = '1';
+                timerContainer.classList.remove('hidden');
+                newKeyBtn.classList.add('hidden');
+                statusMessage.textContent = 'Click on key to copy';
+                showPage2();
+                startCountdown(keyData.expiry);
+                
+                // Lưu trạng thái xác minh
+                sessionStorage.setItem(VERIFICATION_KEY, 'true');
+                sessionStorage.setItem(TOKEN_KEY, 'auto');
+                sessionStorage.setItem(TIMESTAMP_KEY, Date.now().toString());
+            }
+
+            // ============ COPY FUNCTION ============
+            keyDisplay.addEventListener('click', function() {
+                const text = keyDisplay.textContent;
+                if (text && text !== '-----' && text !== 'EXPIRED' && text !== 'LOADING...') {
+                    navigator.clipboard.writeText(text).then(() => {
+                        showCopyNotification('Key copied successfully');
+                    }).catch(() => {
+                        showCopyNotification('Please select and copy manually');
+                    });
+                }
+            });
+
+            function showCopyNotification(message) {
+                const oldNotification = document.querySelector('.copy-notification');
+                if (oldNotification) oldNotification.remove();
+                
+                const notification = document.createElement('div');
+                notification.className = 'copy-notification';
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 2000);
+            }
+
+            // ============ INITIALIZATION ============
+            async function initialize() {
+                await randomDelay(); // Chống timing attack
+                
+                const isVerified = verifyReferrer();
+                
+                if (isVerified) {
+                    const existingData = getSecureData();
+                    
+                    if (existingData && existingData.expiry > Date.now() && validateKey(existingData.key)) {
+                        displayKey(existingData);
+                    } else {
+                        const newKey = generateKey();
+                        const keyData = {
+                            key: newKey,
+                            expiry: Date.now() + KEY_DURATION,
+                            created: Date.now()
+                        };
+                        saveSecureData(keyData);
+                        displayKey(keyData);
+                    }
+                    
+                    // Xóa tham số URL
+                    if (window.history && window.history.replaceState) {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                } else {
+                    const existingData = getSecureData();
+                    if (existingData && existingData.expiry > Date.now() && validateKey(existingData.key)) {
+                        const storedVerification = sessionStorage.getItem(VERIFICATION_KEY);
+                        if (storedVerification === 'true') {
+                            displayKey(existingData);
+                            return;
+                        }
+                    }
+                    showPage1();
+                }
+            }
+
+            // ============ BUTTON HANDLERS ============
+            getKeyBtn.addEventListener('click', async function() {
+                await randomDelay();
+                
+                const newKey = generateKey();
+                const keyData = {
+                    key: newKey,
+                    expiry: Date.now() + KEY_DURATION,
+                    created: Date.now()
+                };
+                saveSecureData(keyData);
+                
+                // Lưu token xác minh
+                sessionStorage.setItem(VERIFICATION_KEY, 'true');
+                sessionStorage.setItem(TOKEN_KEY, 'auto');
+                sessionStorage.setItem(TIMESTAMP_KEY, Date.now().toString());
+                
+                window.open(SHORTENER_URL, '_blank');
+                
+                statusMessage.textContent = 'Opening verification page...';
+            });
+
+            newKeyBtn.addEventListener('click', function() {
+                clearAllData();
+                stopCountdown();
+                window.location.href = window.location.origin + window.location.pathname;
+            });
+
+            // ============ PARTICLES ============
+            function createParticles() {
+                const container = document.getElementById('particles');
+                for (let i = 0; i < 30; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    const size = Math.random() * 4 + 2;
+                    particle.style.width = size + 'px';
+                    particle.style.height = size + 'px';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.top = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 15 + 's';
+                    particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                    container.appendChild(particle);
+                }
+            }
+
+            // ============ PERIODIC SECURITY CHECK ============
+            setInterval(() => {
+                const data = getSecureData();
+                if (data && data.expiry <= Date.now() && currentExpiry) {
+                    handleExpiry();
+                }
+                
+                // Kiểm tra toàn vẹn dữ liệu
+                if (currentExpiry && !getSecureData()) {
+                    handleExpiry();
+                }
+            }, 5000);
+
+            // ============ START ============
+            createParticles();
+            antiDebug();
+            initialize();
+            
+            // Vô hiệu hóa console.log trong production
+            if (window.location.hostname !== 'localhost') {
+                console.log = function() {};
+                console.warn = function() {};
+                console.error = function() {};
+                console.clear = function() {};
+            }
+
+        })();
     </script>
 </body>
 </html>
