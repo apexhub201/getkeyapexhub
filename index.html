@@ -3,22 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APEX HUB | Advanced Security System</title>
+    <title>APEX HUB | Key System</title>
     
-    <!-- Content Security Policy -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
-        script-src 'self' 'unsafe-inline' https://getkeyapexhub.vercel.app;
+        script-src 'self' 'unsafe-inline';
         style-src 'self' 'unsafe-inline';
         connect-src 'self' https://getkeyapexhub.vercel.app;
         img-src 'self' data:;
         font-src 'self';
         frame-src 'none';
-        object-src 'none';
     ">
     
     <style>
-        /* ========== BASE STYLES ========== */
         * {
             margin: 0;
             padding: 0;
@@ -26,13 +23,13 @@
         }
 
         body {
-            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
             background: #0a0a0f;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow-x: hidden;
+            overflow: hidden;
             position: relative;
             user-select: none;
             -webkit-user-select: none;
@@ -40,7 +37,6 @@
             -ms-user-select: none;
         }
 
-        /* Aurora Background */
         .bg-aurora {
             position: fixed;
             top: -50%;
@@ -48,20 +44,22 @@
             width: 200%;
             height: 200%;
             background: 
-                radial-gradient(ellipse at 20% 50%, rgba(76, 0, 255, 0.15) 0%, transparent 40%),
-                radial-gradient(ellipse at 80% 20%, rgba(0, 180, 255, 0.1) 0%, transparent 40%),
-                radial-gradient(ellipse at 50% 80%, rgba(180, 100, 255, 0.08) 0%, transparent 40%);
-            animation: auroraMove 20s ease-in-out infinite;
+                radial-gradient(ellipse at 20% 50%, rgba(76, 0, 255, 0.1) 0%, transparent 40%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 180, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 80%, rgba(180, 100, 255, 0.06) 0%, transparent 40%),
+                radial-gradient(ellipse at 70% 60%, rgba(255, 100, 200, 0.04) 0%, transparent 40%);
+            animation: auroraMove 15s ease-in-out infinite;
             z-index: 0;
+            pointer-events: none;
         }
 
         @keyframes auroraMove {
             0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(3%, -2%) rotate(1deg); }
-            66% { transform: translate(-2%, 1%) rotate(-1deg); }
+            25% { transform: translate(2%, -1%) rotate(1deg); }
+            50% { transform: translate(-1%, 1%) rotate(-1deg); }
+            75% { transform: translate(-2%, -0.5%) rotate(0.5deg); }
         }
 
-        /* Particles */
         .particles {
             position: fixed;
             top: 0;
@@ -74,25 +72,63 @@
 
         .particle {
             position: absolute;
-            background: linear-gradient(135deg, rgba(120, 80, 255, 0.5), rgba(0, 180, 255, 0.3));
+            background: linear-gradient(135deg, rgba(120, 80, 255, 0.4), rgba(0, 180, 255, 0.3));
             border-radius: 50%;
             animation: floatParticle 20s infinite;
-            filter: blur(1px);
         }
 
         @keyframes floatParticle {
-            0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.3; }
-            25% { transform: translateY(-200px) translateX(50px) scale(1.5); opacity: 0.6; }
-            50% { transform: translateY(-150px) translateX(-30px) scale(0.8); opacity: 0.2; }
-            75% { transform: translateY(-300px) translateX(-70px) scale(1.3); opacity: 0.5; }
+            0%, 100% { 
+                transform: translateY(0) translateX(0) scale(1); 
+                opacity: 0.2; 
+            }
+            10% { 
+                transform: translateY(-100px) translateX(30px) scale(1.8); 
+                opacity: 0.6; 
+            }
+            25% { 
+                transform: translateY(-200px) translateX(-50px) scale(0.8); 
+                opacity: 0.1; 
+            }
+            40% { 
+                transform: translateY(-150px) translateX(70px) scale(1.5); 
+                opacity: 0.5; 
+            }
+            60% { 
+                transform: translateY(-300px) translateX(-80px) scale(0.6); 
+                opacity: 0.3; 
+            }
+            80% { 
+                transform: translateY(-100px) translateX(20px) scale(1.3); 
+                opacity: 0.7; 
+            }
         }
 
-        /* Container */
+        .grid-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 30s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+        }
+
         .container {
             position: relative;
             z-index: 10;
             width: 90%;
-            max-width: 520px;
+            max-width: 550px;
         }
 
         .card-wrapper {
@@ -101,77 +137,84 @@
 
         @keyframes cardFloat {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
+            50% { transform: translateY(-10px); }
         }
 
         .card {
-            background: rgba(15, 15, 35, 0.85);
+            background: rgba(15, 15, 30, 0.8);
             backdrop-filter: blur(40px);
             -webkit-backdrop-filter: blur(40px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 28px;
-            padding: 45px 35px;
+            border-radius: 32px;
+            padding: 50px 40px;
             box-shadow: 
-                0 30px 60px rgba(0, 0, 0, 0.95),
+                0 30px 60px rgba(0, 0, 0, 0.9),
                 0 0 0 1px rgba(255, 255, 255, 0.05) inset,
-                0 0 150px rgba(100, 50, 255, 0.15);
+                0 1px 0 rgba(255, 255, 255, 0.08) inset,
+                0 0 100px rgba(100, 50, 255, 0.1);
             position: relative;
             overflow: hidden;
+            animation: cardGlow 3s ease-in-out infinite;
             transition: all 0.5s ease;
         }
 
-        /* Security Status Badge */
-        .security-badge {
+        .card.loading-card {
+            pointer-events: none;
+        }
+
+        @keyframes cardGlow {
+            0%, 100% { 
+                box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.05) inset, 0 0 100px rgba(100, 50, 255, 0.1);
+            }
+            50% { 
+                box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.05) inset, 0 0 150px rgba(100, 50, 255, 0.2);
+            }
+        }
+
+        .card::before {
+            content: '';
             position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(0, 255, 100, 0.1);
-            border: 1px solid rgba(0, 255, 100, 0.3);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            color: #00ff64;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            animation: badgePulse 2s ease-in-out infinite;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, 
+                transparent 0%, 
+                rgba(120, 80, 255, 0.1) 25%, 
+                rgba(0, 180, 255, 0.1) 50%, 
+                rgba(180, 100, 255, 0.1) 75%, 
+                transparent 100%);
+            border-radius: 33px;
+            z-index: -2;
+            animation: borderRotate 8s linear infinite;
         }
 
-        @keyframes badgePulse {
-            0%, 100% { box-shadow: 0 0 10px rgba(0, 255, 100, 0.2); }
-            50% { box-shadow: 0 0 20px rgba(0, 255, 100, 0.4); }
+        @keyframes borderRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        .security-dot {
-            width: 6px;
-            height: 6px;
-            background: #00ff64;
-            border-radius: 50%;
-            animation: dotBlink 1s ease-in-out infinite;
-        }
-
-        @keyframes dotBlink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        /* Brand */
         .brand-container {
             text-align: center;
-            margin-bottom: 35px;
+            margin-bottom: 40px;
         }
 
         .brand {
-            font-size: 2.8rem;
+            font-size: 3rem;
             font-weight: 700;
-            letter-spacing: 6px;
-            background: linear-gradient(135deg, #b894f7, #7eb8ff, #c4a6ff, #9d7bff, #b894f7);
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, 
+                #b894f7 0%, 
+                #7eb8ff 25%, 
+                #c4a6ff 50%, 
+                #9d7bff 75%, 
+                #b894f7 100%);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: brandShine 5s linear infinite;
-            filter: drop-shadow(0 0 30px rgba(140, 100, 255, 0.8));
+            animation: brandShine 4s linear infinite;
+            filter: drop-shadow(0 0 40px rgba(140, 100, 255, 0.6));
         }
 
         @keyframes brandShine {
@@ -180,46 +223,58 @@
         }
 
         .divider {
-            width: 100px;
+            width: 80px;
             height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(180, 150, 255, 0.8), transparent);
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(180, 150, 255, 0.8), 
+                transparent);
             margin: 15px auto;
-            animation: dividerPulse 3s ease-in-out infinite;
+            animation: dividerPulse 2s ease-in-out infinite;
         }
 
         @keyframes dividerPulse {
-            0%, 100% { opacity: 0.5; width: 80px; }
-            50% { opacity: 1; width: 120px; }
+            0%, 100% { opacity: 0.5; width: 60px; }
+            50% { opacity: 1; width: 100px; }
         }
 
         .subtitle {
-            color: rgba(200, 200, 230, 0.7);
-            font-size: 0.85rem;
-            letter-spacing: 4px;
+            color: rgba(200, 200, 230, 0.6);
+            font-size: 0.9rem;
+            letter-spacing: 3px;
             text-transform: uppercase;
+            animation: subtitleFade 3s ease-in-out infinite;
         }
 
-        /* Key Display */
+        @keyframes subtitleFade {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
         .key-area {
-            background: rgba(10, 10, 25, 0.8);
+            background: rgba(10, 10, 25, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 20px;
             padding: 30px 25px;
             margin: 30px 0;
             text-align: center;
+            transition: all 0.5s ease;
             position: relative;
             overflow: hidden;
         }
 
-        .key-area::after {
+        .key-area::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(160, 140, 255, 0.8), transparent);
-            animation: scanLine 3s ease-in-out infinite;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(160, 140, 255, 0.5), 
+                transparent);
+            animation: scanLine 4s ease-in-out infinite;
         }
 
         @keyframes scanLine {
@@ -229,23 +284,25 @@
         }
 
         .key-label {
-            color: rgba(180, 170, 210, 0.8);
-            font-size: 0.8rem;
-            letter-spacing: 3px;
+            color: rgba(180, 170, 210, 0.7);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
             margin-bottom: 15px;
         }
 
         .key-value {
             font-family: 'Fira Code', 'Courier New', monospace;
-            font-size: 1rem;
+            font-size: 1.1rem;
             color: #e8dfff;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 18px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 18px 20px;
             border-radius: 12px;
-            border: 1px solid rgba(160, 140, 220, 0.4);
+            border: 1px solid rgba(160, 140, 220, 0.3);
             word-break: break-all;
+            letter-spacing: 0.5px;
             cursor: pointer;
-            transition: all 0.4s ease;
+            transition: all 0.3s ease;
+            position: relative;
             min-height: 60px;
             display: flex;
             align-items: center;
@@ -253,14 +310,21 @@
         }
 
         .key-value:hover {
-            border-color: rgba(180, 160, 240, 0.8);
-            box-shadow: 0 0 40px rgba(120, 80, 255, 0.3);
+            border-color: rgba(180, 160, 240, 0.6);
+            box-shadow: 0 0 30px rgba(120, 80, 255, 0.2);
             transform: scale(1.02);
         }
 
-        .key-value.loading {
+        .key-value.loading-key {
             opacity: 0.5;
             animation: loadingPulse 1.5s ease-in-out infinite;
+            cursor: default;
+        }
+
+        .key-value.loading-key:hover {
+            transform: none;
+            box-shadow: none;
+            border-color: rgba(160, 140, 220, 0.3);
         }
 
         @keyframes loadingPulse {
@@ -268,7 +332,6 @@
             50% { opacity: 0.6; }
         }
 
-        /* Timer */
         .timer-container {
             display: flex;
             align-items: center;
@@ -281,20 +344,19 @@
 
         .timer {
             font-weight: 700;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             background: linear-gradient(135deg, #f0c27b, #f8a55a);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: timerPulse 1.5s ease-in-out infinite;
+            animation: timerPulse 1s ease-in-out infinite;
         }
 
         @keyframes timerPulse {
             0%, 100% { filter: brightness(1); }
-            50% { filter: brightness(1.4); }
+            50% { filter: brightness(1.3); }
         }
 
-        /* Buttons */
         .btn {
             width: 100%;
             padding: 18px 30px;
@@ -308,16 +370,45 @@
             position: relative;
             overflow: hidden;
             transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1.2);
-            background: linear-gradient(135deg, rgba(50, 25, 80, 0.95), rgba(30, 20, 60, 0.95));
+            background: linear-gradient(135deg, 
+                rgba(50, 25, 80, 0.9), 
+                rgba(30, 20, 60, 0.9));
             color: #e0d0ff;
             border: 1px solid rgba(200, 170, 255, 0.3);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            animation: btnFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes btnFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, 
+                rgba(255, 255, 255, 0.1) 0%, 
+                transparent 60%);
+            animation: btnRipple 3s infinite;
+        }
+
+        @keyframes btnRipple {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
         }
 
         .btn:hover:not(:disabled) {
             transform: translateY(-5px) scale(1.02);
             border-color: rgba(200, 170, 255, 0.6);
-            box-shadow: 0 20px 40px rgba(100, 50, 200, 0.4), 0 0 80px rgba(120, 80, 255, 0.3);
+            box-shadow: 
+                0 20px 40px rgba(100, 50, 200, 0.4),
+                0 0 80px rgba(120, 80, 255, 0.3);
+            animation: none;
         }
 
         .btn:active:not(:disabled) {
@@ -328,52 +419,35 @@
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            filter: grayscale(50%);
+            animation: none;
+            filter: grayscale(30%);
         }
 
-        .btn-loading {
-            position: relative;
-            pointer-events: none;
-        }
-
-        .btn-loading::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 50%;
-            right: 20px;
-            transform: translateY(-50%);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: translateY(-50%) rotate(360deg); }
-        }
-
-        /* Messages */
         .status-message {
             color: #b8a0e0;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             text-align: center;
             margin-top: 20px;
             opacity: 0.8;
-            min-height: 20px;
-            transition: all 0.3s ease;
+            animation: messageFade 2s ease-in-out infinite;
+            min-height: 24px;
+        }
+
+        @keyframes messageFade {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
         }
 
         .status-message.error {
             color: #ff6b6b;
+            animation: none;
         }
 
         .status-message.success {
             color: #6bff9e;
+            animation: none;
         }
 
-        /* Copy Notification */
         .copy-notification {
             position: fixed;
             top: 20px;
@@ -384,289 +458,177 @@
             padding: 14px 28px;
             border-radius: 30px;
             font-size: 0.9rem;
-            z-index: 9999;
+            z-index: 100;
             border: 1px solid rgba(200, 170, 255, 0.4);
             backdrop-filter: blur(10px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: none;
         }
 
         .copy-notification.show {
             transform: translateX(-50%) translateY(0);
         }
 
-        /* Error Container */
-        .error-container {
-            background: rgba(255, 50, 50, 0.1);
-            border: 1px solid rgba(255, 100, 100, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-            color: #ff9999;
-            animation: errorShake 0.5s ease-in-out;
-        }
-
-        @keyframes errorShake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-
         .hidden {
             display: none !important;
         }
 
-        /* Responsive */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-top: 2px solid #b894f7;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         @media (max-width: 600px) {
             .card {
-                padding: 30px 20px;
-                border-radius: 20px;
+                padding: 35px 25px;
+                border-radius: 24px;
             }
             .brand {
-                font-size: 2rem;
+                font-size: 2.2rem;
             }
             .key-value {
-                font-size: 0.8rem;
-                padding: 12px;
+                font-size: 0.9rem;
+                padding: 14px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Background Effects -->
     <div class="bg-aurora"></div>
+    <div class="grid-lines"></div>
     <div class="particles" id="particles"></div>
 
-    <!-- Main Container -->
     <div class="container">
         <div class="card-wrapper">
             <div class="card" id="mainCard">
-                <!-- Security Badge -->
-                <div class="security-badge" id="securityBadge">
-                    <span class="security-dot"></span>
-                    <span id="securityStatus">SECURE</span>
-                </div>
-
-                <!-- Brand -->
                 <div class="brand-container">
                     <div class="brand">APEX HUB</div>
                     <div class="divider"></div>
-                    <div class="subtitle">Advanced Key System</div>
+                    <div class="subtitle">Secure Key System</div>
                 </div>
 
-                <!-- Page 1: Get Key -->
-                <div id="page1">
-                    <div class="key-area">
-                        <div class="key-label">🔒 LICENSE KEY</div>
-                        <div class="key-value loading">••••••••••••••••</div>
+                <!-- Key Area (Luôn hiển thị) -->
+                <div class="key-area">
+                    <div class="key-label" id="keyLabel">🔑 YOUR LICENSE KEY</div>
+                    <div class="key-value loading-key" id="keyDisplay" title="Click to copy">
+                        <span class="spinner"></span> Loading...
                     </div>
-                    <button class="btn" id="getKeyBtn">
-                        <span>🔑 GET KEY</span>
-                    </button>
-                    <div class="status-message">Click to verify and receive your key</div>
-                </div>
-
-                <!-- Page 2: Display Key -->
-                <div id="page2" class="hidden">
-                    <div class="key-area" id="keyArea">
-                        <div class="key-label">🔑 YOUR LICENSE KEY</div>
-                        <div class="key-value" id="keyDisplay" title="Click to copy">••••••••••••••••</div>
-                        <div class="timer-container" id="timerContainer">
-                            <span>⏱ Time Remaining</span>
-                            <span class="timer" id="countdown">24:00:00</span>
-                        </div>
+                    <div class="timer-container hidden" id="timerContainer">
+                        <span>⏱ Time Remaining</span>
+                        <span class="timer" id="countdown">24:00:00</span>
                     </div>
-                    <button class="btn hidden" id="newKeyBtn">🔄 GET NEW KEY</button>
-                    <div class="status-message" id="statusMessage">Click on key to copy</div>
                 </div>
 
-                <!-- Error Display -->
-                <div id="errorContainer" class="error-container hidden"></div>
+                <!-- Button Area -->
+                <button class="btn hidden" id="getKeyBtn">🔑 GET KEY</button>
+                <button class="btn hidden" id="newKeyBtn">🔄 GET NEW KEY</button>
+                
+                <!-- Status Message -->
+                <div class="status-message" id="statusMessage">Initializing secure connection...</div>
             </div>
         </div>
     </div>
 
-    <!-- Copy Notification -->
     <div class="copy-notification" id="copyNotification">✅ Key copied to clipboard!</div>
 
     <script>
-        // ============================================
-        // APEX HUB - Client-Side Security System
-        // ULTRA SECURE MULTI-LAYER PROTECTION
-        // ============================================
-
         (function() {
             'use strict';
 
             // ========== CONFIGURATION ==========
             const CONFIG = {
-                API_URL: 'https://getkeyapexhub.vercel.app/api/verify',
-                SHORTENER_URL: 'https://link4m.org/hXPIjdW',
-                REQUIRED_REFERRER_DOMAINS: ['link4m.org', 'link4m.net', 'link4m.com'],
+                SHORTENER_URL: 'https://link4m.org/hPXljdW',
+                SHORTENER_DOMAINS: ['link4m.org', 'link4m.net', 'link4m.com'],
+                KEY_PREFIX: 'Free_',
+                REQUIRED_WORD: 'apex',
+                SPECIAL_CHARS: 'qptoeugjwmxnalkjf¡¿\'-:;₫&@9275023#%*^+€¥$_|\\[]{}bcz',
+                KEY_DURATION: 24 * 60 * 60 * 1000,
                 STORAGE_PREFIX: 'axph_',
-                KEY_DURATION: 24 * 60 * 60 * 1000, // 24 hours
-                MAX_RETRIES: 3,
-                RETRY_DELAY: 2000,
-                DEBUG_MODE: false
+                FINGERPRINT_KEY: 'axph_fp'
             };
 
-            // ========== ANTI-TAMPER SYSTEM ==========
+            // ========== SECURITY SYSTEM ==========
             const SecuritySystem = {
                 tamperDetected: false,
-                debugAttempts: 0,
                 
                 init: function() {
-                    this.setupAntiDebug();
-                    this.setupConsoleProtection();
-                    this.setupDOMProtection();
-                    this.setupEventProtection();
-                    this.verifyIntegrity();
+                    this.detectDevTools();
+                    this.protectConsole();
+                    this.blockShortcuts();
+                    this.preventContextMenu();
                 },
 
-                setupAntiDebug: function() {
-                    // Detect DevTools
-                    const threshold = 160;
+                detectDevTools: function() {
                     setInterval(() => {
+                        const threshold = 160;
                         const widthDiff = window.outerWidth - window.innerWidth > threshold;
                         const heightDiff = window.outerHeight - window.innerHeight > threshold;
                         
-                        if (widthDiff || heightDiff) {
-                            this.debugAttempts++;
-                            if (this.debugAttempts > 3) {
-                                this.triggerSecurityAlert('DevTools detected');
-                            }
+                        if ((widthDiff || heightDiff) && !this.tamperDetected) {
+                            this.triggerAlert();
                         }
                     }, 1000);
-
-                    // Detect debugger statement
-                    setInterval(() => {
-                        const startTime = performance.now();
-                        debugger;
-                        const endTime = performance.now();
-                        if (endTime - startTime > 100) {
-                            this.triggerSecurityAlert('Debugger detected');
-                        }
-                    }, 2000);
                 },
 
-                setupConsoleProtection: function() {
-                    // Override console methods
+                protectConsole: function() {
                     const noop = () => {};
-                    if (!CONFIG.DEBUG_MODE) {
-                        const methods = ['log', 'warn', 'error', 'info', 'debug', 'clear', 'table', 'trace'];
-                        methods.forEach(method => {
-                            const original = console[method];
-                            console[method] = function(...args) {
-                                if (SecuritySystem.tamperDetected) {
-                                    SecuritySystem.triggerSecurityAlert('Console usage');
-                                    return;
-                                }
-                                // Allow critical errors only
-                                if (method === 'error' && args[0] && args[0].includes('[APEX]')) {
-                                    original.apply(console, args);
-                                }
-                            };
-                        });
-                    }
-                },
-
-                setupDOMProtection: function() {
-                    // Protect against DOM manipulation
-                    const observer = new MutationObserver((mutations) => {
-                        mutations.forEach((mutation) => {
-                            if (mutation.type === 'childList') {
-                                const addedNodes = Array.from(mutation.addedNodes);
-                                const hasSuspiciousElement = addedNodes.some(node => {
-                                    return node.nodeType === 1 && 
-                                           (node.tagName === 'SCRIPT' || 
-                                            node.tagName === 'IFRAME' ||
-                                            node.id === 'external-content');
-                                });
-                                if (hasSuspiciousElement) {
-                                    this.triggerSecurityAlert('Suspicious DOM manipulation');
-                                }
+                    const methods = ['log', 'warn', 'info', 'debug', 'clear', 'table', 'trace'];
+                    
+                    methods.forEach(method => {
+                        const original = console[method];
+                        console[method] = function(...args) {
+                            if (SecuritySystem.tamperDetected) return;
+                            if (method === 'error' && args[0] && args[0].includes('[APEX]')) {
+                                original.apply(console, args);
                             }
-                        });
-                    });
-
-                    observer.observe(document.body, {
-                        childList: true,
-                        subtree: true,
-                        attributes: true,
-                        attributeFilter: ['src', 'href', 'onclick', 'onerror']
+                        };
                     });
                 },
 
-                setupEventProtection: function() {
-                    // Prevent common attack vectors
-                    document.addEventListener('keydown', (e) => {
-                        // Block devtools shortcuts
-                        if ((e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) ||
+                blockShortcuts: function() {
+                    document.addEventListener('keydown', function(e) {
+                        if (
+                            (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) ||
                             (e.ctrlKey && e.key === 'U') ||
-                            e.key === 'F12') {
+                            e.key === 'F12'
+                        ) {
                             e.preventDefault();
                             e.stopPropagation();
                             return false;
                         }
                     }, true);
+                },
 
-                    // Block right-click
-                    document.addEventListener('contextmenu', (e) => {
-                        e.preventDefault();
-                        return false;
-                    }, true);
-
-                    // Block drag
-                    document.addEventListener('dragstart', (e) => {
+                preventContextMenu: function() {
+                    document.addEventListener('contextmenu', function(e) {
                         e.preventDefault();
                         return false;
                     }, true);
                 },
 
-                verifyIntegrity: function() {
-                    // Check if critical functions haven't been modified
-                    const criticalFunctions = ['generateFingerprint', 'encryptData', 'verifyServerResponse'];
-                    criticalFunctions.forEach(fnName => {
-                        if (typeof window[fnName] !== 'undefined') {
-                            this.triggerSecurityAlert('Function override detected');
-                        }
-                    });
-                },
-
-                triggerSecurityAlert: function(reason) {
-                    if (this.tamperDetected) return;
-                    
+                triggerAlert: function() {
                     this.tamperDetected = true;
-                    console.error(`[APEX] Security Alert: ${reason}`);
-                    
-                    // Clear all sensitive data
                     StorageManager.clearAll();
                     
-                    // Show security breach message
-                    const errorContainer = document.getElementById('errorContainer');
-                    if (errorContainer) {
-                        errorContainer.classList.remove('hidden');
-                        errorContainer.innerHTML = `
-                            <div style="font-size: 1.2rem; margin-bottom: 10px;">⚠️ Security Breach Detected</div>
-                            <div style="font-size: 0.9rem;">All data has been cleared for your protection.</div>
-                            <div style="font-size: 0.8rem; margin-top: 10px; opacity: 0.7;">
-                                Please refresh the page to continue.
-                            </div>
-                        `;
-                    }
-
-                    // Disable all buttons
-                    document.querySelectorAll('.btn').forEach(btn => {
-                        btn.disabled = true;
-                    });
-
-                    // Clear key display
                     const keyDisplay = document.getElementById('keyDisplay');
                     if (keyDisplay) {
-                        keyDisplay.textContent = 'SECURITY BREACH';
+                        keyDisplay.textContent = '⚠️ SECURITY BREACH - PLEASE REFRESH';
                         keyDisplay.style.color = '#ff0000';
+                        keyDisplay.style.cursor = 'not-allowed';
                     }
+                    
+                    UIManager.showStatus('Security breach detected! Data cleared.', 'error');
                 },
 
                 isSecure: function() {
@@ -674,23 +636,18 @@
                 }
             };
 
-            // ========== FINGERPRINT GENERATION ==========
+            // ========== FINGERPRINT ==========
             function generateFingerprint() {
                 const components = [
                     navigator.userAgent,
                     navigator.language,
-                    navigator.platform,
                     screen.colorDepth,
                     screen.width + 'x' + screen.height,
                     new Date().getTimezoneOffset(),
                     navigator.hardwareConcurrency || 'unknown',
-                    navigator.deviceMemory || 'unknown',
-                    navigator.maxTouchPoints || 0,
-                    Intl.DateTimeFormat().resolvedOptions().timeZone,
-                    performance.memory ? performance.memory.jsHeapSizeLimit : 'unknown'
+                    navigator.deviceMemory || 'unknown'
                 ];
-
-                // Create hash
+                
                 let hash = 0;
                 const str = components.join('||');
                 for (let i = 0; i < str.length; i++) {
@@ -702,249 +659,181 @@
                 return Math.abs(hash).toString(36) + '_' + Date.now().toString(36);
             }
 
-            // ========== ENCRYPTION SYSTEM ==========
-            const EncryptionSystem = {
-                encrypt: function(data, key) {
-                    try {
-                        const jsonStr = JSON.stringify(data);
-                        let encrypted = '';
-                        for (let i = 0; i < jsonStr.length; i++) {
-                            const charCode = jsonStr.charCodeAt(i) ^ key.charCodeAt(i % key.length);
-                            encrypted += String.fromCharCode(charCode);
-                        }
-                        return btoa(encrypted);
-                    } catch (e) {
-                        return null;
-                    }
-                },
-
-                decrypt: function(encryptedData, key) {
-                    try {
-                        const decoded = atob(encryptedData);
-                        let decrypted = '';
-                        for (let i = 0; i < decoded.length; i++) {
-                            const charCode = decoded.charCodeAt(i) ^ key.charCodeAt(i % key.length);
-                            decrypted += String.fromCharCode(charCode);
-                        }
-                        return JSON.parse(decrypted);
-                    } catch (e) {
-                        return null;
-                    }
-                },
-
-                generateSessionKey: function() {
-                    const array = new Uint32Array(8);
-                    crypto.getRandomValues(array);
-                    return Array.from(array, dec => dec.toString(36)).join('');
+            function verifyFingerprint() {
+                const stored = sessionStorage.getItem(CONFIG.FINGERPRINT_KEY);
+                const current = generateFingerprint();
+                
+                if (!stored) {
+                    sessionStorage.setItem(CONFIG.FINGERPRINT_KEY, current);
+                    return true;
                 }
-            };
+                
+                // So sánh phần hash (bỏ timestamp)
+                const storedHash = stored.split('_')[0];
+                const currentHash = current.split('_')[0];
+                return storedHash === currentHash;
+            }
+
+            // ========== KEY GENERATOR ==========
+            function generateKey() {
+                let key = CONFIG.KEY_PREFIX;
+                const randomBytes = new Uint8Array(16);
+                crypto.getRandomValues(randomBytes);
+                const randomStr = Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
+                
+                const specialPart = CONFIG.SPECIAL_CHARS.substring(0, Math.floor(Math.random() * 20) + 10);
+                const position = Math.floor(Math.random() * 3);
+                
+                switch(position) {
+                    case 0:
+                        key += CONFIG.REQUIRED_WORD + specialPart + randomStr;
+                        break;
+                    case 1:
+                        const mid = Math.floor(specialPart.length / 2);
+                        key += specialPart.substring(0, mid) + CONFIG.REQUIRED_WORD + specialPart.substring(mid) + randomStr;
+                        break;
+                    case 2:
+                        key += specialPart + randomStr + CONFIG.REQUIRED_WORD;
+                        break;
+                }
+                
+                if (!/[¡¿'\-:;₫&@#%*^+€¥$_|\\\[\]{}]/.test(key)) {
+                    key += CONFIG.SPECIAL_CHARS.substring(0, 8);
+                }
+                
+                return key;
+            }
+
+            function validateKey(key) {
+                if (!key || typeof key !== 'string') return false;
+                if (!key.startsWith(CONFIG.KEY_PREFIX)) return false;
+                if (!key.includes(CONFIG.REQUIRED_WORD)) return false;
+                if (!/[¡¿'\-:;₫&@#%*^+€¥$_|\\\[\]{}]/.test(key)) return false;
+                return key.length >= 35;
+            }
 
             // ========== STORAGE MANAGER ==========
             const StorageManager = {
-                sessionKey: null,
-
-                init: function() {
-                    this.sessionKey = sessionStorage.getItem(CONFIG.STORAGE_PREFIX + 'sk') || 
-                                     EncryptionSystem.generateSessionKey();
-                    sessionStorage.setItem(CONFIG.STORAGE_PREFIX + 'sk', this.sessionKey);
-                },
-
-                save: function(key, data) {
+                saveKeyData: function(keyData) {
                     try {
-                        const encrypted = EncryptionSystem.encrypt(data, this.sessionKey);
-                        if (encrypted) {
-                            sessionStorage.setItem(CONFIG.STORAGE_PREFIX + key, encrypted);
-                            return true;
-                        }
-                    } catch (e) {}
-                    return false;
+                        const data = {
+                            ...keyData,
+                            fingerprint: generateFingerprint().split('_')[0],
+                            savedAt: Date.now()
+                        };
+                        sessionStorage.setItem(CONFIG.STORAGE_PREFIX + 'kd', JSON.stringify(data));
+                        return true;
+                    } catch(e) {
+                        return false;
+                    }
                 },
 
-                load: function(key) {
+                loadKeyData: function() {
                     try {
-                        const encrypted = sessionStorage.getItem(CONFIG.STORAGE_PREFIX + key);
-                        if (encrypted) {
-                            return EncryptionSystem.decrypt(encrypted, this.sessionKey);
+                        const raw = sessionStorage.getItem(CONFIG.STORAGE_PREFIX + 'kd');
+                        if (!raw) return null;
+                        
+                        const data = JSON.parse(raw);
+                        
+                        // Verify fingerprint
+                        const currentFingerprint = generateFingerprint().split('_')[0];
+                        if (data.fingerprint !== currentFingerprint) {
+                            this.clearAll();
+                            return null;
                         }
-                    } catch (e) {}
-                    return null;
-                },
-
-                remove: function(key) {
-                    sessionStorage.removeItem(CONFIG.STORAGE_PREFIX + key);
+                        
+                        // Check expiry
+                        if (Date.now() - data.savedAt > CONFIG.KEY_DURATION) {
+                            this.clearAll();
+                            return null;
+                        }
+                        
+                        return data;
+                    } catch(e) {
+                        this.clearAll();
+                        return null;
+                    }
                 },
 
                 clearAll: function() {
                     const keys = Object.keys(sessionStorage);
                     keys.forEach(key => {
-                        if (key.startsWith(CONFIG.STORAGE_PREFIX)) {
+                        if (key.startsWith(CONFIG.STORAGE_PREFIX) || key === CONFIG.FINGERPRINT_KEY) {
                             sessionStorage.removeItem(key);
                         }
                     });
-                },
-
-                saveKeyData: function(keyData) {
-                    return this.save('kd', {
-                        ...keyData,
-                        savedAt: Date.now(),
-                        fingerprint: generateFingerprint()
-                    });
-                },
-
-                loadKeyData: function() {
-                    const data = this.load('kd');
-                    if (!data) return null;
-
-                    // Verify fingerprint
-                    if (data.fingerprint !== generateFingerprint()) {
-                        this.clearAll();
-                        return null;
-                    }
-
-                    // Check expiry
-                    if (Date.now() - data.savedAt > CONFIG.KEY_DURATION) {
-                        this.clearAll();
-                        return null;
-                    }
-
-                    return data;
-                }
-            };
-
-            // ========== TOKEN MANAGER ==========
-            const TokenManager = {
-                generateToken: function() {
-                    const timestamp = Date.now();
-                    const random = crypto.randomUUID ? crypto.randomUUID() : 
-                                 Math.random().toString(36).substring(2);
-                    const fingerprint = generateFingerprint();
-                    
-                    // Create hash using Web Crypto API
-                    const data = `${timestamp}.${fingerprint}.${random}.${CONFIG.STORAGE_PREFIX}`;
-                    let hash = '';
-                    
-                    // Simple but effective hash
-                    for (let i = 0; i < data.length; i++) {
-                        hash += ((data.charCodeAt(i) * 31 + i) % 16).toString(16);
-                    }
-                    
-                    const token = `${timestamp}.${hash.substring(0, 16)}.${random.substring(0, 8)}`;
-                    return btoa(token);
-                },
-
-                storeToken: function(token) {
-                    StorageManager.save('tk', {
-                        token: token,
-                        timestamp: Date.now()
-                    });
-                },
-
-                getStoredToken: function() {
-                    const data = StorageManager.load('tk');
-                    if (data && (Date.now() - data.timestamp < 300000)) {
-                        return data.token;
-                    }
-                    return null;
-                }
-            };
-
-            // ========== API CLIENT ==========
-            const APIClient = {
-                async verifyAndGetKey(referrer) {
-                    const token = TokenManager.generateToken();
-                    const fingerprint = generateFingerprint();
-                    const nonce = crypto.randomUUID ? crypto.randomUUID() : 
-                                 Date.now().toString(36) + Math.random().toString(36);
-
-                    const headers = {
-                        'Content-Type': 'application/json',
-                        'X-Fingerprint': fingerprint,
-                        'X-Timestamp': Date.now().toString(),
-                    };
-
-                    const body = {
-                        token: token,
-                        nonce: nonce,
-                        referrer: referrer || document.referrer,
-                        fingerprint: fingerprint
-                    };
-
-                    try {
-                        const response = await fetch(CONFIG.API_URL, {
-                            method: 'POST',
-                            headers: headers,
-                            body: JSON.stringify(body)
-                        });
-
-                        if (!response.ok) {
-                            const errorData = await response.json();
-                            throw new Error(errorData.error || 'Verification failed');
-                        }
-
-                        const data = await response.json();
-                        
-                        // Verify server response signature
-                        if (!data.success || !data.data || !data.data.key) {
-                            throw new Error('Invalid server response');
-                        }
-
-                        return {
-                            success: true,
-                            key: data.data.key,
-                            hash: data.data.hash,
-                            signature: data.data.signature,
-                            expiresIn: data.data.expiresIn,
-                            timestamp: data.data.timestamp
-                        };
-
-                    } catch (error) {
-                        console.error('[APEX] API Error:', error.message);
-                        return {
-                            success: false,
-                            error: error.message
-                        };
-                    }
                 }
             };
 
             // ========== UI MANAGER ==========
             const UIManager = {
                 elements: {
-                    page1: document.getElementById('page1'),
-                    page2: document.getElementById('page2'),
+                    mainCard: document.getElementById('mainCard'),
                     keyDisplay: document.getElementById('keyDisplay'),
+                    keyLabel: document.getElementById('keyLabel'),
                     countdown: document.getElementById('countdown'),
                     timerContainer: document.getElementById('timerContainer'),
                     getKeyBtn: document.getElementById('getKeyBtn'),
                     newKeyBtn: document.getElementById('newKeyBtn'),
                     statusMessage: document.getElementById('statusMessage'),
-                    errorContainer: document.getElementById('errorContainer'),
-                    securityStatus: document.getElementById('securityStatus'),
-                    keyArea: document.getElementById('keyArea'),
                     copyNotification: document.getElementById('copyNotification')
                 },
 
                 countdownInterval: null,
                 currentExpiry: null,
 
-                showPage1: function() {
-                    this.elements.page1.classList.remove('hidden');
-                    this.elements.page2.classList.add('hidden');
-                    this.stopCountdown();
-                    this.resetUI();
-                },
-
-                showPage2: function() {
-                    this.elements.page1.classList.add('hidden');
-                    this.elements.page2.classList.remove('hidden');
-                },
-
-                displayKey: function(key) {
+                // Hiển thị key (từ shortener)
+                showKey: function(key, expiry) {
+                    // Bỏ loading
+                    this.elements.keyDisplay.classList.remove('loading-key');
+                    this.elements.keyDisplay.innerHTML = '';
                     this.elements.keyDisplay.textContent = key;
-                    this.elements.keyDisplay.classList.remove('loading');
                     this.elements.keyDisplay.style.cursor = 'pointer';
+                    
+                    // Hiển thị timer
+                    this.elements.timerContainer.classList.remove('hidden');
+                    
+                    // Ẩn tất cả button
+                    this.elements.getKeyBtn.classList.add('hidden');
                     this.elements.newKeyBtn.classList.add('hidden');
-                    this.showPage2();
+                    
+                    // Start countdown
+                    this.startCountdown(expiry);
+                    
+                    // Update status
+                    this.showStatus('✅ Key ready! Click to copy.', 'success');
+                    
+                    // Xóa URL params để bảo mật
+                    if (window.history && window.history.replaceState) {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                },
+
+                // Hiển thị trạng thái chưa có key (cần GET KEY)
+                showGetKeyButton: function() {
+                    this.elements.keyDisplay.classList.remove('loading-key');
+                    this.elements.keyDisplay.innerHTML = '-----';
+                    this.elements.keyDisplay.style.opacity = '0.5';
+                    this.elements.keyDisplay.style.cursor = 'default';
+                    
+                    this.elements.timerContainer.classList.add('hidden');
+                    this.elements.getKeyBtn.classList.remove('hidden');
+                    this.elements.newKeyBtn.classList.add('hidden');
+                    
+                    this.showStatus('Click GET KEY to receive your license', '');
+                },
+
+                // Hiển thị đang loading
+                showLoading: function(message) {
+                    this.elements.keyDisplay.classList.add('loading-key');
+                    this.elements.keyDisplay.innerHTML = '<span class="spinner"></span> Loading...';
+                    this.elements.keyDisplay.style.cursor = 'default';
+                    
+                    this.elements.timerContainer.classList.add('hidden');
+                    this.elements.getKeyBtn.classList.add('hidden');
+                    this.elements.newKeyBtn.classList.add('hidden');
+                    
+                    this.showStatus(message || 'Initializing...', '');
                 },
 
                 startCountdown: function(expiryTimestamp) {
@@ -969,7 +858,6 @@
 
                     update();
                     this.countdownInterval = setInterval(update, 1000);
-                    this.elements.timerContainer.classList.remove('hidden');
                 },
 
                 stopCountdown: function() {
@@ -982,108 +870,67 @@
 
                 handleExpiry: function() {
                     this.stopCountdown();
-                    this.elements.keyDisplay.textContent = 'EXPIRED';
-                    this.elements.keyDisplay.style.cursor = 'not-allowed';
+                    
+                    this.elements.keyDisplay.classList.remove('loading-key');
+                    this.elements.keyDisplay.innerHTML = 'EXPIRED';
                     this.elements.keyDisplay.style.color = '#ff6b6b';
+                    this.elements.keyDisplay.style.cursor = 'not-allowed';
+                    
                     this.elements.timerContainer.classList.add('hidden');
+                    this.elements.getKeyBtn.classList.add('hidden');
                     this.elements.newKeyBtn.classList.remove('hidden');
-                    this.showStatus('Key has expired. Please get a new key.', 'error');
+                    
+                    this.showStatus('⏰ Key expired. Get a new one.', 'error');
+                    
                     StorageManager.clearAll();
                 },
 
-                resetUI: function() {
-                    this.elements.keyDisplay.textContent = '••••••••••••••••';
-                    this.elements.keyDisplay.classList.add('loading');
-                    this.elements.keyDisplay.style.cursor = 'default';
-                    this.elements.keyDisplay.style.color = '#e8dfff';
-                    this.elements.errorContainer.classList.add('hidden');
-                    this.elements.newKeyBtn.classList.add('hidden');
-                    this.elements.timerContainer.classList.add('hidden');
-                    this.showStatus('Click to verify and receive your key');
-                },
-
-                showStatus: function(message, type = 'info') {
-                    const statusEl = this.elements.statusMessage;
-                    statusEl.textContent = message;
-                    statusEl.className = 'status-message';
-                    if (type === 'error') {
-                        statusEl.classList.add('error');
-                    } else if (type === 'success') {
-                        statusEl.classList.add('success');
-                    }
-                },
-
-                showError: function(message) {
-                    this.elements.errorContainer.classList.remove('hidden');
-                    this.elements.errorContainer.innerHTML = `
-                        <div style="margin-bottom: 10px;">⚠️ Error</div>
-                        <div style="font-size: 0.9rem;">${message}</div>
-                    `;
-                    this.showStatus(message, 'error');
+                showStatus: function(message, type) {
+                    const el = this.elements.statusMessage;
+                    el.textContent = message;
+                    el.className = 'status-message';
+                    
+                    if (type === 'error') el.classList.add('error');
+                    if (type === 'success') el.classList.add('success');
                 },
 
                 showCopyNotification: function() {
-                    const notification = this.elements.copyNotification;
-                    notification.classList.add('show');
+                    const notif = this.elements.copyNotification;
+                    notif.classList.add('show');
                     setTimeout(() => {
-                        notification.classList.remove('show');
+                        notif.classList.remove('show');
                     }, 2000);
-                },
-
-                setLoading: function(loading) {
-                    const btn = this.elements.getKeyBtn;
-                    if (loading) {
-                        btn.disabled = true;
-                        btn.classList.add('btn-loading');
-                        btn.innerHTML = '<span>⏳ VERIFYING...</span>';
-                    } else {
-                        btn.disabled = false;
-                        btn.classList.remove('btn-loading');
-                        btn.innerHTML = '<span>🔑 GET KEY</span>';
-                    }
                 }
             };
 
             // ========== MAIN APPLICATION ==========
             const App = {
-                init: async function() {
-                    // Initialize systems
+                init: function() {
+                    // Khởi tạo security
                     SecuritySystem.init();
-                    StorageManager.init();
-
+                    
                     if (!SecuritySystem.isSecure()) {
-                        return; // Security breach detected, stop everything
+                        return;
                     }
-
-                    // Create particles
+                    
+                    // Tạo particles
                     this.createParticles();
-
-                    // Setup event listeners
-                    this.setupEventListeners();
-
-                    // Check for existing valid key
-                    await this.checkExistingKey();
-
-                    // Periodic security checks
-                    setInterval(() => {
-                        if (!SecuritySystem.isSecure()) {
-                            StorageManager.clearAll();
-                            UIManager.showPage1();
-                        }
-                    }, 5000);
-
-                    // Update security badge
-                    this.updateSecurityBadge();
+                    
+                    // Setup events
+                    this.setupEvents();
+                    
+                    // Kiểm tra URL và quyết định flow
+                    this.checkURLAndProceed();
                 },
 
                 createParticles: function() {
                     const container = document.getElementById('particles');
                     const fragment = document.createDocumentFragment();
                     
-                    for (let i = 0; i < 50; i++) {
+                    for (let i = 0; i < 40; i++) {
                         const particle = document.createElement('div');
                         particle.className = 'particle';
-                        const size = Math.random() * 4 + 2;
+                        const size = Math.random() * 5 + 2;
                         particle.style.width = size + 'px';
                         particle.style.height = size + 'px';
                         particle.style.left = Math.random() * 100 + '%';
@@ -1096,30 +943,35 @@
                     container.appendChild(fragment);
                 },
 
-                setupEventListeners: function() {
-                    // Get Key Button
-                    UIManager.elements.getKeyBtn.addEventListener('click', async (e) => {
+                setupEvents: function() {
+                    // GET KEY button
+                    UIManager.elements.getKeyBtn.addEventListener('click', (e) => {
                         e.preventDefault();
-                        await this.handleGetKey();
+                        this.handleGetKey();
                     });
 
-                    // New Key Button
+                    // NEW KEY button
                     UIManager.elements.newKeyBtn.addEventListener('click', (e) => {
                         e.preventDefault();
                         StorageManager.clearAll();
-                        UIManager.showPage1();
+                        UIManager.showGetKeyButton();
                     });
 
-                    // Key Copy
+                    // Copy key
                     UIManager.elements.keyDisplay.addEventListener('click', () => {
-                        const key = UIManager.elements.keyDisplay.textContent;
-                        if (key && key !== '••••••••••••••••' && key !== 'EXPIRED') {
-                            navigator.clipboard.writeText(key).then(() => {
+                        const text = UIManager.elements.keyDisplay.textContent;
+                        if (text && 
+                            text !== '-----' && 
+                            text !== 'EXPIRED' && 
+                            text !== '⚠️ SECURITY BREACH - PLEASE REFRESH' &&
+                            !text.includes('Loading') &&
+                            !UIManager.elements.keyDisplay.classList.contains('loading-key')) {
+                            
+                            navigator.clipboard.writeText(text).then(() => {
                                 UIManager.showCopyNotification();
                             }).catch(() => {
-                                // Fallback copy method
                                 const textarea = document.createElement('textarea');
-                                textarea.value = key;
+                                textarea.value = text;
                                 textarea.style.position = 'fixed';
                                 textarea.style.opacity = '0';
                                 document.body.appendChild(textarea);
@@ -1130,117 +982,98 @@
                             });
                         }
                     });
-
-                    // Handle page visibility change
-                    document.addEventListener('visibilitychange', () => {
-                        if (document.hidden) {
-                            // Page hidden, clear sensitive data from memory
-                            if (UIManager.currentExpiry && Date.now() > UIManager.currentExpiry) {
-                                UIManager.handleExpiry();
-                            }
-                        }
-                    });
                 },
 
-                handleGetKey: async function() {
-                    if (!SecuritySystem.isSecure()) {
-                        UIManager.showError('Security system compromised. Please refresh.');
-                        return;
-                    }
-
-                    UIManager.setLoading(true);
-                    UIManager.showStatus('Verifying... Please wait', 'info');
-
-                    try {
-                        // Check referrer
-                        const referrer = document.referrer;
-                        const isFromShortener = CONFIG.REQUIRED_REFERRER_DOMAINS.some(
+                checkURLAndProceed: function() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const page = urlParams.get('page');
+                    const token = urlParams.get('token');
+                    
+                    // ===== CASE 1: TỪ SHORTENER (có ?page=key&token=auto) =====
+                    if (page === 'key' && token === 'auto') {
+                        const referrer = document.referrer.toLowerCase();
+                        const isFromShortener = CONFIG.SHORTENER_DOMAINS.some(
                             domain => referrer.includes(domain)
                         );
-
-                        // Attempt API verification
-                        const result = await APIClient.verifyAndGetKey(referrer);
-
-                        if (result.success) {
-                            // Save key data
-                            const keyData = {
-                                key: result.key,
-                                hash: result.hash,
-                                signature: result.signature,
-                                expiry: Date.now() + result.expiresIn,
-                                created: Date.now()
-                            };
-
-                            StorageManager.saveKeyData(keyData);
-                            UIManager.displayKey(result.key);
-                            UIManager.startCountdown(keyData.expiry);
-                            UIManager.showStatus('✅ Key verified successfully! Click to copy.', 'success');
-                        } else {
-                            // If API fails, fallback to shortener
-                            UIManager.showStatus('Opening verification page...', 'info');
+                        
+                        if (isFromShortener) {
+                            // HỢP LỆ: Đến từ shortener -> TỰ ĐỘNG TẠO KEY
+                            UIManager.showLoading('Verifying from shortener...');
                             
-                            // Store temporary token
-                            const tempToken = TokenManager.generateToken();
-                            TokenManager.storeToken(tempToken);
-                            
-                            // Open shortener
                             setTimeout(() => {
-                                window.open(CONFIG.SHORTENER_URL, '_blank');
-                            }, 500);
-
-                            UIManager.showStatus('Please complete verification on the next page.', 'info');
-                        }
-                    } catch (error) {
-                        UIManager.showError('Verification failed. Please try again.');
-                        console.error('[APEX] Get key error:', error);
-                    } finally {
-                        UIManager.setLoading(false);
-                    }
-                },
-
-                checkExistingKey: async function() {
-                    const keyData = StorageManager.loadKeyData();
-                    
-                    if (keyData && keyData.expiry > Date.now()) {
-                        // Valid key exists
-                        UIManager.displayKey(keyData.key);
-                        UIManager.startCountdown(keyData.expiry);
-                        UIManager.showStatus('✅ Key loaded from secure storage', 'success');
-                    } else if (keyData && keyData.expiry <= Date.now()) {
-                        // Expired key
-                        StorageManager.clearAll();
-                        UIManager.showPage2();
-                        UIManager.handleExpiry();
-                    } else {
-                        // No key
-                        UIManager.showPage1();
-                    }
-                },
-
-                updateSecurityBadge: function() {
-                    setInterval(() => {
-                        if (SecuritySystem.isSecure()) {
-                            UIManager.elements.securityStatus.textContent = 'SECURE';
-                            UIManager.elements.securityStatus.style.color = '#00ff64';
+                                const newKey = generateKey();
+                                const keyData = {
+                                    key: newKey,
+                                    expiry: Date.now() + CONFIG.KEY_DURATION
+                                };
+                                
+                                StorageManager.saveKeyData(keyData);
+                                sessionStorage.setItem(CONFIG.FINGERPRINT_KEY, generateFingerprint());
+                                
+                                UIManager.showKey(newKey, keyData.expiry);
+                            }, 1500);
+                            
+                            return;
                         } else {
-                            UIManager.elements.securityStatus.textContent = 'BREACHED';
-                            UIManager.elements.securityStatus.style.color = '#ff0000';
+                            // KHÔNG HỢP LỆ: URL giả mạo -> Chuyển về GET KEY
+                            UIManager.showGetKeyButton();
+                            UIManager.showStatus('⚠️ Invalid access. Please use GET KEY.', 'error');
+                            return;
                         }
-                    }, 3000);
+                    }
+                    
+                    // ===== CASE 2: KIỂM TRA KEY CŨ TRONG STORAGE =====
+                    const existingKey = StorageManager.loadKeyData();
+                    
+                    if (existingKey && existingKey.expiry > Date.now() && validateKey(existingKey.key)) {
+                        // Key còn hạn -> Hiển thị
+                        UIManager.showKey(existingKey.key, existingKey.expiry);
+                        return;
+                    }
+                    
+                    if (existingKey && existingKey.expiry <= Date.now()) {
+                        // Key hết hạn
+                        UIManager.handleExpiry();
+                        return;
+                    }
+                    
+                    // ===== CASE 3: MẶC ĐỊNH -> HIỂN THỊ GET KEY =====
+                    UIManager.showGetKeyButton();
+                },
+
+                handleGetKey: function() {
+                    if (!SecuritySystem.isSecure()) {
+                        UIManager.showStatus('⚠️ Security error. Refresh page.', 'error');
+                        return;
+                    }
+                    
+                    UIManager.showStatus('🔄 Opening verification page...', '');
+                    
+                    // Lưu fingerprint
+                    sessionStorage.setItem(CONFIG.FINGERPRINT_KEY, generateFingerprint());
+                    
+                    // Mở shortener
+                    setTimeout(() => {
+                        window.open(CONFIG.SHORTENER_URL, '_blank');
+                    }, 300);
                 }
             };
 
-            // ========== START APPLICATION ==========
-            // Wait for DOM to be fully loaded
+            // ========== START ==========
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', () => App.init());
             } else {
                 App.init();
             }
 
-            // Prevent any external modifications
-            Object.freeze(CONFIG);
-            Object.freeze(SecuritySystem);
+            // Periodic check
+            setInterval(() => {
+                if (!SecuritySystem.isSecure() || !verifyFingerprint()) {
+                    StorageManager.clearAll();
+                    UIManager.showGetKeyButton();
+                    UIManager.showStatus('⚠️ Session expired. Please get new key.', 'error');
+                }
+            }, 10000);
 
         })();
     </script>
